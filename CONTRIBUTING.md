@@ -48,7 +48,7 @@ We show our engineering process, so the history matters as much as the code.
 # API (Python 3.12)
 cd services/api
 python -m venv .venv && . .venv/bin/activate        # Windows: .venv\Scriptsctivate
-pip install -e ".[dev]"
+pip install -e ../../packages/engine -e ".[dev]"
 export DATABASE_URL=postgresql+psycopg://xora:change-me@localhost:5432/xora DATASET_DIR=../../datasets
 alembic upgrade head && python -m app.seed && uvicorn app.main:app --reload
 # Web (Node 22)

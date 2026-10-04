@@ -27,7 +27,12 @@ requires = ["setuptools>=72"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
-include = ["app*"]
+# Ship the same engine sources in the API wheel, so standalone API CI installs work.
+where = [".", "../../packages/engine/src"]
+include = ["app*", "xora_engine*"]
+
+[tool.setuptools.package-data]
+xora_engine = ["py.typed"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

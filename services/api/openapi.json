@@ -185,10 +185,424 @@
           }
         ]
       }
+    },
+    "/api/v1/fleet": {
+      "get": {
+        "tags": [
+          "fleet"
+        ],
+        "summary": "Get Fleet",
+        "operationId": "get_fleet_api_v1_fleet_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "date",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "title": "Date"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/FleetOut"
+                  },
+                  "title": "Response Get Fleet Api V1 Fleet Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/fleet/{vehicle}/{operating_date}": {
+      "patch": {
+        "tags": [
+          "fleet"
+        ],
+        "summary": "Switch",
+        "operationId": "switch_api_v1_fleet__vehicle___operating_date__patch",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "vehicle",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Vehicle"
+            }
+          },
+          {
+            "name": "operating_date",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "title": "Operating Date"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FleetSwitchIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FleetOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/plans/{operating_date}/generate": {
+      "post": {
+        "tags": [
+          "planning"
+        ],
+        "summary": "Generate",
+        "operationId": "generate_api_v1_plans__operating_date__generate_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "operating_date",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "title": "Operating Date"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/plans/{operating_date}": {
+      "get": {
+        "tags": [
+          "planning"
+        ],
+        "summary": "Get Plan",
+        "operationId": "get_plan_api_v1_plans__operating_date__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "operating_date",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "title": "Operating Date"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/plan-versions/{version_id}/deferrals/confirm": {
+      "post": {
+        "tags": [
+          "planning"
+        ],
+        "summary": "Confirm",
+        "operationId": "confirm_api_v1_plan_versions__version_id__deferrals_confirm_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "version_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Version Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConfirmIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/plan-versions/{version_id}/publish-check": {
+      "get": {
+        "tags": [
+          "planning"
+        ],
+        "summary": "Publish Check",
+        "operationId": "publish_check_api_v1_plan_versions__version_id__publish_check_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "version_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Version Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublishCheckOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/plan-versions/{version_id}/publish": {
+      "post": {
+        "tags": [
+          "planning"
+        ],
+        "summary": "Publish",
+        "operationId": "publish_api_v1_plan_versions__version_id__publish_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "version_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Version Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "anyOf": [
+                  {
+                    "$ref": "#/components/schemas/PublishIn"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Body"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
     "schemas": {
+      "BottleneckOut": {
+        "properties": {
+          "resource": {
+            "type": "string",
+            "title": "Resource"
+          },
+          "used": {
+            "type": "number",
+            "title": "Used"
+          },
+          "capacity": {
+            "type": "number",
+            "title": "Capacity"
+          },
+          "explanation": {
+            "type": "string",
+            "title": "Explanation"
+          }
+        },
+        "type": "object",
+        "required": [
+          "resource",
+          "used",
+          "capacity",
+          "explanation"
+        ],
+        "title": "BottleneckOut"
+      },
       "ClockOut": {
         "properties": {
           "now": {
@@ -229,6 +643,239 @@
         ],
         "title": "ClockSet"
       },
+      "ConfirmIn": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ConfirmItem"
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Items"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items"
+        ],
+        "title": "ConfirmIn"
+      },
+      "ConfirmItem": {
+        "properties": {
+          "deferral_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Deferral Id"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 2000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "deferral_id"
+        ],
+        "title": "ConfirmItem"
+      },
+      "DeferralOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "order_ref": {
+            "type": "string",
+            "title": "Order Ref"
+          },
+          "outlet_code": {
+            "type": "string",
+            "title": "Outlet Code"
+          },
+          "reason_code": {
+            "type": "string",
+            "title": "Reason Code"
+          },
+          "group": {
+            "type": "string",
+            "title": "Group"
+          },
+          "priority": {
+            "type": "number",
+            "title": "Priority"
+          },
+          "explanation": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Explanation"
+          },
+          "displaces": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Displaces"
+          },
+          "next_run": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Run"
+          },
+          "repeat_skip": {
+            "type": "boolean",
+            "title": "Repeat Skip"
+          },
+          "confirmed": {
+            "type": "boolean",
+            "title": "Confirmed"
+          },
+          "confirm_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confirm Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "order_ref",
+          "outlet_code",
+          "reason_code",
+          "group",
+          "priority",
+          "explanation",
+          "displaces",
+          "next_run",
+          "repeat_skip",
+          "confirmed",
+          "confirm_reason"
+        ],
+        "title": "DeferralOut"
+      },
+      "FleetOut": {
+        "properties": {
+          "vehicle_code": {
+            "type": "string",
+            "title": "Vehicle Code"
+          },
+          "date": {
+            "type": "string",
+            "format": "date",
+            "title": "Date"
+          },
+          "type": {
+            "type": "string",
+            "title": "Type"
+          },
+          "temp": {
+            "type": "string",
+            "title": "Temp"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "switched_on": {
+            "type": "boolean",
+            "title": "Switched On"
+          },
+          "off_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Off Reason"
+          },
+          "weight_cap_kg": {
+            "type": "number",
+            "title": "Weight Cap Kg"
+          },
+          "volume_cap_m3": {
+            "type": "number",
+            "title": "Volume Cap M3"
+          },
+          "fuel_used_l": {
+            "type": "number",
+            "title": "Fuel Used L"
+          },
+          "fuel_remaining_l": {
+            "type": "number",
+            "title": "Fuel Remaining L"
+          }
+        },
+        "type": "object",
+        "required": [
+          "vehicle_code",
+          "date",
+          "type",
+          "temp",
+          "status",
+          "switched_on",
+          "off_reason",
+          "weight_cap_kg",
+          "volume_cap_m3",
+          "fuel_used_l",
+          "fuel_remaining_l"
+        ],
+        "title": "FleetOut"
+      },
+      "FleetSwitchIn": {
+        "properties": {
+          "switched_on": {
+            "type": "boolean",
+            "title": "Switched On"
+          },
+          "off_reason": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 120
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Off Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "switched_on"
+        ],
+        "title": "FleetSwitchIn"
+      },
       "HTTPValidationError": {
         "properties": {
           "detail": {
@@ -241,6 +888,49 @@
         },
         "type": "object",
         "title": "HTTPValidationError"
+      },
+      "KpisOut": {
+        "properties": {
+          "orders_served": {
+            "type": "integer",
+            "title": "Orders Served"
+          },
+          "chilled_served": {
+            "type": "integer",
+            "title": "Chilled Served"
+          },
+          "stops_at_risk": {
+            "type": "integer",
+            "title": "Stops At Risk"
+          },
+          "deferrals": {
+            "type": "integer",
+            "title": "Deferrals"
+          },
+          "value_served": {
+            "type": "number",
+            "title": "Value Served"
+          },
+          "reefer_m3_used": {
+            "type": "number",
+            "title": "Reefer M3 Used"
+          },
+          "reefer_m3_total": {
+            "type": "number",
+            "title": "Reefer M3 Total"
+          }
+        },
+        "type": "object",
+        "required": [
+          "orders_served",
+          "chilled_served",
+          "stops_at_risk",
+          "deferrals",
+          "value_served",
+          "reefer_m3_used",
+          "reefer_m3_total"
+        ],
+        "title": "KpisOut"
       },
       "LoginRequest": {
         "properties": {
@@ -263,6 +953,243 @@
           "password"
         ],
         "title": "LoginRequest"
+      },
+      "PlanOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "plan_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Plan Id"
+          },
+          "number": {
+            "type": "integer",
+            "title": "Number"
+          },
+          "operating_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Operating Date"
+          },
+          "depot": {
+            "type": "string",
+            "title": "Depot"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "solver_status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Solver Status"
+          },
+          "solve_ms": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Solve Ms"
+          },
+          "kpis": {
+            "$ref": "#/components/schemas/KpisOut"
+          },
+          "bottleneck": {
+            "$ref": "#/components/schemas/BottleneckOut"
+          },
+          "trips": {
+            "items": {
+              "$ref": "#/components/schemas/TripOut"
+            },
+            "type": "array",
+            "title": "Trips"
+          },
+          "deferrals": {
+            "items": {
+              "$ref": "#/components/schemas/DeferralOut"
+            },
+            "type": "array",
+            "title": "Deferrals"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "plan_id",
+          "number",
+          "operating_date",
+          "depot",
+          "status",
+          "solver_status",
+          "solve_ms",
+          "kpis",
+          "bottleneck",
+          "trips",
+          "deferrals"
+        ],
+        "title": "PlanOut"
+      },
+      "PublishCheckOut": {
+        "properties": {
+          "can_publish": {
+            "type": "boolean",
+            "title": "Can Publish"
+          },
+          "violations": {
+            "items": {
+              "$ref": "#/components/schemas/ViolationOut"
+            },
+            "type": "array",
+            "title": "Violations"
+          },
+          "unconfirmed_deferrals": {
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "type": "array",
+            "title": "Unconfirmed Deferrals"
+          },
+          "late_risk_order_refs": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Late Risk Order Refs"
+          }
+        },
+        "type": "object",
+        "required": [
+          "can_publish",
+          "violations",
+          "unconfirmed_deferrals",
+          "late_risk_order_refs"
+        ],
+        "title": "PublishCheckOut"
+      },
+      "PublishIn": {
+        "properties": {
+          "accept_late_risk": {
+            "type": "boolean",
+            "title": "Accept Late Risk",
+            "default": false
+          }
+        },
+        "type": "object",
+        "title": "PublishIn"
+      },
+      "StopOrderOut": {
+        "properties": {
+          "order_ref": {
+            "type": "string",
+            "title": "Order Ref"
+          },
+          "cases": {
+            "type": "integer",
+            "title": "Cases"
+          }
+        },
+        "type": "object",
+        "required": [
+          "order_ref",
+          "cases"
+        ],
+        "title": "StopOrderOut"
+      },
+      "StopOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "seq": {
+            "type": "integer",
+            "title": "Seq"
+          },
+          "outlet_code": {
+            "type": "string",
+            "title": "Outlet Code"
+          },
+          "plan_arrival": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Plan Arrival"
+          },
+          "likely_from": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Likely From"
+          },
+          "likely_to": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Likely To"
+          },
+          "at_risk": {
+            "type": "boolean",
+            "title": "At Risk"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "orders": {
+            "items": {
+              "$ref": "#/components/schemas/StopOrderOut"
+            },
+            "type": "array",
+            "title": "Orders"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "seq",
+          "outlet_code",
+          "plan_arrival",
+          "likely_from",
+          "likely_to",
+          "at_risk",
+          "status",
+          "orders"
+        ],
+        "title": "StopOut"
       },
       "TokenOut": {
         "properties": {
@@ -292,6 +1219,91 @@
           "user"
         ],
         "title": "TokenOut"
+      },
+      "TripOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "vehicle_code": {
+            "type": "string",
+            "title": "Vehicle Code"
+          },
+          "trip_no": {
+            "type": "integer",
+            "title": "Trip No"
+          },
+          "brand": {
+            "type": "string",
+            "title": "Brand"
+          },
+          "district": {
+            "type": "string",
+            "title": "District"
+          },
+          "lane": {
+            "type": "string",
+            "title": "Lane"
+          },
+          "planned_depart": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Planned Depart"
+          },
+          "plan_minutes": {
+            "type": "integer",
+            "title": "Plan Minutes"
+          },
+          "litres": {
+            "type": "number",
+            "title": "Litres"
+          },
+          "weight_kg": {
+            "type": "number",
+            "title": "Weight Kg"
+          },
+          "volume_m3": {
+            "type": "number",
+            "title": "Volume M3"
+          },
+          "locked": {
+            "type": "boolean",
+            "title": "Locked"
+          },
+          "stops": {
+            "items": {
+              "$ref": "#/components/schemas/StopOut"
+            },
+            "type": "array",
+            "title": "Stops"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "vehicle_code",
+          "trip_no",
+          "brand",
+          "district",
+          "lane",
+          "planned_depart",
+          "plan_minutes",
+          "litres",
+          "weight_kg",
+          "volume_m3",
+          "locked",
+          "stops"
+        ],
+        "title": "TripOut"
       },
       "UserOut": {
         "properties": {
@@ -415,6 +1427,56 @@
           "type"
         ],
         "title": "ValidationError"
+      },
+      "ViolationOut": {
+        "properties": {
+          "rule_id": {
+            "type": "string",
+            "title": "Rule Id"
+          },
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "context": {
+            "additionalProperties": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "boolean"
+                },
+                {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                }
+              ]
+            },
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "rule_id",
+          "code",
+          "message",
+          "context"
+        ],
+        "title": "ViolationOut"
       }
     },
     "securitySchemes": {
