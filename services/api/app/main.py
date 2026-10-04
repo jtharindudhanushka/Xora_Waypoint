@@ -12,7 +12,9 @@ from app.core.middleware import RequestContextMiddleware
 from app.modules.auth.router import router as auth_router
 from app.modules.fleet.router import router as fleet_router
 from app.modules.health.router import router as health_router
+from app.modules.issues.router import router as issues_router
 from app.modules.ops.clock_router import router as clock_router
+from app.modules.ops.router import router as ops_router
 from app.modules.planning.router import router as planning_router
 from app.modules.repair.router import router as repair_router
 from app.modules.stream.router import router as stream_router
@@ -50,6 +52,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         health_router,
         auth_router,
         clock_router,
+        ops_router,
+        issues_router,
         stream_router,
         fleet_router,
         planning_router,

@@ -18,6 +18,16 @@ The brief requires us to explain which work was AI-assisted, which wasn't, and h
 | 2026-10-04 | Dev 2 shortfall repair, task 2.5 | Codex (OpenAI), Figma connector | Built A/B/C repairs with shared rules and case conservation, stale quotes, linked top-ups/next-run orders, v2 publication and D6; tested real S1 repair plus synthetic API/browser flows | Approved the disabled dock-call control and existing probability departure; lead reviews PR #15 and connects loader acknowledgement |
 | 2026-10-04 | Dev 2 handover | Codex (OpenAI) | Recorded task status, PR merge order, verified checks, S1 results, integration gaps, departures and local verification commands | Requested the report and final documentation PR; retains merge and submission decisions |
 
+## Dev 2 second assignment log (4 Oct 2026)
+
+| Date | Area | Tool | What the AI did | What we did |
+|---|---|---|---|---|
+| 2026-10-04 | Bounded optimiser, task 2.6 | Codex (OpenAI) | Built CP-SAT compatible assignment/capacity/time/fuel/lock constraints, greedy hints and validated fallback; added synthetic/property tests; checked local S1 and dependency/image installation | Set solver budget, acceptance criteria and priority; lead reviews #17; prototype quality remains a documented gap |
+| 2026-10-04 | Live operations, task 2.7 | Codex (OpenAI), Figma connector | Read D5 and its rationale; implemented depot-scoped views, impact ranking, pending sync, notices, safe stop swaps, immutable publication, tests and comparison | Assigned track boundaries; lead creates field events and reviews #18 |
+| 2026-10-04 | Issues, task 2.8 | Codex (OpenAI), Figma connector | Implemented D10/D13 evidence and decisions, next-run redelivery, short claims, notifications/SSE and synthetic tests; compared both screens | Approved accurate loading-team notification wording; lead owns issue creation, loading pick-note display and review of #21 |
+| 2026-10-04 | Fidelity and integration, task 2.9 | Codex (OpenAI), Figma connector | Reviewed eight frames; corrected planning geometry/type/tokens and refreshed comparisons; regenerated merged sync contracts and froze a flaky repair timer fixture | Authorized completion of in-progress work at freeze; lead reviews #25 and final deployed walkthrough |
+| 2026-10-04 | Second handover | Codex (OpenAI) | Recorded merge order, statuses, measured S1 results, limitations, departures, integration risks and exact verification commands | Requested the report; retains merge, deployment and submission decisions |
+
 ## Not AI-assisted
 - _To be completed by the team (e.g. the original wireframes and flows from the Designathon, decisions made in review)._
 

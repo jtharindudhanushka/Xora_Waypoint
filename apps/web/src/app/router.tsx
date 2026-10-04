@@ -4,6 +4,8 @@ import { LoginPage } from '../features/auth/LoginPage'
 import { RoleHome } from '../features/placeholder/RoleHome'
 import { PlanWorkspace } from '../features/dispatch/planning/PlanWorkspace'
 import { ShortfallWorkspace } from '../features/dispatch/repair/ShortfallWorkspace'
+import { LiveOpsWorkspace } from '../features/dispatch/ops/LiveOpsWorkspace'
+import { IssueWorkspace } from '../features/dispatch/issues/IssueWorkspace'
 import { OutcomePage } from '../features/driver/OutcomePage'
 import { RecordPage, UploadsPage } from '../features/driver/RecordPage'
 import { StopPage } from '../features/driver/StopPage'
@@ -25,18 +27,14 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <Navigate to="plan" replace /> },
       { path: 'shortfalls/:id', element: <ShortfallWorkspace /> },
+      { path: 'issues/:id', element: <IssueWorkspace /> },
       {
         path: 'plan',
         element: <PlanWorkspace />,
       },
       {
         path: 'ops',
-        element: (
-          <RoleHome
-            title="Live operations"
-            screens={['D5 Live ops', 'D10 Store report', 'D13 Reconcile']}
-          />
-        ),
+        element: <LiveOpsWorkspace />,
       },
     ],
   },
