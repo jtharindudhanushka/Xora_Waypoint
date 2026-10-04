@@ -7,9 +7,14 @@ This is the **Hackathon build** of Xora for Waypoint (Tech-Triathlon 2026). The 
 2. [`docs/02-business-rules.md`](docs/02-business-rules.md): **the rules**. Every feature traces to a `BR-xx`.
 3. [`docs/03-architecture.md`](docs/03-architecture.md): how it fits together.
 4. [`docs/12-work-breakdown.md`](docs/12-work-breakdown.md): who owns what, and the order of work.
-5. The doc for your area: `04` data model · `05` API · `06` engine · `07` offline sync · `08` frontend · `09` seed/demo · `10` testing · `11` deployment.
+5. [`docs/13-figma-screen-map.md`](docs/13-figma-screen-map.md): the exact Figma frame for every screen.
+6. The doc for your area: `04` data model · `05` API · `06` engine · `07` offline sync · `08` frontend · `09` seed/demo · `10` testing · `11` deployment.
+
+## Starting in a fresh AI chat?
+Follow [`docs/14-ai-handoff.md`](docs/14-ai-handoff.md): it has the setup, the starter prompt and what to read for each work package.
 
 ## Hard rules for contributors
+- **UI must match the Figma frames exactly** (copy, layout, spacing, tokens, states). Frame links per screen: [`docs/13-figma-screen-map.md`](docs/13-figma-screen-map.md). Read the frame and its rationale before coding; if it can't match, log a departure in `docs/02-business-rules.md` and ask first. Never improvise a design.
 - **Never commit the competition data.** That means `datasets/`, any CSV derived from it, DB dumps and trained model files. The repo is **public**, and the T&C forbid publishing the data or derivatives. `.gitignore` enforces this, so don't override it.
 - **Deadline: Sun 2026-10-04 23:59 Sri Lanka time.** Code pushed after it is ignored. Internal target: submit by 21:00.
 - **Business rules live in one place.** The engine's rule checks are in `packages/engine`, and the API and UI call them. Never re-implement a rule in the frontend.
