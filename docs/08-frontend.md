@@ -1,6 +1,6 @@
 # 08 · Frontend (`apps/web`)
 
-React 18 + TypeScript (strict) + Vite, built as a PWA (vite-plugin-pwa / Workbox). **One app, four role areas.** After login, users are routed by role (X1). **Fidelity to Figma is scored (10%)**, so match the frames in the [Figma file](https://www.figma.com/design/G2O2aShpb6GCFNgBiftFFj/Xora-Rootcode). Each screen's Figma page and frame is listed below.
+React 19 + TypeScript 6 (strict) + Vite 8, built as a PWA (vite-plugin-pwa / Workbox). **One app, four role areas.** After login, users are routed by role (X1). **Fidelity to Figma is scored (10%)**, so match the frames in the [Figma file](https://www.figma.com/design/G2O2aShpb6GCFNgBiftFFj/Xora-Rootcode). Each screen's Figma page and frame is listed below.
 
 ## Libraries
 | Need | Choice |
@@ -14,6 +14,7 @@ React 18 + TypeScript (strict) + Vite, built as a PWA (vite-plugin-pwa / Workbox
 | Forms | React Hook Form + Zod |
 | i18n (S8 notice) | simple message catalogue `si` / `ta` / `en` |
 | Tests | Vitest + Testing Library (units), Playwright (e2e) |
+| Lint / format | **oxlint** (`npm run lint`) + **prettier** (`npm run format`) |
 
 ## Routes → screens
 | Route | Screen | Figma page | Primary device |

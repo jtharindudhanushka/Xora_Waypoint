@@ -22,6 +22,22 @@
 4. Open a PR to `main` using the template. **CI must be green.** Squash-merge.
 5. Rebase often. `main` moves fast today.
 
+## Running without Docker (fast dev loop)
+```bash
+# API (Python 3.12)
+cd services/api
+python -m venv .venv && . .venv/bin/activate        # Windows: .venv\Scriptsctivate
+pip install -e ".[dev]"
+export DATABASE_URL=postgresql+psycopg://xora:change-me@localhost:5432/xora DATASET_DIR=../../datasets
+alembic upgrade head && python -m app.seed && uvicorn app.main:app --reload
+# Web (Node 22)
+cd apps/web && npm ci && npm run dev                # http://localhost:5173, proxies /api to :8000
+```
+After changing an API schema or route:
+```bash
+python services/api/scripts/export_openapi.py && (cd apps/web && npm run gen:api)
+```
+
 ## Rules of the road
 - Business rules live in `packages/engine` (planning) or the API service layer. **Never** only in the UI. Reference `BR-xx`.
 - API shapes come from Pydantic → OpenAPI. Regenerate the TS client:
@@ -35,5 +51,5 @@
 
 ## Code style
 - **Python:** ruff (format + lint), mypy; type hints everywhere.
-- **TypeScript:** strict; eslint + prettier.
+- **TypeScript:** strict; oxlint + prettier.
 - **Naming:** `snake_case` (Python, DB), `camelCase` (TS), `PascalCase` (components).

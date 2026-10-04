@@ -16,7 +16,7 @@ The minimum before submitting: **engine tests green, API smoke tests green, e2e 
 |---|---|
 | Python format + lint | **ruff** (format + lint), line length 100 |
 | Python types | **mypy --strict** on `packages/engine`; standard on `services/api` |
-| TS lint/format | **eslint** (typescript-eslint, react-hooks) + **prettier** |
+| TS lint/format | **oxlint** + **prettier** (`.prettierrc.json`) |
 | TS types | `tsc --noEmit` (strict) |
 | Pre-commit | `pre-commit` hooks: ruff, prettier, end-of-file, no large files, **no CSV/PDF** |
 | Commits | **Conventional commits**: `feat(planning): …`, `fix(sync): …`, `docs: …` |
