@@ -569,8 +569,8 @@ function Revision({
           Plan v{trip.previous_version} → v{trip.version.number}
         </p>
         <h1 className="text-[28px] font-semibold leading-[34px] tracking-[-0.28px]">
-      {own.length + (trip.previous_departure !== trip.departure ? 1 : 0)}{' '}
-      {own.length + (trip.previous_departure !== trip.departure ? 1 : 0) === 1
+          {own.length + (trip.previous_departure !== trip.departure ? 1 : 0)}{' '}
+          {own.length + (trip.previous_departure !== trip.departure ? 1 : 0) === 1
             ? 'change'
             : 'changes'}{' '}
           to this load
@@ -611,7 +611,12 @@ function Revision({
             value={`${c.before} → 0 cases`}
           />
         ))}
-      {trip.previous_departure !== trip.departure && <KeyValue label="Departure" value={time(trip.previous_departure) + " → " + time(trip.departure)} />}
+      {trip.previous_departure !== trip.departure && (
+        <KeyValue
+          label="Departure"
+          value={time(trip.previous_departure) + ' → ' + time(trip.departure)}
+        />
+      )}
       {other.map((c) => (
         <div
           key={`${c.vehicle}:${c.trip_no}:${c.order_id}`}
@@ -650,4 +655,3 @@ function Revision({
     </>
   )
 }
-
