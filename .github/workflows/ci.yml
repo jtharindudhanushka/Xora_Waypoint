@@ -80,5 +80,7 @@ jobs:
     needs: [api]
     steps:
       - uses: actions/checkout@v4
-      - run: cp .env.example .env
-      - run: docker compose build
+      - id: detect
+        run: echo "present=$([ -f apps/web/Dockerfile ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+      - if: steps.detect.outputs.present == 'true'
+        run: cp .env.example .env && docker compose build
