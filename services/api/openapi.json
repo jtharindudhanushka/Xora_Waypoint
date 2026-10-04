@@ -571,6 +571,158 @@
           }
         }
       }
+    },
+    "/api/v1/deferrals/{deferral_id}/serve-instead": {
+      "post": {
+        "tags": [
+          "planning"
+        ],
+        "summary": "Serve Instead",
+        "operationId": "serve_instead_api_v1_deferrals__deferral_id__serve_instead_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "deferral_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Deferral Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ServeInsteadIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServeInsteadOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/trips/{trip_id}/lock": {
+      "post": {
+        "tags": [
+          "planning"
+        ],
+        "summary": "Lock Trip",
+        "operationId": "lock_trip_api_v1_trips__trip_id__lock_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "trip_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Trip Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "planning"
+        ],
+        "summary": "Unlock Trip",
+        "operationId": "unlock_trip_api_v1_trips__trip_id__lock_delete",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "trip_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Trip Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -761,6 +913,32 @@
               }
             ],
             "title": "Confirm Reason"
+          },
+          "district": {
+            "type": "string",
+            "title": "District"
+          },
+          "temp_requirement": {
+            "type": "string",
+            "title": "Temp Requirement"
+          },
+          "volume_m3": {
+            "type": "number",
+            "title": "Volume M3"
+          },
+          "weight_kg": {
+            "type": "number",
+            "title": "Weight Kg"
+          },
+          "notice_body": {
+            "type": "string",
+            "title": "Notice Body",
+            "default": ""
+          },
+          "notice_language": {
+            "type": "string",
+            "title": "Notice Language",
+            "default": "en"
           }
         },
         "type": "object",
@@ -776,7 +954,11 @@
           "next_run",
           "repeat_skip",
           "confirmed",
-          "confirm_reason"
+          "confirm_reason",
+          "district",
+          "temp_requirement",
+          "volume_m3",
+          "weight_kg"
         ],
         "title": "DeferralOut"
       },
@@ -1024,6 +1206,14 @@
             },
             "type": "array",
             "title": "Deferrals"
+          },
+          "orders_total": {
+            "type": "integer",
+            "title": "Orders Total"
+          },
+          "chilled_total": {
+            "type": "integer",
+            "title": "Chilled Total"
           }
         },
         "type": "object",
@@ -1039,7 +1229,9 @@
           "kpis",
           "bottleneck",
           "trips",
-          "deferrals"
+          "deferrals",
+          "orders_total",
+          "chilled_total"
         ],
         "title": "PlanOut"
       },
@@ -1091,6 +1283,48 @@
         },
         "type": "object",
         "title": "PublishIn"
+      },
+      "ServeInsteadIn": {
+        "properties": {
+          "confirm": {
+            "type": "boolean",
+            "title": "Confirm",
+            "default": false
+          }
+        },
+        "type": "object",
+        "title": "ServeInsteadIn"
+      },
+      "ServeInsteadOut": {
+        "properties": {
+          "order_ref": {
+            "type": "string",
+            "title": "Order Ref"
+          },
+          "displaces": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Displaces"
+          },
+          "version": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PlanOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "order_ref",
+          "displaces"
+        ],
+        "title": "ServeInsteadOut"
       },
       "StopOrderOut": {
         "properties": {
@@ -1285,6 +1519,20 @@
             },
             "type": "array",
             "title": "Stops"
+          },
+          "rule_messages": {
+            "items": {
+              "$ref": "#/components/schemas/ViolationOut"
+            },
+            "type": "array",
+            "title": "Rule Messages"
+          },
+          "protected_outlets": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Protected Outlets"
           }
         },
         "type": "object",

@@ -8,6 +8,16 @@ from xora_engine.export import export_task2b
 from xora_engine.policy import priority
 
 
+def test_br16_forced_replacement_uses_the_same_hard_rules(problem):
+    orders = {f"O{i}": replace(problem.orders["O1"], ref=f"O{i}", weight_kg=1000) for i in range(3)}
+    problem = replace(problem, orders=orders)
+    original = plan(problem)
+    forced = original.deferrals[0].order_ref
+    replacement = plan(problem, force_order_ref=forced)
+    assert forced in {s.order_ref for t in replacement.trips for s in t.stops}
+    assert validate(replacement.assignment, problem) == []
+
+
 def test_br13_priority_formula(problem):
     order = replace(problem.orders["O1"], deferred_yesterday=True, days_since_last_served=2)
     assert priority(order, 1) == 1 * 1 * 1.8 * 3 * 1.5

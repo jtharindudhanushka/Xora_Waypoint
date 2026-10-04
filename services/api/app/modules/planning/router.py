@@ -9,7 +9,14 @@ from fastapi import APIRouter, Depends
 from app.core.deps import ClockDep, DbDep, require_roles
 from app.modules.auth.models import User
 from app.modules.planning import service
-from app.modules.planning.schemas import ConfirmIn, PlanOut, PublishCheckOut, PublishIn
+from app.modules.planning.schemas import (
+    ConfirmIn,
+    PlanOut,
+    PublishCheckOut,
+    PublishIn,
+    ServeInsteadIn,
+    ServeInsteadOut,
+)
 
 Dispatcher = Annotated[User, Depends(require_roles("dispatcher"))]
 router = APIRouter(tags=["planning"])
@@ -54,3 +61,22 @@ async def publish(
         repo, user, clock, version_id, body.accept_late_risk if body else False
     )
     return service.plan_out(repo, version)
+
+
+@router.post("/deferrals/{deferral_id}/serve-instead", response_model=ServeInsteadOut)
+def serve_instead(
+    deferral_id: uuid.UUID, body: ServeInsteadIn, db: DbDep, clock: ClockDep, user: Dispatcher
+) -> ServeInsteadOut:
+    return service.serve_instead(
+        service.repository(db, user), user, clock, deferral_id, body.confirm
+    )
+
+
+@router.post("/trips/{trip_id}/lock", response_model=PlanOut)
+def lock_trip(trip_id: uuid.UUID, db: DbDep, clock: ClockDep, user: Dispatcher) -> PlanOut:
+    return service.lock_trip(service.repository(db, user), user, clock, trip_id, True)
+
+
+@router.delete("/trips/{trip_id}/lock", response_model=PlanOut)
+def unlock_trip(trip_id: uuid.UUID, db: DbDep, clock: ClockDep, user: Dispatcher) -> PlanOut:
+    return service.lock_trip(service.repository(db, user), user, clock, trip_id, False)

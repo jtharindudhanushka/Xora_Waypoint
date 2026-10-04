@@ -17,14 +17,18 @@ def as_time(value: int) -> time:
 
 
 def load_problem(
-    repo: Repository, version: PlanVersion | None = None, *, operating_date: date | None = None
+    repo: Repository,
+    version: PlanVersion | None = None,
+    *,
+    operating_date: date | None = None,
+    include_completed: bool = False,
 ) -> Problem:
     if version is not None:
         operating_date = version.plan.operating_date
     assert operating_date is not None
     outlets = {o.code: o for o in repo.outlets()}
     orders: dict[str, Order] = {}
-    for row in repo.orders(operating_date):
+    for row in repo.orders(operating_date, include_completed=include_completed):
         outlet = outlets[row.outlet_code]
         orders[row.ref] = Order(
             row.ref,
@@ -84,7 +88,7 @@ def load_problem(
 
 
 def load_assignment(version: PlanVersion, repo: Repository) -> Assignment:
-    by_id = {o.id: o.ref for o in repo.orders(version.plan.operating_date)}
+    by_id = {o.id: o.ref for o in repo.orders(version.plan.operating_date, include_completed=True)}
     return Assignment(
         tuple(
             Trip(
