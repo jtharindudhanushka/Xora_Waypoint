@@ -29,6 +29,7 @@ The brief requires us to explain which work was AI-assisted, which wasn't, and h
 | 2026-10-04 | Second handover | Codex (OpenAI) | Recorded merge order, statuses, measured S1 results, limitations, departures, integration risks and exact verification commands | Requested the report; retains merge, deployment and submission decisions |
 | 2026-10-04 | Cross-track contract integration | Codex (OpenAI) | Merged latest main into remaining PR branches, retained all routers, regenerated contracts and fixed the dispatcher IssueOut type collision using its endpoint response; ran combined API and web checks | Explicitly requested merge commits, regenerated contracts and checked pushes; lead retains PR merge decisions |
 | 2026-10-04 | Shortfall demo and deferral fixes | Codex (OpenAI) | Verified S1 shortfall/repair/ack flow for greedy and Trip 2 shapes, corrected deferral timezone dates and repicked driver projection, and added synthetic regressions | Kept the deployed solver configuration unchanged as requested; retained lead review, merge and deployment authority |
+| 2026-10-04 | Merged architecture and video segment | Codex (OpenAI) | Checked registered routers, ORM keys, integrity triggers, outbox, scoped SSE and Compose deployment; corrected architecture/data diagrams and drafted the code segment script | Requested documentation to match merged code, retained lead review and narration |
 
 ## Lead implementation log (4 Oct 2026)
 
