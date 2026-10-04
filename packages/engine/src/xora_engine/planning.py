@@ -143,7 +143,7 @@ def _insert(order: Order, assignment: Assignment, problem: Problem) -> Assignmen
             ]
             for next_trip in later:
                 next_scheduled = _scheduled(next_trip, updated, problem)
-                if next_scheduled is None:
+                if next_scheduled is None or (next_trip.locked and next_scheduled != next_trip):
                     break
                 updated = Assignment(
                     tuple(next_scheduled if t == next_trip else t for t in updated.trips)
@@ -329,12 +329,27 @@ def _bottleneck(
     reefer_total: float,
 ) -> Bottleneck:
     if any(problem.orders[d.order_ref].temp == "chilled" for d in deferrals):
+        reefers = {
+            v.code
+            for v in problem.vehicles.values()
+            if v.temp == "reefer" and v.switched_on and v.status == "available"
+        }
+        trips = [t for t in assignment.trips if t.vehicle in reefers]
+        fresh_minutes = sum(
+            t.plan_minutes for t in trips if problem.orders[t.stops[0].order_ref].brand == "Fresh"
+        )
+        resources = (
+            ("reefer_space", reefer_used, reefer_total),
+            ("reefer_fresh_minutes", float(fresh_minutes), float(len(reefers) * 270)),
+            ("reefer_trip_slots", float(len(trips)), float(len(reefers) * 2)),
+        )
+        resource, used, capacity = max(resources, key=lambda r: r[1] / r[2] if r[2] else 0)
         return Bottleneck(
-            "reefer_space",
-            reefer_used,
-            reefer_total,
-            "Chilled orders remain deferred; reefer trips are constrained "
-            "by space, time and trip limits",
+            resource,
+            used,
+            capacity,
+            "Highest utilisation among eligible reefer resources; "
+            "brand, district and per-vehicle limits also constrain the greedy plan",
         )
     active = [v for v in problem.vehicles.values() if v.switched_on and v.status == "available"]
     return Bottleneck(

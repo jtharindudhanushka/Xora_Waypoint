@@ -10,8 +10,10 @@ from app.core.errors import register_error_handlers
 from app.core.logging import configure_logging
 from app.core.middleware import RequestContextMiddleware
 from app.modules.auth.router import router as auth_router
+from app.modules.fleet.router import router as fleet_router
 from app.modules.health.router import router as health_router
 from app.modules.ops.clock_router import router as clock_router
+from app.modules.planning.router import router as planning_router
 from app.modules.stream.router import router as stream_router
 
 API_PREFIX = "/api/v1"
@@ -42,7 +44,14 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     register_error_handlers(app)
 
     api = APIRouter(prefix=API_PREFIX)
-    for router in (health_router, auth_router, clock_router, stream_router):
+    for router in (
+        health_router,
+        auth_router,
+        clock_router,
+        stream_router,
+        fleet_router,
+        planning_router,
+    ):
         api.include_router(router)
     app.include_router(api)
     return app
