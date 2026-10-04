@@ -112,6 +112,39 @@ def test_br28_topup_waits_for_repick_and_rechecks_later_trip_budget(problem):
     assert not validate_repair(option.assignment, original, value, problem)
 
 
+def test_br28_br29_shortfall_on_trip_two_never_topups_an_earlier_trip(problem):
+    original = published(problem)
+    value = Shortfall("O2", 2, "V1", 2, 350, "same_morning_only")
+    options = {o.label: o for o in repair(original, value, problem)}
+    assert set(options) == {"B", "C"}
+    assert options["B"].recommended
+    assert not options["B"].breaks_store_rule
+    assert options["C"].breaks_store_rule
+    for option in options.values():
+        assert option.assignment.trips[0] == original.trips[0]
+        assert not validate_repair(
+            option.assignment, original, value, problem, option.next_run_cases
+        )
+
+
+def test_br28_br29_trip_two_can_topup_a_later_compatible_vehicle(problem):
+    problem = replace(
+        problem,
+        orders={**problem.orders, "O3": replace(problem.orders["O1"], ref="O3", outlet="OUT3")},
+        vehicles={**problem.vehicles, "V2": replace(problem.vehicles["V1"], code="V2")},
+    )
+    original = Assignment((*published(problem).trips, Trip("V2", 1, (Stop("O3", 10),), 400, 40)))
+    value = Shortfall("O2", 2, "V1", 2, 350, "same_morning_only")
+    options = {o.label: o for o in repair(original, value, problem)}
+    assert set(options) == {"A", "B", "C"}
+    assert options["A"].recommended
+    assert options["A"].top_up_trip == ("V2", 1)
+    assert "Trip 1 on V2" in options["A"].title
+    assert not options["A"].breaks_store_rule
+    assert options["C"].breaks_store_rule
+    assert not validate_repair(options["A"].assignment, original, value, problem)
+
+
 @given(st.integers(min_value=1, max_value=10))
 def test_br30_every_repair_preserves_quantity_and_passes_shared_rules(missing):
     order = Order(

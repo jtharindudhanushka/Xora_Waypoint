@@ -175,6 +175,40 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  '/api/v1/dock/trips': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Trips */
+    get: operations['trips_api_v1_dock_trips_get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/v1/dock/trips/{identifier}': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Trip */
+    get: operations['trip_api_v1_dock_trips__identifier__get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   '/api/v1/stream': {
     parameters: {
       query?: never
@@ -821,6 +855,225 @@ export interface components {
        * @default en
        */
       notice_language: string
+    }
+    /** DockChange */
+    DockChange: {
+      /** Vehicle */
+      vehicle: string
+      /** Trip No */
+      trip_no: number
+      /** Departure */
+      departure: string | null
+      /**
+       * Order Id
+       * Format: uuid
+       */
+      order_id: string
+      /** Order Ref */
+      order_ref: string
+      /** Outlet Code */
+      outlet_code: string
+      /** Before */
+      before: number
+      /** After */
+      after: number
+      /** Top Up */
+      top_up: boolean
+    }
+    /** DockDay */
+    DockDay: {
+      /**
+       * Date
+       * Format: date
+       */
+      date: string
+      /** Depot */
+      depot: string
+      /** Dock */
+      dock: string | null
+      version: components['schemas']['DockVersion'] | null
+      /** Trips */
+      trips: components['schemas']['DockTrip'][]
+      /**
+       * Server Time
+       * Format: date-time
+       */
+      server_time: string
+    }
+    /** DockDetail */
+    DockDetail: {
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string
+      /** Vehicle */
+      vehicle: string
+      /** Vehicle Type */
+      vehicle_type: string
+      /** Temperature */
+      temperature: string
+      /** Trip No */
+      trip_no: number
+      /** District */
+      district: string
+      /** Departure */
+      departure: string | null
+      /** Stops */
+      stops: number
+      /** Cases */
+      cases: number
+      /** Volume M3 */
+      volume_m3: number
+      /** Weight Kg */
+      weight_kg: number
+      /** Volume Cap M3 */
+      volume_cap_m3: number
+      /** Weight Cap Kg */
+      weight_cap_kg: number
+      /**
+       * Load Status
+       * @enum {string}
+       */
+      load_status: 'planned' | 'loaded' | 'on_hold'
+      /** On Hold */
+      on_hold: boolean
+      version: components['schemas']['DockVersion']
+      /** Load List */
+      load_list: components['schemas']['DockLine'][]
+      hold: components['schemas']['DockHold'] | null
+      /** Previous Version */
+      previous_version: number | null
+      /** Previous Departure */
+      previous_departure: string | null
+      /** Changes */
+      changes: components['schemas']['DockChange'][]
+      /** Shortfall Reasons */
+      shortfall_reasons: string[]
+      /**
+       * Server Time
+       * Format: date-time
+       */
+      server_time: string
+    }
+    /** DockHold */
+    DockHold: {
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string
+      /**
+       * Shortfall Id
+       * Format: uuid
+       */
+      shortfall_id: string
+      /**
+       * Order Id
+       * Format: uuid
+       */
+      order_id: string
+      /** Order Ref */
+      order_ref: string
+      /** Outlet Code */
+      outlet_code: string
+      /** Kind */
+      kind: string
+      /** Qty */
+      qty: number
+      /** Planned Cases */
+      planned_cases: number
+      /** Reason */
+      reason: string
+      /**
+       * Reported At
+       * Format: date-time
+       */
+      reported_at: string
+      /** Waiting Seconds */
+      waiting_seconds: number
+      /** To Departure Minutes */
+      to_departure_minutes: number | null
+    }
+    /** DockLine */
+    DockLine: {
+      /**
+       * Order Id
+       * Format: uuid
+       */
+      order_id: string
+      /** Order Ref */
+      order_ref: string
+      /** Outlet Code */
+      outlet_code: string
+      /** Stop Seq */
+      stop_seq: number
+      /** Cases */
+      cases: number
+      /** Temperature */
+      temperature: string
+      /** Weight Kg */
+      weight_kg: number
+      /** Top Up */
+      top_up: boolean
+    }
+    /** DockTrip */
+    DockTrip: {
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string
+      /** Vehicle */
+      vehicle: string
+      /** Vehicle Type */
+      vehicle_type: string
+      /** Temperature */
+      temperature: string
+      /** Trip No */
+      trip_no: number
+      /** District */
+      district: string
+      /** Departure */
+      departure: string | null
+      /** Stops */
+      stops: number
+      /** Cases */
+      cases: number
+      /** Volume M3 */
+      volume_m3: number
+      /** Weight Kg */
+      weight_kg: number
+      /** Volume Cap M3 */
+      volume_cap_m3: number
+      /** Weight Cap Kg */
+      weight_cap_kg: number
+      /**
+       * Load Status
+       * @enum {string}
+       */
+      load_status: 'planned' | 'loaded' | 'on_hold'
+      /** On Hold */
+      on_hold: boolean
+      version: components['schemas']['DockVersion']
+    }
+    /** DockVersion */
+    DockVersion: {
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string
+      /** Number */
+      number: number
+      /** Published At */
+      published_at: string | null
+      /** Acknowledged */
+      acknowledged: boolean
+      /** Needs Acknowledgement */
+      needs_acknowledgement: boolean
+      /** Change Reason */
+      change_reason: string | null
     }
     /** DriverNoteIn */
     DriverNoteIn: {
@@ -2414,6 +2667,68 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['app__modules__issues__schemas__IssueOut']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  trips_api_v1_dock_trips_get: {
+    parameters: {
+      query?: {
+        date?: string | null
+      }
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['DockDay']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  trip_api_v1_dock_trips__identifier__get: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        identifier: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['DockDetail']
         }
       }
       /** @description Validation Error */

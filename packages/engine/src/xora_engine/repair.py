@@ -308,7 +308,8 @@ def repair(
         add(
             "A",
             f"Send {now_cases} now, {shortfall.qty_missing} more on Trip "
-            f"{later.trip_no} this morning",
+            f"{later.trip_no}"
+            f"{' on ' + later.vehicle if later.vehicle != affected.vehicle else ''} this morning",
             candidate,
             top_up=(later.vehicle, later.trip_no),
         )

@@ -476,6 +476,109 @@
         }
       }
     },
+    "/api/v1/dock/trips": {
+      "get": {
+        "tags": [
+          "loading"
+        ],
+        "summary": "Trips",
+        "operationId": "trips_api_v1_dock_trips_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "date",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Date"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DockDay"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/dock/trips/{identifier}": {
+      "get": {
+        "tags": [
+          "loading"
+        ],
+        "summary": "Trip",
+        "operationId": "trip_api_v1_dock_trips__identifier__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "identifier",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Identifier"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DockDetail"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/stream": {
       "get": {
         "tags": [
@@ -2383,6 +2486,574 @@
           "weight_kg"
         ],
         "title": "DeferralOut"
+      },
+      "DockChange": {
+        "properties": {
+          "vehicle": {
+            "type": "string",
+            "title": "Vehicle"
+          },
+          "trip_no": {
+            "type": "integer",
+            "title": "Trip No"
+          },
+          "departure": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Departure"
+          },
+          "order_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Order Id"
+          },
+          "order_ref": {
+            "type": "string",
+            "title": "Order Ref"
+          },
+          "outlet_code": {
+            "type": "string",
+            "title": "Outlet Code"
+          },
+          "before": {
+            "type": "integer",
+            "title": "Before"
+          },
+          "after": {
+            "type": "integer",
+            "title": "After"
+          },
+          "top_up": {
+            "type": "boolean",
+            "title": "Top Up"
+          }
+        },
+        "type": "object",
+        "required": [
+          "vehicle",
+          "trip_no",
+          "departure",
+          "order_id",
+          "order_ref",
+          "outlet_code",
+          "before",
+          "after",
+          "top_up"
+        ],
+        "title": "DockChange"
+      },
+      "DockDay": {
+        "properties": {
+          "date": {
+            "type": "string",
+            "format": "date",
+            "title": "Date"
+          },
+          "depot": {
+            "type": "string",
+            "title": "Depot"
+          },
+          "dock": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dock"
+          },
+          "version": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DockVersion"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "trips": {
+            "items": {
+              "$ref": "#/components/schemas/DockTrip"
+            },
+            "type": "array",
+            "title": "Trips"
+          },
+          "server_time": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Server Time"
+          }
+        },
+        "type": "object",
+        "required": [
+          "date",
+          "depot",
+          "dock",
+          "version",
+          "trips",
+          "server_time"
+        ],
+        "title": "DockDay"
+      },
+      "DockDetail": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "vehicle": {
+            "type": "string",
+            "title": "Vehicle"
+          },
+          "vehicle_type": {
+            "type": "string",
+            "title": "Vehicle Type"
+          },
+          "temperature": {
+            "type": "string",
+            "title": "Temperature"
+          },
+          "trip_no": {
+            "type": "integer",
+            "title": "Trip No"
+          },
+          "district": {
+            "type": "string",
+            "title": "District"
+          },
+          "departure": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Departure"
+          },
+          "stops": {
+            "type": "integer",
+            "title": "Stops"
+          },
+          "cases": {
+            "type": "integer",
+            "title": "Cases"
+          },
+          "volume_m3": {
+            "type": "number",
+            "title": "Volume M3"
+          },
+          "weight_kg": {
+            "type": "number",
+            "title": "Weight Kg"
+          },
+          "volume_cap_m3": {
+            "type": "number",
+            "title": "Volume Cap M3"
+          },
+          "weight_cap_kg": {
+            "type": "number",
+            "title": "Weight Cap Kg"
+          },
+          "load_status": {
+            "type": "string",
+            "enum": [
+              "planned",
+              "loaded",
+              "on_hold"
+            ],
+            "title": "Load Status"
+          },
+          "on_hold": {
+            "type": "boolean",
+            "title": "On Hold"
+          },
+          "version": {
+            "$ref": "#/components/schemas/DockVersion"
+          },
+          "load_list": {
+            "items": {
+              "$ref": "#/components/schemas/DockLine"
+            },
+            "type": "array",
+            "title": "Load List"
+          },
+          "hold": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DockHold"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "previous_version": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Previous Version"
+          },
+          "previous_departure": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Previous Departure"
+          },
+          "changes": {
+            "items": {
+              "$ref": "#/components/schemas/DockChange"
+            },
+            "type": "array",
+            "title": "Changes"
+          },
+          "shortfall_reasons": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Shortfall Reasons"
+          },
+          "server_time": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Server Time"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "vehicle",
+          "vehicle_type",
+          "temperature",
+          "trip_no",
+          "district",
+          "departure",
+          "stops",
+          "cases",
+          "volume_m3",
+          "weight_kg",
+          "volume_cap_m3",
+          "weight_cap_kg",
+          "load_status",
+          "on_hold",
+          "version",
+          "load_list",
+          "hold",
+          "previous_version",
+          "previous_departure",
+          "changes",
+          "shortfall_reasons",
+          "server_time"
+        ],
+        "title": "DockDetail"
+      },
+      "DockHold": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "shortfall_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Shortfall Id"
+          },
+          "order_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Order Id"
+          },
+          "order_ref": {
+            "type": "string",
+            "title": "Order Ref"
+          },
+          "outlet_code": {
+            "type": "string",
+            "title": "Outlet Code"
+          },
+          "kind": {
+            "type": "string",
+            "title": "Kind"
+          },
+          "qty": {
+            "type": "integer",
+            "title": "Qty"
+          },
+          "planned_cases": {
+            "type": "integer",
+            "title": "Planned Cases"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason"
+          },
+          "reported_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Reported At"
+          },
+          "waiting_seconds": {
+            "type": "integer",
+            "title": "Waiting Seconds"
+          },
+          "to_departure_minutes": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "To Departure Minutes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "shortfall_id",
+          "order_id",
+          "order_ref",
+          "outlet_code",
+          "kind",
+          "qty",
+          "planned_cases",
+          "reason",
+          "reported_at",
+          "waiting_seconds",
+          "to_departure_minutes"
+        ],
+        "title": "DockHold"
+      },
+      "DockLine": {
+        "properties": {
+          "order_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Order Id"
+          },
+          "order_ref": {
+            "type": "string",
+            "title": "Order Ref"
+          },
+          "outlet_code": {
+            "type": "string",
+            "title": "Outlet Code"
+          },
+          "stop_seq": {
+            "type": "integer",
+            "title": "Stop Seq"
+          },
+          "cases": {
+            "type": "integer",
+            "title": "Cases"
+          },
+          "temperature": {
+            "type": "string",
+            "title": "Temperature"
+          },
+          "weight_kg": {
+            "type": "number",
+            "title": "Weight Kg"
+          },
+          "top_up": {
+            "type": "boolean",
+            "title": "Top Up"
+          }
+        },
+        "type": "object",
+        "required": [
+          "order_id",
+          "order_ref",
+          "outlet_code",
+          "stop_seq",
+          "cases",
+          "temperature",
+          "weight_kg",
+          "top_up"
+        ],
+        "title": "DockLine"
+      },
+      "DockTrip": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "vehicle": {
+            "type": "string",
+            "title": "Vehicle"
+          },
+          "vehicle_type": {
+            "type": "string",
+            "title": "Vehicle Type"
+          },
+          "temperature": {
+            "type": "string",
+            "title": "Temperature"
+          },
+          "trip_no": {
+            "type": "integer",
+            "title": "Trip No"
+          },
+          "district": {
+            "type": "string",
+            "title": "District"
+          },
+          "departure": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Departure"
+          },
+          "stops": {
+            "type": "integer",
+            "title": "Stops"
+          },
+          "cases": {
+            "type": "integer",
+            "title": "Cases"
+          },
+          "volume_m3": {
+            "type": "number",
+            "title": "Volume M3"
+          },
+          "weight_kg": {
+            "type": "number",
+            "title": "Weight Kg"
+          },
+          "volume_cap_m3": {
+            "type": "number",
+            "title": "Volume Cap M3"
+          },
+          "weight_cap_kg": {
+            "type": "number",
+            "title": "Weight Cap Kg"
+          },
+          "load_status": {
+            "type": "string",
+            "enum": [
+              "planned",
+              "loaded",
+              "on_hold"
+            ],
+            "title": "Load Status"
+          },
+          "on_hold": {
+            "type": "boolean",
+            "title": "On Hold"
+          },
+          "version": {
+            "$ref": "#/components/schemas/DockVersion"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "vehicle",
+          "vehicle_type",
+          "temperature",
+          "trip_no",
+          "district",
+          "departure",
+          "stops",
+          "cases",
+          "volume_m3",
+          "weight_kg",
+          "volume_cap_m3",
+          "weight_cap_kg",
+          "load_status",
+          "on_hold",
+          "version"
+        ],
+        "title": "DockTrip"
+      },
+      "DockVersion": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "number": {
+            "type": "integer",
+            "title": "Number"
+          },
+          "published_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Published At"
+          },
+          "acknowledged": {
+            "type": "boolean",
+            "title": "Acknowledged"
+          },
+          "needs_acknowledgement": {
+            "type": "boolean",
+            "title": "Needs Acknowledgement"
+          },
+          "change_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Change Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "number",
+          "published_at",
+          "acknowledged",
+          "needs_acknowledgement",
+          "change_reason"
+        ],
+        "title": "DockVersion"
       },
       "DriverNoteIn": {
         "properties": {

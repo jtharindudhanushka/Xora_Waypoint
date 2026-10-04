@@ -28,6 +28,7 @@ The brief requires us to explain which work was AI-assisted, which wasn't, and h
 | 2026-10-04 | Fidelity and integration, task 2.9 | Codex (OpenAI), Figma connector | Reviewed eight frames; corrected planning geometry/type/tokens and refreshed comparisons; regenerated merged sync contracts and froze a flaky repair timer fixture | Authorized completion of in-progress work at freeze; lead reviews #25 and final deployed walkthrough |
 | 2026-10-04 | Second handover | Codex (OpenAI) | Recorded merge order, statuses, measured S1 results, limitations, departures, integration risks and exact verification commands | Requested the report; retains merge, deployment and submission decisions |
 | 2026-10-04 | Cross-track contract integration | Codex (OpenAI) | Merged latest main into remaining PR branches, retained all routers, regenerated contracts and fixed the dispatcher IssueOut type collision using its endpoint response; ran combined API and web checks | Explicitly requested merge commits, regenerated contracts and checked pushes; lead retains PR merge decisions |
+| 2026-10-04 | Shortfall demo and deferral fixes | Codex (OpenAI) | Verified S1 shortfall/repair/ack flow for greedy and Trip 2 shapes, corrected deferral timezone dates and repicked driver projection, and added synthetic regressions | Kept the deployed solver configuration unchanged as requested; retained lead review, merge and deployment authority |
 
 ## Lead implementation log (4 Oct 2026)
 
@@ -40,6 +41,7 @@ The brief requires us to explain which work was AI-assisted, which wasn't, and h
 | 2026-10-04 | Submission docs | Claude Code (Anthropic) | Drafted the README (setup, accounts, walkthrough from the QA results, departures, known gaps) and this log | Reviewed and approved the final text |
 
 ## Not AI-assisted
+
 - _To be completed by the team (e.g. the original wireframes and flows from the Designathon, decisions made in review)._
 
 ## Rules we keep
@@ -55,3 +57,4 @@ The brief requires us to explain which work was AI-assisted, which wasn't, and h
 | 2026-10-04 | Store receipt preview | Codex (OpenAI) | Added a shared server-side report preview and a regression for shortages already excluded by driver counts; exposed receipt timestamps for the Figma recent-delivery copy | Retained lead PR review and merge authority |
 | 2026-10-04 | Store UI, task 3.2 | Codex (OpenAI), Figma connector, Playwright | Implemented five Store screens using exported SVG assets, shared tokens and generated API types; compared 390 × 844 screenshots and exercised original synthetic flows, retries and offline states | Retained decisions on dispatch calling and photo uploads, native-language review and PR merge authority |
 | 2026-10-04 | Live walkthrough smoke, task 3.3 | Codex (OpenAI), Playwright | Authored a separate live UI/API smoke suite, verified discovery of seven checks, and documented staged receipt coverage and Docker execution | Retained live Docker verification and CI-enablement decisions; no live walkthrough completion claimed |
+| 2026-10-04 | Loader dock API and phone UI | Codex, Figma connector | Read L1–L5 frames and rationales; implemented depot-scoped load views and offline loader interactions; verified synthetic rules and local shortfall flow | Assigned loader scope, retained lead review and merge authority |
