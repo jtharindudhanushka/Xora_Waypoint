@@ -45,6 +45,10 @@ class SyncResultOut(BaseModel):
     code: str | None = None
     rule_id: str | None = None
     detail: str | None = None
+    # Count conflict evidence for R7 (BR-52): both records, side by side.
+    driver_qty: int | None = None
+    store_qty: int | None = None
+    store_time: datetime | None = None
 
 
 class SyncOut(BaseModel):
@@ -72,6 +76,8 @@ class StopOrderView(BaseModel):
     order_ref: str
     temp_requirement: str
     planned_cases: int
+    weight_kg: float
+    volume_m3: float
     top_up_of_order_ref: str | None = None
     lines: list[OrderLineView]
     known_shortfall: KnownShortfallOut | None = None
@@ -96,6 +102,7 @@ class StopView(BaseModel):
     access_note: str | None  # from the outlet profile, labelled as such (BR-39)
     contact_name: str | None
     store_note: str | None  # same-day note from the store, shown first (BR-39)
+    store_note_at: datetime | None
     arrived_at: datetime | None
     outcome: str | None
     orders: list[StopOrderView]
