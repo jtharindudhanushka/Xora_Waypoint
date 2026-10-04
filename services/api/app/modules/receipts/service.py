@@ -63,7 +63,13 @@ def draft(db: Session, user: User, clock: Clock, order: Order) -> ReceiptDraftOu
                 name=product.name if product else line.product_id,
                 ordered_qty=line.qty_ordered,
                 driver_qty=qty,
-                store_qty=line.qty_received if line.qty_received is not None else qty,
+                # No driver record yet (offline van): start from the ordered cases; the
+                # store's counts stay separate and a late driver sync is compared (BR-52).
+                store_qty=line.qty_received
+                if line.qty_received is not None
+                else qty
+                if qty is not None or outcome is not None
+                else line.qty_ordered,
             )
         )
     confirmed = db.scalar(select(Receipt.id).where(Receipt.order_id == order.id)) is not None
@@ -154,6 +160,16 @@ def confirm(db: Session, user: User, clock: Clock, ref: str, body: ReceiptIn) ->
                 )
         return receipt_out(db, order, prior)
     view = draft(db, user, clock, order)
+    no_driver_evidence = view.driver_event_id is None and all(
+        line.driver_qty is None for line in view.lines
+    )
+    if no_driver_evidence and order.status != "delivered" and view.vehicle_code is None:
+        # A receipt before any driver record is only for an order on that day's published plan.
+        raise DomainError(
+            "NOT_ON_PUBLISHED_TRIP",
+            "This order is not on a published trip for its delivery day",
+            rule_id="BR-55",
+        )
     if not view.can_confirm and body.lines is None:
         raise DomainError(
             "DRIVER_COUNTS_PENDING", "Driver item counts have not arrived yet", rule_id="BR-46"
