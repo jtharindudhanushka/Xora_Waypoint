@@ -13,7 +13,7 @@ the 19:00 feature freeze. The post-merge stretch has not started.
 | [#13](https://github.com/jtharindudhanushka/Xora_Waypoint/pull/13) | feat/planning-api | main | #12 | M1 generate → confirm → publish, fleet, scoped SSE | Green; open |
 | [#14](https://github.com/jtharindudhanushka/Xora_Waypoint/pull/14) | feat/dispatch-plan-ui | main | #13 | D1 tabs/dialog, locks and serve-instead | Green; open |
 | [#15](https://github.com/jtharindudhanushka/Xora_Waypoint/pull/15) | feat/dispatch-shortfall | main | #14 | A/B/C repair, linked quantities, v2 and D6 | Green; open |
-| Final documentation PR | docs/dev2-handover | main | #15 | Work status, disclosure and this report | Pending opening |
+| [#16](https://github.com/jtharindudhanushka/Xora_Waypoint/pull/16) | docs/dev2-handover | main | #15 | Work status, disclosure and this report | Implementation checks green; see PR for latest documentation run |
 
 All PRs target main as requested; each dependent branch contains its predecessor's
 unmerged work. GitHub removes that inherited diff as the earlier PRs land. No
@@ -200,7 +200,7 @@ Pop-Location
 
 Copy-Item .env.example .env  # First setup only; preserve existing configuration.
 docker compose up --build
-# Open http://localhost:8080; API docs: http://localhost:8000/docs
+# Open http://localhost:8080; API docs: http://localhost:8080/api/docs
 ```
 
 Synthetic browser checks (in a separate terminal from the running Vite server):
