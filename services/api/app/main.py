@@ -16,6 +16,7 @@ from app.modules.ops.clock_router import router as clock_router
 from app.modules.planning.router import router as planning_router
 from app.modules.repair.router import router as repair_router
 from app.modules.stream.router import router as stream_router
+from app.modules.sync.router import router as sync_router
 
 API_PREFIX = "/api/v1"
 
@@ -53,6 +54,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         fleet_router,
         planning_router,
         repair_router,
+        sync_router,
     ):
         api.include_router(router)
     app.include_router(api)

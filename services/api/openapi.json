@@ -829,10 +829,271 @@
           }
         }
       }
+    },
+    "/api/v1/sync": {
+      "post": {
+        "tags": [
+          "Sync"
+        ],
+        "summary": "Sync",
+        "description": "Apply a device outbox in order; idempotent by `event_id` (BR-35 to BR-37, BR-52, BR-53).",
+        "operationId": "sync_api_v1_sync_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SyncIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SyncOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/sync/bootstrap": {
+      "get": {
+        "tags": [
+          "Sync"
+        ],
+        "summary": "Bootstrap",
+        "description": "Everything a field device needs to work offline today (docs/07 \u203a Client side, BR-38).",
+        "operationId": "bootstrap_api_v1_sync_bootstrap_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "date",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Date"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BootstrapOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/vehicles/{code}/today": {
+      "get": {
+        "tags": [
+          "Sync",
+          "Driver"
+        ],
+        "summary": "Vehicle Today",
+        "description": "Published trips, stops, two clocks, notes and known shortfalls (BR-32 to BR-34, BR-39).",
+        "operationId": "vehicle_today_api_v1_vehicles__code__today_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "code",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Code"
+            }
+          },
+          {
+            "name": "date",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Date"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VehicleTodayOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
     "schemas": {
+      "BootstrapOut": {
+        "properties": {
+          "server_time": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Server Time"
+          },
+          "operating_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Operating Date"
+          },
+          "user": {
+            "$ref": "#/components/schemas/BootstrapUserOut"
+          },
+          "vehicles": {
+            "items": {
+              "$ref": "#/components/schemas/VehicleTodayOut"
+            },
+            "type": "array",
+            "title": "Vehicles"
+          }
+        },
+        "type": "object",
+        "required": [
+          "server_time",
+          "operating_date",
+          "user",
+          "vehicles"
+        ],
+        "title": "BootstrapOut"
+      },
+      "BootstrapUserOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "role": {
+            "type": "string",
+            "title": "Role"
+          },
+          "depot": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Depot"
+          },
+          "dock": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dock"
+          },
+          "vehicle_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Vehicle Code"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "role",
+          "depot",
+          "dock",
+          "vehicle_code"
+        ],
+        "title": "BootstrapUserOut"
+      },
       "BottleneckOut": {
         "properties": {
           "resource": {
@@ -1068,6 +1329,30 @@
         ],
         "title": "DeferralOut"
       },
+      "EntityRef": {
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "trip",
+              "stop",
+              "order"
+            ],
+            "title": "Type"
+          },
+          "id": {
+            "type": "string",
+            "maxLength": 64,
+            "title": "Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "type",
+          "id"
+        ],
+        "title": "EntityRef"
+      },
       "FleetOut": {
         "properties": {
           "vehicle_code": {
@@ -1177,6 +1462,36 @@
         "type": "object",
         "title": "HTTPValidationError"
       },
+      "KnownShortfallOut": {
+        "properties": {
+          "shortfall_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Shortfall Id"
+          },
+          "kind": {
+            "type": "string",
+            "title": "Kind"
+          },
+          "qty": {
+            "type": "integer",
+            "title": "Qty"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "shortfall_id",
+          "kind",
+          "qty",
+          "reason"
+        ],
+        "title": "KnownShortfallOut",
+        "description": "A loading shortfall already reported for this order: pre-filled and locked (BR-34)."
+      },
       "KpisOut": {
         "properties": {
           "orders_served": {
@@ -1241,6 +1556,29 @@
           "password"
         ],
         "title": "LoginRequest"
+      },
+      "OrderLineView": {
+        "properties": {
+          "product_id": {
+            "type": "string",
+            "title": "Product Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "qty": {
+            "type": "integer",
+            "title": "Qty"
+          }
+        },
+        "type": "object",
+        "required": [
+          "product_id",
+          "name",
+          "qty"
+        ],
+        "title": "OrderLineView"
       },
       "PlanOut": {
         "properties": {
@@ -1752,6 +2090,64 @@
         ],
         "title": "StopOrderOut"
       },
+      "StopOrderView": {
+        "properties": {
+          "order_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Order Id"
+          },
+          "order_ref": {
+            "type": "string",
+            "title": "Order Ref"
+          },
+          "temp_requirement": {
+            "type": "string",
+            "title": "Temp Requirement"
+          },
+          "planned_cases": {
+            "type": "integer",
+            "title": "Planned Cases"
+          },
+          "top_up_of_order_ref": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Top Up Of Order Ref"
+          },
+          "lines": {
+            "items": {
+              "$ref": "#/components/schemas/OrderLineView"
+            },
+            "type": "array",
+            "title": "Lines"
+          },
+          "known_shortfall": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/KnownShortfallOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "order_id",
+          "order_ref",
+          "temp_requirement",
+          "planned_cases",
+          "lines"
+        ],
+        "title": "StopOrderView"
+      },
       "StopOut": {
         "properties": {
           "id": {
@@ -1832,6 +2228,383 @@
           "orders"
         ],
         "title": "StopOut"
+      },
+      "StopView": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "seq": {
+            "type": "integer",
+            "title": "Seq"
+          },
+          "outlet_code": {
+            "type": "string",
+            "title": "Outlet Code"
+          },
+          "district": {
+            "type": "string",
+            "title": "District"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "plan_arrival": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Plan Arrival"
+          },
+          "likely_from": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Likely From"
+          },
+          "likely_to": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Likely To"
+          },
+          "at_risk": {
+            "type": "boolean",
+            "title": "At Risk"
+          },
+          "window_open": {
+            "type": "string",
+            "format": "time",
+            "title": "Window Open"
+          },
+          "window_close": {
+            "type": "string",
+            "format": "time",
+            "title": "Window Close"
+          },
+          "dock_type": {
+            "type": "string",
+            "title": "Dock Type"
+          },
+          "parking_constraint": {
+            "type": "string",
+            "title": "Parking Constraint"
+          },
+          "mall_window_open": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mall Window Open"
+          },
+          "mall_window_close": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mall Window Close"
+          },
+          "access_note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Access Note"
+          },
+          "contact_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Contact Name"
+          },
+          "store_note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Store Note"
+          },
+          "arrived_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Arrived At"
+          },
+          "outcome": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Outcome"
+          },
+          "orders": {
+            "items": {
+              "$ref": "#/components/schemas/StopOrderView"
+            },
+            "type": "array",
+            "title": "Orders"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "seq",
+          "outlet_code",
+          "district",
+          "status",
+          "plan_arrival",
+          "likely_from",
+          "likely_to",
+          "at_risk",
+          "window_open",
+          "window_close",
+          "dock_type",
+          "parking_constraint",
+          "mall_window_open",
+          "mall_window_close",
+          "access_note",
+          "contact_name",
+          "store_note",
+          "arrived_at",
+          "outcome",
+          "orders"
+        ],
+        "title": "StopView"
+      },
+      "SyncEventIn": {
+        "properties": {
+          "event_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Event Id"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "trip_acknowledged",
+              "load_checked",
+              "trip_loaded",
+              "shortfall_reported",
+              "arrived",
+              "outcome_recorded",
+              "note_added"
+            ],
+            "title": "Type"
+          },
+          "entity": {
+            "$ref": "#/components/schemas/EntityRef"
+          },
+          "plan_version_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Plan Version Id"
+          },
+          "event_time": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Event Time"
+          },
+          "seq": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Seq"
+          },
+          "payload": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Payload"
+          }
+        },
+        "type": "object",
+        "required": [
+          "event_id",
+          "type",
+          "entity",
+          "event_time"
+        ],
+        "title": "SyncEventIn"
+      },
+      "SyncIn": {
+        "properties": {
+          "device_id": {
+            "type": "string",
+            "maxLength": 80,
+            "minLength": 1,
+            "title": "Device Id"
+          },
+          "events": {
+            "items": {
+              "$ref": "#/components/schemas/SyncEventIn"
+            },
+            "type": "array",
+            "maxItems": 50,
+            "title": "Events"
+          }
+        },
+        "type": "object",
+        "required": [
+          "device_id",
+          "events"
+        ],
+        "title": "SyncIn"
+      },
+      "SyncOut": {
+        "properties": {
+          "results": {
+            "items": {
+              "$ref": "#/components/schemas/SyncResultOut"
+            },
+            "type": "array",
+            "title": "Results"
+          },
+          "server_time": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Server Time"
+          }
+        },
+        "type": "object",
+        "required": [
+          "results",
+          "server_time"
+        ],
+        "title": "SyncOut"
+      },
+      "SyncResultOut": {
+        "properties": {
+          "event_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Event Id"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "accepted",
+              "duplicate",
+              "conflict",
+              "rejected"
+            ],
+            "title": "Status"
+          },
+          "conflict_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Conflict Id"
+          },
+          "code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Code"
+          },
+          "rule_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rule Id"
+          },
+          "detail": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "required": [
+          "event_id",
+          "status"
+        ],
+        "title": "SyncResultOut"
       },
       "TokenOut": {
         "properties": {
@@ -1961,6 +2734,94 @@
         ],
         "title": "TripOut"
       },
+      "TripView": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "trip_no": {
+            "type": "integer",
+            "title": "Trip No"
+          },
+          "lane": {
+            "type": "string",
+            "title": "Lane"
+          },
+          "brand": {
+            "type": "string",
+            "title": "Brand"
+          },
+          "district": {
+            "type": "string",
+            "title": "District"
+          },
+          "planned_depart": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Planned Depart"
+          },
+          "plan_minutes": {
+            "type": "integer",
+            "title": "Plan Minutes"
+          },
+          "weight_kg": {
+            "type": "number",
+            "title": "Weight Kg"
+          },
+          "volume_m3": {
+            "type": "number",
+            "title": "Volume M3"
+          },
+          "on_hold": {
+            "type": "boolean",
+            "title": "On Hold"
+          },
+          "hold_shortfall_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Hold Shortfall Id"
+          },
+          "stops": {
+            "items": {
+              "$ref": "#/components/schemas/StopView"
+            },
+            "type": "array",
+            "title": "Stops"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "trip_no",
+          "lane",
+          "brand",
+          "district",
+          "planned_depart",
+          "plan_minutes",
+          "weight_kg",
+          "volume_m3",
+          "on_hold",
+          "hold_shortfall_id",
+          "stops"
+        ],
+        "title": "TripView"
+      },
       "UserOut": {
         "properties": {
           "id": {
@@ -2083,6 +2944,122 @@
           "type"
         ],
         "title": "ValidationError"
+      },
+      "VehicleTodayOut": {
+        "properties": {
+          "vehicle_code": {
+            "type": "string",
+            "title": "Vehicle Code"
+          },
+          "vehicle_type": {
+            "type": "string",
+            "title": "Vehicle Type"
+          },
+          "vehicle_temp": {
+            "type": "string",
+            "title": "Vehicle Temp"
+          },
+          "operating_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Operating Date"
+          },
+          "server_time": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Server Time"
+          },
+          "version": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/VersionView"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "trips": {
+            "items": {
+              "$ref": "#/components/schemas/TripView"
+            },
+            "type": "array",
+            "title": "Trips"
+          }
+        },
+        "type": "object",
+        "required": [
+          "vehicle_code",
+          "vehicle_type",
+          "vehicle_temp",
+          "operating_date",
+          "server_time",
+          "version",
+          "trips"
+        ],
+        "title": "VehicleTodayOut"
+      },
+      "VersionView": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "number": {
+            "type": "integer",
+            "title": "Number"
+          },
+          "published_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Published At"
+          },
+          "change_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Change Reason"
+          },
+          "acknowledged": {
+            "type": "boolean",
+            "title": "Acknowledged"
+          },
+          "acked_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Acked At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "number",
+          "published_at",
+          "change_reason",
+          "acknowledged",
+          "acked_at"
+        ],
+        "title": "VersionView"
       },
       "ViolationOut": {
         "properties": {
