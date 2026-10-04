@@ -48,7 +48,8 @@ Re-running the seed is safe. Reference data is merged on every start. **The demo
 | Driver (VEH007) | `driver.veh007@waypoint.demo` | `demo1234` | VEH007 (offline story) |
 | Store manager | `store.out001@waypoint.demo` | `demo1234` | OUT001 |
 | Store manager | `store.out074@waypoint.demo` | `demo1234` | OUT074 (count conflict) |
-| Store manager | `store.out054@waypoint.demo` | `demo1234` | OUT054 (deferral notice) |
+| Store manager | `store.out002@waypoint.demo` | `demo1234` | OUT002 (deferral notice; deferred on the live S1 plan) |
+| Store manager | `store.out054@waypoint.demo` | `demo1234` | OUT054 (served on the live S1 plan, VEH006 T1: no notice) |
 
 The brief asks for 4 accounts (one per role); the first four are those. The extra three make the offline and deferral stories easy to show.
 
@@ -61,7 +62,7 @@ _Draft. Each step is ticked when its screens are built and verified by the e2e t
 | 2 | → 16:05 | Dispatcher | Log in → advance the clock → **Generate plan** | Plan in seconds: served / chilled / at-risk numbers; **Limit today: Reefer space**; VEH036 has 2 trips ("1,096 kg > 1,040 kg"); OUT074 on VEH007 |
 | 3 | 16:10 | Dispatcher | **Fleet** tab: VEH038 is off ("No driver"); workshop reefers locked off | BR-10 |
 | 4 | 16:12 | Dispatcher | **Deferred** tab: groups, reasons, priorities; confirm (repeat skips need a reason) → **Review & publish** → gate → **Publish v1** | v1 published; stores notified |
-| 5 | 16:25 | Store OUT054 | Log in → notice | S8: what moved, why, when, in si/ta/en |
+| 5 | 16:25 | Store OUT002 | Log in → notice | S8: S1-003 deferred, why and the next run (English template; DEP-6). Corrected from OUT054, which the live plan serves |
 | 6 | Tue 04:18 | Loader | Find **S1-005 / OUT003 / 42 cases** in the published plan; use its actual vehicle/trip. On the VM's confirmed greedy run this is **VEH036 T1**, stop 2 after OUT001. Load in reverse order → **Report a problem**: missing 2, short from chiller pick | Actual source trip **on hold** (L4) |
 | 7 | 04:19 | Dispatcher | Open that hold → **D6**; inspect OUT003's same-morning split rule. On the greedy T1 run choose **A** (40 now, 2 on later T2); C is flagged. If CP-SAT puts the order on T2 and no later compatible trip exists, A is absent: choose recommended **B**, re-pick all 42 | Human selection publishes v2; no impossible backward top-up |
 | 8 | 04:27 | Loader | **Review v2**. Greedy/A: T1 OUT003 42 → 40; T2 OUT002 38 unchanged plus linked OUT003 +2. CP-SAT/B: source OUT003 stays 42; departure/arrival times shift for re-pick, no top-up. **Acknowledge the new v2 trip ID** | Hold transfers to v2 and releases only on its acknowledgement |
