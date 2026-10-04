@@ -228,6 +228,7 @@ def test_br52_count_conflict_keeps_both_records(client, field, session_maker):
     with session_maker() as db:
         issue = db.get(Issue, uuid.UUID(results[1]["conflict_id"]))
         assert (issue.kind, issue.driver_qty, issue.store_qty) == ("count_conflict", 205, 200)
+        assert (results[1]["driver_qty"], results[1]["store_qty"]) == (205, 200)
         assert str(issue.driver_event_id) == results[1]["event_id"]
         assert db.scalar(select(Receipt)).total_cases == 200  # nothing overwritten
 

@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import uuid
 from dataclasses import dataclass, field
+from datetime import datetime
 from typing import Any
 
 from sqlalchemy import select
@@ -43,6 +44,9 @@ class Outbound:
 @dataclass
 class Applied:
     conflict_id: uuid.UUID | None = None
+    driver_qty: int | None = None
+    store_qty: int | None = None
+    store_time: datetime | None = None
 
 
 def _dispatch(depot: str) -> Audience:
@@ -97,7 +101,12 @@ def _one(
     out.messages.extend(pending.messages)
     if applied.conflict_id is not None:
         return SyncResultOut(
-            event_id=event.event_id, status="conflict", conflict_id=applied.conflict_id
+            event_id=event.event_id,
+            status="conflict",
+            conflict_id=applied.conflict_id,
+            driver_qty=applied.driver_qty,
+            store_qty=applied.store_qty,
+            store_time=applied.store_time,
         )
     return SyncResultOut(event_id=event.event_id, status="accepted")
 
@@ -348,7 +357,7 @@ def _outcome(
     """Record the outcome (BR-34); a count that differs from the store receipt conflicts (BR-52)."""
     p = event.payload
     stop.status = "delivered" if p["outcome"] in ("delivered", "partial") else "failed"
-    conflict: uuid.UUID | None = None
+    conflict = Applied()
     on_stop = {so.order_id for so in stop.orders}
     for line in p.get("orders", []):
         order_id = _uuid(str(line.get("order_id", "")), "order")
@@ -374,8 +383,14 @@ def _outcome(
                 driver_qty=line["cases"],
                 store_qty=receipt.total_cases,
             )
-            conflict = conflict or issue.id
-    return Applied(conflict_id=conflict)
+            if conflict.conflict_id is None:
+                conflict = Applied(
+                    conflict_id=issue.id,
+                    driver_qty=line["cases"],
+                    store_qty=receipt.total_cases,
+                    store_time=ensure_utc(receipt.confirmed_at),
+                )
+    return conflict
 
 
 def _open_issue(

@@ -788,6 +788,10 @@ export interface components {
       temp_requirement: string
       /** Planned Cases */
       planned_cases: number
+      /** Weight Kg */
+      weight_kg: number
+      /** Volume M3 */
+      volume_m3: number
       /** Top Up Of Order Ref */
       top_up_of_order_ref?: string | null
       /** Lines */
@@ -865,6 +869,8 @@ export interface components {
       contact_name: string | null
       /** Store Note */
       store_note: string | null
+      /** Store Note At */
+      store_note_at: string | null
       /** Arrived At */
       arrived_at: string | null
       /** Outcome */
@@ -943,6 +949,12 @@ export interface components {
       rule_id?: string | null
       /** Detail */
       detail?: string | null
+      /** Driver Qty */
+      driver_qty?: number | null
+      /** Store Qty */
+      store_qty?: number | null
+      /** Store Time */
+      store_time?: string | null
     }
     /** TokenOut */
     TokenOut: {
