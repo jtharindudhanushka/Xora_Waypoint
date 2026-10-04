@@ -24,4 +24,9 @@ The brief requires us to explain which work was AI-assisted, which wasn't, and h
 ## Rules we keep
 - No competition data was published. The AI read the dataset locally for analysis only.
 - Numbers shown in the product are computed by our engine from the data, not invented.
+
+## Dev 3 walkthrough log (4 Oct 2026)
+
+| Date | Area | Tool | What the AI did | What we did |
+|---|---|---|---|---|
 | 2026-10-04 | Live walkthrough smoke, task 3.3 | Codex (OpenAI), Playwright | Authored a separate live UI/API smoke suite, verified discovery of seven checks, and documented staged receipt coverage and Docker execution | Retained live Docker verification and CI-enablement decisions; no live walkthrough completion claimed |

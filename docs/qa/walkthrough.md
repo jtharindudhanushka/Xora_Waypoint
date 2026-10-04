@@ -11,7 +11,7 @@ pack kept local, following README. For a new run, reset the demo yourself:
 ```sh
 docker compose up --build -d
 docker compose exec api python -m app.seed --reset-demo
-npm install --prefix /tmp/xora-walkthrough --no-save @playwright/test
+npm install --prefix /tmp/xora-walkthrough --no-save @playwright/test@1.62.1
 node /tmp/xora-walkthrough/node_modules/playwright/cli.js install chromium
 PLAYWRIGHT_TEST_MODULE=/tmp/xora-walkthrough/node_modules/@playwright/test \
   node /tmp/xora-walkthrough/node_modules/playwright/cli.js test \
