@@ -90,10 +90,140 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  '/api/v1/fleet': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Get Fleet */
+    get: operations['get_fleet_api_v1_fleet_get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/v1/fleet/{vehicle}/{operating_date}': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    /** Switch */
+    patch: operations['switch_api_v1_fleet__vehicle___operating_date__patch']
+    trace?: never
+  }
+  '/api/v1/plans/{operating_date}/generate': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Generate */
+    post: operations['generate_api_v1_plans__operating_date__generate_post']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/v1/plans/{operating_date}': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Get Plan */
+    get: operations['get_plan_api_v1_plans__operating_date__get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/v1/plan-versions/{version_id}/deferrals/confirm': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Confirm */
+    post: operations['confirm_api_v1_plan_versions__version_id__deferrals_confirm_post']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/v1/plan-versions/{version_id}/publish-check': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Publish Check */
+    get: operations['publish_check_api_v1_plan_versions__version_id__publish_check_get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/v1/plan-versions/{version_id}/publish': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Publish */
+    post: operations['publish_api_v1_plan_versions__version_id__publish_post']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
 }
 export type webhooks = Record<string, never>
 export interface components {
   schemas: {
+    /** BottleneckOut */
+    BottleneckOut: {
+      /** Resource */
+      resource: string
+      /** Used */
+      used: number
+      /** Capacity */
+      capacity: number
+      /** Explanation */
+      explanation: string
+    }
     /** ClockOut */
     ClockOut: {
       /**
@@ -109,10 +239,107 @@ export interface components {
       /** Demo Now */
       demo_now: string | null
     }
+    /** ConfirmIn */
+    ConfirmIn: {
+      /** Items */
+      items: components['schemas']['ConfirmItem'][]
+    }
+    /** ConfirmItem */
+    ConfirmItem: {
+      /**
+       * Deferral Id
+       * Format: uuid
+       */
+      deferral_id: string
+      /** Reason */
+      reason?: string | null
+    }
+    /** DeferralOut */
+    DeferralOut: {
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string
+      /** Order Ref */
+      order_ref: string
+      /** Outlet Code */
+      outlet_code: string
+      /** Reason Code */
+      reason_code: string
+      /** Group */
+      group: string
+      /** Priority */
+      priority: number
+      /** Explanation */
+      explanation: string | null
+      /** Displaces */
+      displaces: string[]
+      /** Next Run */
+      next_run: string | null
+      /** Repeat Skip */
+      repeat_skip: boolean
+      /** Confirmed */
+      confirmed: boolean
+      /** Confirm Reason */
+      confirm_reason: string | null
+    }
+    /** FleetOut */
+    FleetOut: {
+      /** Vehicle Code */
+      vehicle_code: string
+      /**
+       * Date
+       * Format: date
+       */
+      date: string
+      /** Type */
+      type: string
+      /** Temp */
+      temp: string
+      /** Status */
+      status: string
+      /** Switched On */
+      switched_on: boolean
+      /** Off Reason */
+      off_reason: string | null
+      /** Weight Cap Kg */
+      weight_cap_kg: number
+      /** Volume Cap M3 */
+      volume_cap_m3: number
+      /** Fuel Used L */
+      fuel_used_l: number
+      /** Fuel Remaining L */
+      fuel_remaining_l: number
+    }
+    /** FleetSwitchIn */
+    FleetSwitchIn: {
+      /** Switched On */
+      switched_on: boolean
+      /** Off Reason */
+      off_reason?: string | null
+    }
     /** HTTPValidationError */
     HTTPValidationError: {
       /** Detail */
       detail?: components['schemas']['ValidationError'][]
+    }
+    /** KpisOut */
+    KpisOut: {
+      /** Orders Served */
+      orders_served: number
+      /** Chilled Served */
+      chilled_served: number
+      /** Stops At Risk */
+      stops_at_risk: number
+      /** Deferrals */
+      deferrals: number
+      /** Value Served */
+      value_served: number
+      /** Reefer M3 Used */
+      reefer_m3_used: number
+      /** Reefer M3 Total */
+      reefer_m3_total: number
     }
     /** LoginRequest */
     LoginRequest: {
@@ -120,6 +347,90 @@ export interface components {
       email: string
       /** Password */
       password: string
+    }
+    /** PlanOut */
+    PlanOut: {
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string
+      /**
+       * Plan Id
+       * Format: uuid
+       */
+      plan_id: string
+      /** Number */
+      number: number
+      /**
+       * Operating Date
+       * Format: date
+       */
+      operating_date: string
+      /** Depot */
+      depot: string
+      /** Status */
+      status: string
+      /** Solver Status */
+      solver_status: string | null
+      /** Solve Ms */
+      solve_ms: number | null
+      kpis: components['schemas']['KpisOut']
+      bottleneck: components['schemas']['BottleneckOut']
+      /** Trips */
+      trips: components['schemas']['TripOut'][]
+      /** Deferrals */
+      deferrals: components['schemas']['DeferralOut'][]
+    }
+    /** PublishCheckOut */
+    PublishCheckOut: {
+      /** Can Publish */
+      can_publish: boolean
+      /** Violations */
+      violations: components['schemas']['ViolationOut'][]
+      /** Unconfirmed Deferrals */
+      unconfirmed_deferrals: string[]
+      /** Late Risk Order Refs */
+      late_risk_order_refs: string[]
+    }
+    /** PublishIn */
+    PublishIn: {
+      /**
+       * Accept Late Risk
+       * @default false
+       */
+      accept_late_risk: boolean
+    }
+    /** StopOrderOut */
+    StopOrderOut: {
+      /** Order Ref */
+      order_ref: string
+      /** Cases */
+      cases: number
+    }
+    /** StopOut */
+    StopOut: {
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string
+      /** Seq */
+      seq: number
+      /** Outlet Code */
+      outlet_code: string
+      /** Plan Arrival */
+      plan_arrival: string | null
+      /** Likely From */
+      likely_from: string | null
+      /** Likely To */
+      likely_to: string | null
+      /** At Risk */
+      at_risk: boolean
+      /** Status */
+      status: string
+      /** Orders */
+      orders: components['schemas']['StopOrderOut'][]
     }
     /** TokenOut */
     TokenOut: {
@@ -137,6 +448,38 @@ export interface components {
        */
       expires_in: number
       user: components['schemas']['UserOut']
+    }
+    /** TripOut */
+    TripOut: {
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string
+      /** Vehicle Code */
+      vehicle_code: string
+      /** Trip No */
+      trip_no: number
+      /** Brand */
+      brand: string
+      /** District */
+      district: string
+      /** Lane */
+      lane: string
+      /** Planned Depart */
+      planned_depart: string | null
+      /** Plan Minutes */
+      plan_minutes: number
+      /** Litres */
+      litres: number
+      /** Weight Kg */
+      weight_kg: number
+      /** Volume M3 */
+      volume_m3: number
+      /** Locked */
+      locked: boolean
+      /** Stops */
+      stops: components['schemas']['StopOut'][]
     }
     /** UserOut */
     UserOut: {
@@ -175,6 +518,19 @@ export interface components {
       input?: unknown
       /** Context */
       ctx?: Record<string, never>
+    }
+    /** ViolationOut */
+    ViolationOut: {
+      /** Rule Id */
+      rule_id: string
+      /** Code */
+      code: string
+      /** Message */
+      message: string
+      /** Context */
+      context: {
+        [key: string]: string | number | boolean | string[]
+      }
     }
   }
   responses: never
@@ -329,6 +685,236 @@ export interface operations {
         }
         content: {
           'application/json': unknown
+        }
+      }
+    }
+  }
+  get_fleet_api_v1_fleet_get: {
+    parameters: {
+      query: {
+        date: string
+      }
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['FleetOut'][]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  switch_api_v1_fleet__vehicle___operating_date__patch: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        vehicle: string
+        operating_date: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['FleetSwitchIn']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['FleetOut']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  generate_api_v1_plans__operating_date__generate_post: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        operating_date: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['PlanOut']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  get_plan_api_v1_plans__operating_date__get: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        operating_date: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['PlanOut']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  confirm_api_v1_plan_versions__version_id__deferrals_confirm_post: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        version_id: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['ConfirmIn']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['PlanOut']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  publish_check_api_v1_plan_versions__version_id__publish_check_get: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        version_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['PublishCheckOut']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  publish_api_v1_plan_versions__version_id__publish_post: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        version_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: {
+      content: {
+        'application/json': components['schemas']['PublishIn'] | null
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['PlanOut']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
         }
       }
     }
