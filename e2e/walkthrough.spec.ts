@@ -169,12 +169,19 @@ test("steps 2–4: generate, fleet, deferrals and publish", async ({
     DESKTOP,
   );
   await page.goto("/dispatch/plan");
-  const generated = page.waitForResponse(
-    (r) => r.url().endsWith("/generate") && r.request().method() === "POST",
-    { timeout: 60_000 },
-  );
-  await page.getByRole("button", { name: "Generate plan", exact: true }).click();
-  expect((await generated).status()).toBe(200);
+  const generate = page.getByRole("button", { name: "Generate plan", exact: true });
+  const rerun = page.getByRole("button", { name: "Re-run", exact: true });
+  await expect(generate.or(rerun).first()).toBeVisible();
+  await expect(page.getByText("Loading plan…")).toHaveCount(0);
+  if (await generate.isVisible()) {
+    const generated = page.waitForResponse(
+      (r) => r.url().endsWith("/generate") && r.request().method() === "POST",
+      { timeout: 60_000 },
+    );
+    await generate.click();
+    expect((await generated).status()).toBe(200);
+  }
+  await expect(rerun).toBeVisible({ timeout: 60_000 });
   await page.waitForTimeout(2500);
 
   const plan = await getJson(request, `/api/v1/plans/${DAY}`, "dispatch.peliyagoda");
@@ -201,7 +208,7 @@ test("steps 2–4: generate, fleet, deferrals and publish", async ({
 
   await page.getByRole("button", { name: /^Fleet/ }).click();
   await expect(page.getByText("VEH038", { exact: true }).first()).toBeVisible();
-  await expect(page.getByText("No driver", { exact: true }).first()).toBeVisible();
+  await expect(page.getByText(/Switched off · No driver/).first()).toBeVisible();
   await page.waitForTimeout(1500);
 
   await page.getByRole("button", { name: /^Deferred/ }).click();

@@ -29,7 +29,14 @@ const authDir =
   if (!baseURL) throw new Error("Set WALKTHROUGH_URL");
   const wanted = process.argv.slice(2).length ? process.argv.slice(2) : ACCOUNTS;
   fs.mkdirSync(authDir, { recursive: true });
-  const browser = await chromium.launch({ headless: false });
+  // Headed bundled Chromium can fail to spawn on Windows; fall back to installed Edge.
+  const channel = process.env.PLAYWRIGHT_CHANNEL;
+  const browser = await chromium
+    .launch({ headless: false, ...(channel ? { channel } : {}) })
+    .catch(() => chromium.launch({ headless: false, channel: "msedge" }));
+  // A branded browser exits when its last window closes; keep one blank window open.
+  const keeper = await browser.newContext();
+  await keeper.newPage();
   for (const account of wanted) {
     const email = `${account}@waypoint.demo`;
     const context = await browser.newContext({ baseURL });
