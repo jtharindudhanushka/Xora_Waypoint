@@ -56,7 +56,7 @@ The whole system runs on one server clock. The **dispatcher header clock is a me
 ## Judge walkthrough
 Scenario S1: orders for **Tue 7 Apr 2026**, Peliyagoda DC. Use a phone-sized window (390 px) for store, loader and driver; desktop for the dispatcher. Sign out between roles (dispatcher: name button, top right; driver: **Me** tab; store: **Account** tab).
 
-> **The plan is computed live, so trip assignments can vary between runs.** On the 1-vCPU demo VM the optimiser usually returns the greedy plan: **72/85 orders served, 14/26 chilled, limit: reefer space, 13 deferrals**, with VEH036 T1 = OUT001 (S1-001, 80 cases) → OUT003 (S1-005, 42 cases) and VEH007 T2 = OUT074 (S1-083, 205 cases). If a run differs, follow the order refs (S1-001, S1-005, S1-083), not the trip numbers.
+> **The plan is computed live, so trip assignments can vary between runs.** On the 1-vCPU demo VM the optimiser usually returns the greedy plan: **72/85 orders served, 14/26 chilled, limit: reefer trip slots, 13 deferrals**, with VEH036 T1 = OUT001 (S1-001, 80 cases) → OUT003 (S1-005, 42 cases) and VEH007 T2 = OUT074 (S1-083, 205 cases). If a run differs, follow the order refs (S1-001, S1-005, S1-083), not the trip numbers.
 
 | # | Clock | Who | Do | Expect |
 |---|---|---|---|---|
@@ -98,7 +98,7 @@ Full list with reasons: [`docs/02-business-rules.md` → Departures](docs/02-bus
 - **Offline is shown with browser offline mode.** The service worker precaches the app, but the walkthrough uses DevTools/flight mode on a live session rather than a cold offline start.
 - **Photos.** L3, R3 and S6 photos are optional; only a reference or the time taken is recorded and no image is uploaded.
 - **D1 editing and the Orders tab** are disabled, as above.
-- **Open QA items** ([results](docs/qa/walkthrough-results.md)): B4 (late-risk / pending-sync exceptions may be listed twice in Live ops; not re-checked after the fix pass) and F1 (the deferral explanation says "greedy plan" even when `solver_status` is FEASIBLE). B1/B2/B5 are fixed and B3/B6 resolved.
+- **Open QA items** ([results](docs/qa/walkthrough-results.md)): B1/B2/B5 are fixed and B3/B6 resolved; B4 (superseded-version exceptions left open in `GET /exceptions`; Live ops was unaffected) and F1 (bottleneck text said "greedy plan" on CP-SAT runs) are fixed in the post-submission QA pass, pending deploy.
 - **SSE broker is in-process** (single API instance); multi-instance would need Postgres LISTEN/NOTIFY.
 - **Verification.** Steps 1–4 and 9 (online) were clicked on the live URL, and steps 12–13 were clicked on a local seeded stack. Results from the full four-role QA run are in [`docs/qa/walkthrough-results.md`](docs/qa/walkthrough-results.md) when present.
 

@@ -59,7 +59,7 @@ _Draft. Each step is ticked when its screens are built and verified by the e2e t
 | # | Clock | Who | Do | Expect |
 |---|---|---|---|---|
 | 1 | Mon 14:50 | Store OUT001 | Log in → **New order** → chilled → yoghurt shows 60 → "3× your usual" → **Use 20** → Review → Submit | Order S1-001 placed; cutoff countdown shown |
-| 2 | → 16:05 | Dispatcher | Log in → advance the clock → **Generate plan** | Plan in seconds: served / chilled / at-risk numbers; **Limit today: Reefer space**; VEH036 has 2 trips ("1,096 kg > 1,040 kg"); OUT074 on VEH007 |
+| 2 | → 16:05 | Dispatcher | Log in → advance the clock → **Generate plan** | Plan in seconds: served / chilled / at-risk numbers; **Limit today** (live runs: reefer trip slots); VEH036 has 2 trips (live: T1 ≈ 767 kg, T2 ≈ 714 kg; read the plan); OUT074 on VEH007 |
 | 3 | 16:10 | Dispatcher | **Fleet** tab: VEH038 is off ("No driver"); workshop reefers locked off | BR-10 |
 | 4 | 16:12 | Dispatcher | **Deferred** tab: groups, reasons, priorities; confirm (repeat skips need a reason) → **Review & publish** → gate → **Publish v1** | v1 published; stores notified |
 | 5 | 16:25 | Store OUT002 | Log in → notice | S8: S1-003 deferred, why and the next run (English template; DEP-6). Corrected from OUT054, which the live plan serves |
