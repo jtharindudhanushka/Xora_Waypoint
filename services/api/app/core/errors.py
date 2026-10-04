@@ -1,4 +1,4 @@
-"""RFC 7807 problem+json errors. Domain errors carry a code and, when relevant, a business-rule id."""
+"""RFC 7807 problem+json errors. Domain errors carry a code and, if relevant, a rule id."""
 
 from __future__ import annotations
 
@@ -61,5 +61,9 @@ def register_error_handlers(app: FastAPI) -> None:
     @app.exception_handler(RequestValidationError)
     async def _validation(_: Request, exc: RequestValidationError) -> JSONResponse:
         return _problem(
-            422, "Invalid request", "Request validation failed", code="VALIDATION", errors=exc.errors()
+            422,
+            "Invalid request",
+            "Request validation failed",
+            code="VALIDATION",
+            errors=exc.errors(),
         )
