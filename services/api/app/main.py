@@ -15,7 +15,9 @@ from app.modules.health.router import router as health_router
 from app.modules.issues.router import router as issues_router
 from app.modules.ops.clock_router import router as clock_router
 from app.modules.ops.router import router as ops_router
+from app.modules.orders.router import router as orders_router
 from app.modules.planning.router import router as planning_router
+from app.modules.receipts.router import router as receipts_router
 from app.modules.repair.router import router as repair_router
 from app.modules.stream.router import router as stream_router
 from app.modules.sync.router import router as sync_router
@@ -59,6 +61,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         planning_router,
         repair_router,
         sync_router,
+        orders_router,
+        receipts_router,
     ):
         api.include_router(router)
     app.include_router(api)

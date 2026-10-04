@@ -27,6 +27,7 @@ The brief requires us to explain which work was AI-assisted, which wasn't, and h
 | 2026-10-04 | Issues, task 2.8 | Codex (OpenAI), Figma connector | Implemented D10/D13 evidence and decisions, next-run redelivery, short claims, notifications/SSE and synthetic tests; compared both screens | Approved accurate loading-team notification wording; lead owns issue creation, loading pick-note display and review of #21 |
 | 2026-10-04 | Fidelity and integration, task 2.9 | Codex (OpenAI), Figma connector | Reviewed eight frames; corrected planning geometry/type/tokens and refreshed comparisons; regenerated merged sync contracts and froze a flaky repair timer fixture | Authorized completion of in-progress work at freeze; lead reviews #25 and final deployed walkthrough |
 | 2026-10-04 | Second handover | Codex (OpenAI) | Recorded merge order, statuses, measured S1 results, limitations, departures, integration risks and exact verification commands | Requested the report; retains merge, deployment and submission decisions |
+| 2026-10-04 | Cross-track contract integration | Codex (OpenAI) | Merged latest main into remaining PR branches, retained all routers, regenerated contracts and fixed the dispatcher IssueOut type collision using its endpoint response; ran combined API and web checks | Explicitly requested merge commits, regenerated contracts and checked pushes; lead retains PR merge decisions |
 
 ## Not AI-assisted
 - _To be completed by the team (e.g. the original wireframes and flows from the Designathon, decisions made in review)._
@@ -34,3 +35,11 @@ The brief requires us to explain which work was AI-assisted, which wasn't, and h
 ## Rules we keep
 - No competition data was published. The AI read the dataset locally for analysis only.
 - Numbers shown in the product are computed by our engine from the data, not invented.
+
+## Dev 3 implementation log (4 Oct 2026)
+
+| Date | Area | Tool | What the AI did | What we did |
+|---|---|---|---|---|
+| 2026-10-04 | Store API, task 3.1 | Codex (OpenAI), Figma connector | Read Store frames/rationales and repository contracts; implemented scoped draft submission, cutoff/calendar checks, quantity confirmation, read-only tracking, notice acknowledgement, separate receipts and per-line reports; added synthetic regression tests | Assigned Dev 3 the Store track; retains specification decisions, PR review and merge authority |
+| 2026-10-04 | Store rules/fixtures | Codex (OpenAI) | Reconciled the exact Figma 3× boundary in BR-42 and ADR-0008; added original demo case measurements, separate temperature orders, driver evidence links, wrong-item rows and scoped multilingual notice reads | Specified Figma as authoritative and retained lead review of demo estimates and translated copy |
+| 2026-10-04 | Store receipt preview | Codex (OpenAI) | Added a shared server-side report preview and a regression for shortages already excluded by driver counts; exposed receipt timestamps for the Figma recent-delivery copy | Retained lead PR review and merge authority |

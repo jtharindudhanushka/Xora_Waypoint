@@ -1,8 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { api, problemMessage } from '../../../api/client'
-import type { components } from '../../../api/schema'
+import type { components, paths } from '../../../api/schema'
 
-export type Issue = components['schemas']['IssueOut']
+export type Issue =
+  paths['/api/v1/issues/{identifier}']['get']['responses'][200]['content']['application/json']
 export type Decision = components['schemas']['ResolveIn']
 
 export function useIssue(id: string) {

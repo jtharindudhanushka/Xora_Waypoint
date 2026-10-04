@@ -350,7 +350,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/IssueOut"
+                    "$ref": "#/components/schemas/app__modules__issues__schemas__IssueOut"
                   },
                   "title": "Response List Issues Api V1 Issues Get"
                 }
@@ -400,7 +400,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/IssueOut"
+                  "$ref": "#/components/schemas/app__modules__issues__schemas__IssueOut"
                 }
               }
             }
@@ -458,7 +458,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/IssueOut"
+                  "$ref": "#/components/schemas/app__modules__issues__schemas__IssueOut"
                 }
               }
             }
@@ -1312,6 +1312,747 @@
           }
         }
       }
+    },
+    "/api/v1/stores/me/orders": {
+      "get": {
+        "tags": [
+          "store"
+        ],
+        "summary": "Home",
+        "operationId": "home_api_v1_stores_me_orders_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StoreHomeOut"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/orders/{ref}": {
+      "get": {
+        "tags": [
+          "store"
+        ],
+        "summary": "Get Order",
+        "operationId": "get_order_api_v1_orders__ref__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "ref",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Ref"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/outlets/{code}/usual-items": {
+      "get": {
+        "tags": [
+          "store"
+        ],
+        "summary": "Usual Items",
+        "operationId": "usual_items_api_v1_outlets__code__usual_items_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "code",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Code"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UsualItemOut"
+                  },
+                  "title": "Response Usual Items Api V1 Outlets  Code  Usual Items Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/outlets/{code}/next-deliveries": {
+      "get": {
+        "tags": [
+          "store"
+        ],
+        "summary": "Next Deliveries",
+        "operationId": "next_deliveries_api_v1_outlets__code__next_deliveries_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "code",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Code"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/OrderOut"
+                  },
+                  "title": "Response Next Deliveries Api V1 Outlets  Code  Next Deliveries Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/orders/check": {
+      "post": {
+        "tags": [
+          "store"
+        ],
+        "summary": "Check",
+        "operationId": "check_api_v1_orders_check_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrderCheckIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderCheckOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/orders": {
+      "post": {
+        "tags": [
+          "store"
+        ],
+        "summary": "Submit",
+        "operationId": "submit_api_v1_orders_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrderSubmitIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/OrderOut"
+                  },
+                  "type": "array",
+                  "title": "Response Submit Api V1 Orders Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/outlets/{code}/driver-note": {
+      "post": {
+        "tags": [
+          "store"
+        ],
+        "summary": "Driver Note",
+        "operationId": "driver_note_api_v1_outlets__code__driver_note_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "code",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Code"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DriverNoteIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DriverNoteOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/notifications": {
+      "get": {
+        "tags": [
+          "store"
+        ],
+        "summary": "Notifications",
+        "operationId": "notifications_api_v1_notifications_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/NotificationOut"
+                  },
+                  "type": "array",
+                  "title": "Response Notifications Api V1 Notifications Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/notifications/{notice_id}": {
+      "get": {
+        "tags": [
+          "store"
+        ],
+        "summary": "Notification",
+        "operationId": "notification_api_v1_notifications__notice_id__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "notice_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Notice Id"
+            }
+          },
+          {
+            "name": "language",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "en",
+                    "si",
+                    "ta"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Language"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotificationOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/notifications/{notice_id}/ack": {
+      "post": {
+        "tags": [
+          "store"
+        ],
+        "summary": "Acknowledge",
+        "operationId": "acknowledge_api_v1_notifications__notice_id__ack_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "notice_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Notice Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotificationOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/notifications/{notice_id}/read": {
+      "post": {
+        "tags": [
+          "store"
+        ],
+        "summary": "Acknowledge",
+        "operationId": "acknowledge_api_v1_notifications__notice_id__read_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "notice_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Notice Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotificationOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/orders/{ref}/receipt-draft": {
+      "get": {
+        "tags": [
+          "receipts"
+        ],
+        "summary": "Draft",
+        "operationId": "draft_api_v1_orders__ref__receipt_draft_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "ref",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Ref"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReceiptDraftOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/orders/{ref}/receipt": {
+      "post": {
+        "tags": [
+          "receipts"
+        ],
+        "summary": "Confirm",
+        "operationId": "confirm_api_v1_orders__ref__receipt_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "ref",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Ref"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReceiptIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReceiptOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/orders/{ref}/issues": {
+      "post": {
+        "tags": [
+          "receipts"
+        ],
+        "summary": "Report",
+        "operationId": "report_api_v1_orders__ref__issues_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "ref",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Ref"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IssueIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/app__modules__receipts__schemas__IssueOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/orders/{ref}/issues/check": {
+      "post": {
+        "tags": [
+          "receipts"
+        ],
+        "summary": "Check Report",
+        "operationId": "check_report_api_v1_orders__ref__issues_check_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "ref",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Ref"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IssueIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IssuePreviewOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -1643,6 +2384,40 @@
         ],
         "title": "DeferralOut"
       },
+      "DriverNoteIn": {
+        "properties": {
+          "text": {
+            "type": "string",
+            "maxLength": 240,
+            "minLength": 1,
+            "title": "Text"
+          }
+        },
+        "type": "object",
+        "required": [
+          "text"
+        ],
+        "title": "DriverNoteIn"
+      },
+      "DriverNoteOut": {
+        "properties": {
+          "text": {
+            "type": "string",
+            "title": "Text"
+          },
+          "sent_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Sent At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "text",
+          "sent_at"
+        ],
+        "title": "DriverNoteOut"
+      },
       "EntityRef": {
         "properties": {
           "type": {
@@ -1875,6 +2650,30 @@
         "type": "object",
         "title": "HTTPValidationError"
       },
+      "IssueIn": {
+        "properties": {
+          "request_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Request Id"
+          },
+          "lines": {
+            "items": {
+              "$ref": "#/components/schemas/ProblemLineIn"
+            },
+            "type": "array",
+            "maxItems": 100,
+            "minItems": 1,
+            "title": "Lines"
+          }
+        },
+        "type": "object",
+        "required": [
+          "request_id",
+          "lines"
+        ],
+        "title": "IssueIn"
+      },
       "IssueItemOut": {
         "properties": {
           "product_id": {
@@ -1940,272 +2739,38 @@
         ],
         "title": "IssueItemOut"
       },
-      "IssueOut": {
+      "IssuePreviewOut": {
         "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid",
-            "title": "Id"
-          },
-          "kind": {
-            "type": "string",
-            "title": "Kind"
-          },
-          "status": {
-            "type": "string",
-            "title": "Status"
-          },
-          "order_ref": {
-            "type": "string",
-            "title": "Order Ref"
-          },
-          "outlet_code": {
-            "type": "string",
-            "title": "Outlet Code"
-          },
-          "district": {
-            "type": "string",
-            "title": "District"
-          },
-          "temp_requirement": {
-            "type": "string",
-            "title": "Temp Requirement"
-          },
-          "vehicle_code": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Vehicle Code"
-          },
-          "driver_record_id": {
-            "anyOf": [
-              {
-                "type": "string",
-                "format": "uuid"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Driver Record Id"
-          },
-          "driver_recorded_at": {
-            "anyOf": [
-              {
-                "type": "string",
-                "format": "date-time"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Driver Recorded At"
-          },
-          "driver_uploaded_at": {
-            "anyOf": [
-              {
-                "type": "string",
-                "format": "date-time"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Driver Uploaded At"
-          },
-          "driver_name": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Driver Name"
-          },
-          "driver_photo_url": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Driver Photo Url"
-          },
-          "store_recorded_at": {
-            "anyOf": [
-              {
-                "type": "string",
-                "format": "date-time"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Store Recorded At"
-          },
-          "store_name": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Store Name"
-          },
-          "store_photo_url": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Store Photo Url"
-          },
-          "opened_at": {
-            "type": "string",
-            "format": "date-time",
-            "title": "Opened At"
-          },
-          "driver_qty": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Driver Qty"
-          },
-          "store_qty": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Store Qty"
-          },
-          "items": {
-            "items": {
-              "$ref": "#/components/schemas/IssueItemOut"
-            },
-            "type": "array",
-            "title": "Items"
-          },
-          "affected_cases": {
+          "good_cases": {
             "type": "integer",
-            "title": "Affected Cases"
-          },
-          "next_run": {
-            "anyOf": [
-              {
-                "type": "string",
-                "format": "date"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Next Run"
-          },
-          "window_open": {
-            "type": "string",
-            "format": "time",
-            "title": "Window Open"
-          },
-          "window_close": {
-            "type": "string",
-            "format": "time",
-            "title": "Window Close"
-          },
-          "recount_due": {
-            "type": "string",
-            "format": "date-time",
-            "title": "Recount Due"
-          },
-          "resolution": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Resolution"
-          },
-          "note": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Note"
-          },
-          "resolved_at": {
-            "anyOf": [
-              {
-                "type": "string",
-                "format": "date-time"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Resolved At"
+            "title": "Good Cases"
           }
         },
         "type": "object",
         "required": [
-          "id",
-          "kind",
-          "status",
-          "order_ref",
-          "outlet_code",
-          "district",
-          "temp_requirement",
-          "vehicle_code",
-          "driver_record_id",
-          "driver_recorded_at",
-          "driver_uploaded_at",
-          "driver_name",
-          "driver_photo_url",
-          "store_recorded_at",
-          "store_name",
-          "store_photo_url",
-          "opened_at",
-          "driver_qty",
-          "store_qty",
-          "items",
-          "affected_cases",
-          "next_run",
-          "window_open",
-          "window_close",
-          "recount_due",
-          "resolution",
-          "note",
-          "resolved_at"
+          "good_cases"
         ],
-        "title": "IssueOut"
+        "title": "IssuePreviewOut"
+      },
+      "ItemIn": {
+        "properties": {
+          "product_id": {
+            "type": "string",
+            "title": "Product Id"
+          },
+          "qty": {
+            "type": "integer",
+            "maximum": 100000.0,
+            "minimum": 0.0,
+            "title": "Qty"
+          }
+        },
+        "type": "object",
+        "required": [
+          "product_id",
+          "qty"
+        ],
+        "title": "ItemIn"
       },
       "KnownShortfallOut": {
         "properties": {
@@ -2301,6 +2866,105 @@
           "password"
         ],
         "title": "LoginRequest"
+      },
+      "NotificationOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "kind": {
+            "type": "string",
+            "title": "Kind"
+          },
+          "order_ref": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Order Ref"
+          },
+          "reason_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason Code"
+          },
+          "lang": {
+            "type": "string",
+            "title": "Lang"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "body": {
+            "type": "string",
+            "title": "Body"
+          },
+          "next_run": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Run"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "acked_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Acked At"
+          },
+          "source": {
+            "type": "string",
+            "title": "Source",
+            "default": "Written from the plan"
+          },
+          "protection": {
+            "type": "string",
+            "title": "Protection",
+            "default": "First in line (moved once)"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "kind",
+          "order_ref",
+          "reason_code",
+          "lang",
+          "title",
+          "body",
+          "next_run",
+          "created_at",
+          "acked_at"
+        ],
+        "title": "NotificationOut"
       },
       "OpsOut": {
         "properties": {
@@ -2483,6 +3147,115 @@
         ],
         "title": "OpsTripOut"
       },
+      "OrderCheckIn": {
+        "properties": {
+          "lines": {
+            "items": {
+              "$ref": "#/components/schemas/ItemIn"
+            },
+            "type": "array",
+            "maxItems": 100,
+            "minItems": 1,
+            "title": "Lines"
+          }
+        },
+        "type": "object",
+        "required": [
+          "lines"
+        ],
+        "title": "OrderCheckIn"
+      },
+      "OrderCheckOut": {
+        "properties": {
+          "warnings": {
+            "items": {
+              "$ref": "#/components/schemas/QuantityWarning"
+            },
+            "type": "array",
+            "title": "Warnings"
+          },
+          "delivery_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Delivery Date"
+          },
+          "cutoff_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Cutoff At"
+          },
+          "cutoff_seconds": {
+            "type": "integer",
+            "title": "Cutoff Seconds"
+          },
+          "after_cutoff": {
+            "type": "boolean",
+            "title": "After Cutoff"
+          }
+        },
+        "type": "object",
+        "required": [
+          "warnings",
+          "delivery_date",
+          "cutoff_at",
+          "cutoff_seconds",
+          "after_cutoff"
+        ],
+        "title": "OrderCheckOut"
+      },
+      "OrderLineOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "product_id": {
+            "type": "string",
+            "title": "Product Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "qty_ordered": {
+            "type": "integer",
+            "title": "Qty Ordered"
+          },
+          "qty_delivered": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Qty Delivered"
+          },
+          "qty_received": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Qty Received"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "product_id",
+          "name",
+          "qty_ordered",
+          "qty_delivered",
+          "qty_received"
+        ],
+        "title": "OrderLineOut"
+      },
       "OrderLineView": {
         "properties": {
           "product_id": {
@@ -2505,6 +3278,158 @@
           "qty"
         ],
         "title": "OrderLineView"
+      },
+      "OrderOut": {
+        "properties": {
+          "ref": {
+            "type": "string",
+            "title": "Ref"
+          },
+          "outlet_code": {
+            "type": "string",
+            "title": "Outlet Code"
+          },
+          "brand": {
+            "type": "string",
+            "title": "Brand"
+          },
+          "district": {
+            "type": "string",
+            "title": "District"
+          },
+          "temp_requirement": {
+            "type": "string",
+            "title": "Temp Requirement"
+          },
+          "delivery_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Delivery Date"
+          },
+          "units": {
+            "type": "integer",
+            "title": "Units"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "planned",
+              "loaded",
+              "in_transit",
+              "delivered",
+              "at_risk",
+              "late",
+              "deferred",
+              "pending_sync",
+              "on_hold"
+            ],
+            "title": "Status"
+          },
+          "submission_status": {
+            "type": "string",
+            "title": "Submission Status"
+          },
+          "placed_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Placed At"
+          },
+          "receipt_confirmed": {
+            "type": "boolean",
+            "title": "Receipt Confirmed"
+          },
+          "receipt_confirmed_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Receipt Confirmed At"
+          },
+          "lines": {
+            "items": {
+              "$ref": "#/components/schemas/OrderLineOut"
+            },
+            "type": "array",
+            "title": "Lines"
+          },
+          "tracking": {
+            "items": {
+              "$ref": "#/components/schemas/TrackingOut"
+            },
+            "type": "array",
+            "title": "Tracking"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ref",
+          "outlet_code",
+          "brand",
+          "district",
+          "temp_requirement",
+          "delivery_date",
+          "units",
+          "status",
+          "submission_status",
+          "placed_at",
+          "receipt_confirmed",
+          "receipt_confirmed_at",
+          "lines",
+          "tracking"
+        ],
+        "title": "OrderOut"
+      },
+      "OrderSubmitIn": {
+        "properties": {
+          "lines": {
+            "items": {
+              "$ref": "#/components/schemas/ItemIn"
+            },
+            "type": "array",
+            "maxItems": 100,
+            "minItems": 1,
+            "title": "Lines"
+          },
+          "draft_ref": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Draft Ref"
+          },
+          "confirm_unusual": {
+            "type": "boolean",
+            "title": "Confirm Unusual",
+            "default": false
+          },
+          "request_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Request Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "lines",
+          "request_id"
+        ],
+        "title": "OrderSubmitIn"
       },
       "PlanOut": {
         "properties": {
@@ -2605,6 +3530,67 @@
         ],
         "title": "PlanOut"
       },
+      "ProblemLineIn": {
+        "properties": {
+          "order_line_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Order Line Id"
+          },
+          "product_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Product Id"
+          },
+          "problem": {
+            "type": "string",
+            "enum": [
+              "missing",
+              "damaged",
+              "wrong_item",
+              "warm"
+            ],
+            "title": "Problem"
+          },
+          "qty": {
+            "type": "integer",
+            "maximum": 100000.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Qty"
+          },
+          "photo_url": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 300
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Photo Url"
+          }
+        },
+        "type": "object",
+        "required": [
+          "problem",
+          "qty"
+        ],
+        "title": "ProblemLineIn"
+      },
       "PublishCheckOut": {
         "properties": {
           "can_publish": {
@@ -2653,6 +3639,283 @@
         },
         "type": "object",
         "title": "PublishIn"
+      },
+      "QuantityWarning": {
+        "properties": {
+          "product_id": {
+            "type": "string",
+            "title": "Product Id"
+          },
+          "qty": {
+            "type": "integer",
+            "title": "Qty"
+          },
+          "usual_qty": {
+            "type": "integer",
+            "title": "Usual Qty"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "rule_id": {
+            "type": "string",
+            "title": "Rule Id",
+            "default": "BR-42"
+          }
+        },
+        "type": "object",
+        "required": [
+          "product_id",
+          "qty",
+          "usual_qty",
+          "message"
+        ],
+        "title": "QuantityWarning"
+      },
+      "ReceiptCountIn": {
+        "properties": {
+          "order_line_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Order Line Id"
+          },
+          "store_qty": {
+            "type": "integer",
+            "maximum": 100000.0,
+            "minimum": 0.0,
+            "title": "Store Qty"
+          }
+        },
+        "type": "object",
+        "required": [
+          "order_line_id",
+          "store_qty"
+        ],
+        "title": "ReceiptCountIn"
+      },
+      "ReceiptDraftLine": {
+        "properties": {
+          "order_line_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Order Line Id"
+          },
+          "product_id": {
+            "type": "string",
+            "title": "Product Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "ordered_qty": {
+            "type": "integer",
+            "title": "Ordered Qty"
+          },
+          "driver_qty": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Driver Qty"
+          },
+          "store_qty": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Store Qty"
+          }
+        },
+        "type": "object",
+        "required": [
+          "order_line_id",
+          "product_id",
+          "name",
+          "ordered_qty",
+          "driver_qty",
+          "store_qty"
+        ],
+        "title": "ReceiptDraftLine"
+      },
+      "ReceiptDraftOut": {
+        "properties": {
+          "order_ref": {
+            "type": "string",
+            "title": "Order Ref"
+          },
+          "outlet_code": {
+            "type": "string",
+            "title": "Outlet Code"
+          },
+          "temp_requirement": {
+            "type": "string",
+            "title": "Temp Requirement"
+          },
+          "vehicle_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Vehicle Code"
+          },
+          "delivered_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Delivered At"
+          },
+          "receiver": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Receiver"
+          },
+          "photo_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Photo Url"
+          },
+          "driver_event_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Driver Event Id"
+          },
+          "can_confirm": {
+            "type": "boolean",
+            "title": "Can Confirm"
+          },
+          "confirmed": {
+            "type": "boolean",
+            "title": "Confirmed"
+          },
+          "total_cases": {
+            "type": "integer",
+            "title": "Total Cases"
+          },
+          "lines": {
+            "items": {
+              "$ref": "#/components/schemas/ReceiptDraftLine"
+            },
+            "type": "array",
+            "title": "Lines"
+          }
+        },
+        "type": "object",
+        "required": [
+          "order_ref",
+          "outlet_code",
+          "temp_requirement",
+          "vehicle_code",
+          "delivered_at",
+          "receiver",
+          "photo_url",
+          "driver_event_id",
+          "can_confirm",
+          "confirmed",
+          "total_cases",
+          "lines"
+        ],
+        "title": "ReceiptDraftOut"
+      },
+      "ReceiptIn": {
+        "properties": {
+          "lines": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/ReceiptCountIn"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lines"
+          }
+        },
+        "type": "object",
+        "title": "ReceiptIn"
+      },
+      "ReceiptOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "order_ref": {
+            "type": "string",
+            "title": "Order Ref"
+          },
+          "total_cases": {
+            "type": "integer",
+            "title": "Total Cases"
+          },
+          "confirmed_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Confirmed At"
+          },
+          "issue_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Issue Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "order_ref",
+          "total_cases",
+          "confirmed_at"
+        ],
+        "title": "ReceiptOut"
       },
       "RepairApplyIn": {
         "properties": {
@@ -3406,6 +4669,70 @@
         ],
         "title": "StopView"
       },
+      "StoreHomeOut": {
+        "properties": {
+          "outlet_code": {
+            "type": "string",
+            "title": "Outlet Code"
+          },
+          "district": {
+            "type": "string",
+            "title": "District"
+          },
+          "brand": {
+            "type": "string",
+            "title": "Brand"
+          },
+          "now": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Now"
+          },
+          "ordering": {
+            "$ref": "#/components/schemas/OrderCheckOut"
+          },
+          "window_open": {
+            "type": "string",
+            "format": "time",
+            "title": "Window Open"
+          },
+          "window_close": {
+            "type": "string",
+            "format": "time",
+            "title": "Window Close"
+          },
+          "orders": {
+            "items": {
+              "$ref": "#/components/schemas/OrderOut"
+            },
+            "type": "array",
+            "title": "Orders"
+          },
+          "driver_note": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DriverNoteOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "outlet_code",
+          "district",
+          "brand",
+          "now",
+          "ordering",
+          "window_open",
+          "window_close",
+          "orders",
+          "driver_note"
+        ],
+        "title": "StoreHomeOut"
+      },
       "SyncEventIn": {
         "properties": {
           "event_id": {
@@ -3650,6 +4977,134 @@
           "user"
         ],
         "title": "TokenOut"
+      },
+      "TrackingOut": {
+        "properties": {
+          "stop_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Stop Id"
+          },
+          "stop_seq": {
+            "type": "integer",
+            "title": "Stop Seq"
+          },
+          "stop_count": {
+            "type": "integer",
+            "title": "Stop Count"
+          },
+          "vehicle_code": {
+            "type": "string",
+            "title": "Vehicle Code"
+          },
+          "trip_no": {
+            "type": "integer",
+            "title": "Trip No"
+          },
+          "version": {
+            "type": "integer",
+            "title": "Version"
+          },
+          "planned_cases": {
+            "type": "integer",
+            "title": "Planned Cases"
+          },
+          "plan_arrival": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Plan Arrival"
+          },
+          "likely_from": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Likely From"
+          },
+          "likely_to": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Likely To"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "planned",
+              "loaded",
+              "in_transit",
+              "delivered",
+              "at_risk",
+              "late",
+              "deferred",
+              "pending_sync",
+              "on_hold"
+            ],
+            "title": "Status"
+          },
+          "basis": {
+            "type": "string",
+            "title": "Basis",
+            "default": "based on past runs"
+          },
+          "event_time": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Event Time"
+          },
+          "received_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Received At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "stop_id",
+          "stop_seq",
+          "stop_count",
+          "vehicle_code",
+          "trip_no",
+          "version",
+          "planned_cases",
+          "plan_arrival",
+          "likely_from",
+          "likely_to",
+          "status"
+        ],
+        "title": "TrackingOut"
       },
       "TripOut": {
         "properties": {
@@ -3921,6 +5376,41 @@
         ],
         "title": "UserOut"
       },
+      "UsualItemOut": {
+        "properties": {
+          "product_id": {
+            "type": "string",
+            "title": "Product Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "is_chilled": {
+            "type": "boolean",
+            "title": "Is Chilled"
+          },
+          "usual_qty": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Usual Qty"
+          }
+        },
+        "type": "object",
+        "required": [
+          "product_id",
+          "name",
+          "is_chilled",
+          "usual_qty"
+        ],
+        "title": "UsualItemOut"
+      },
       "ValidationError": {
         "properties": {
           "loc": {
@@ -4126,6 +5616,308 @@
           "context"
         ],
         "title": "ViolationOut"
+      },
+      "app__modules__issues__schemas__IssueOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "kind": {
+            "type": "string",
+            "title": "Kind"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "order_ref": {
+            "type": "string",
+            "title": "Order Ref"
+          },
+          "outlet_code": {
+            "type": "string",
+            "title": "Outlet Code"
+          },
+          "district": {
+            "type": "string",
+            "title": "District"
+          },
+          "temp_requirement": {
+            "type": "string",
+            "title": "Temp Requirement"
+          },
+          "vehicle_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Vehicle Code"
+          },
+          "driver_record_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Driver Record Id"
+          },
+          "driver_recorded_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Driver Recorded At"
+          },
+          "driver_uploaded_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Driver Uploaded At"
+          },
+          "driver_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Driver Name"
+          },
+          "driver_photo_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Driver Photo Url"
+          },
+          "store_recorded_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Store Recorded At"
+          },
+          "store_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Store Name"
+          },
+          "store_photo_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Store Photo Url"
+          },
+          "opened_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Opened At"
+          },
+          "driver_qty": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Driver Qty"
+          },
+          "store_qty": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Store Qty"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/IssueItemOut"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "affected_cases": {
+            "type": "integer",
+            "title": "Affected Cases"
+          },
+          "next_run": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Run"
+          },
+          "window_open": {
+            "type": "string",
+            "format": "time",
+            "title": "Window Open"
+          },
+          "window_close": {
+            "type": "string",
+            "format": "time",
+            "title": "Window Close"
+          },
+          "recount_due": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Recount Due"
+          },
+          "resolution": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Resolution"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          },
+          "resolved_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Resolved At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "kind",
+          "status",
+          "order_ref",
+          "outlet_code",
+          "district",
+          "temp_requirement",
+          "vehicle_code",
+          "driver_record_id",
+          "driver_recorded_at",
+          "driver_uploaded_at",
+          "driver_name",
+          "driver_photo_url",
+          "store_recorded_at",
+          "store_name",
+          "store_photo_url",
+          "opened_at",
+          "driver_qty",
+          "store_qty",
+          "items",
+          "affected_cases",
+          "next_run",
+          "window_open",
+          "window_close",
+          "recount_due",
+          "resolution",
+          "note",
+          "resolved_at"
+        ],
+        "title": "IssueOut"
+      },
+      "app__modules__receipts__schemas__IssueOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "order_ref": {
+            "type": "string",
+            "title": "Order Ref"
+          },
+          "kind": {
+            "type": "string",
+            "title": "Kind",
+            "default": "store_report"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "receipt_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Receipt Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "order_ref",
+          "status",
+          "receipt_id"
+        ],
+        "title": "IssueOut"
       }
     },
     "securitySchemes": {

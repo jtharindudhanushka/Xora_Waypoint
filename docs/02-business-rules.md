@@ -71,7 +71,7 @@
 |---|---|---|---|
 | BR-40 | **Orders close at 16:00** for next-day delivery. After the cutoff, an order goes to the next operating day (per `calendar.is_operating`) | A | S2, S1 |
 | BR-41 | Chilled and dry are **separate orders** | A | S2 |
-| BR-42 | **Order sanity check:** a line > 3× the outlet's usual quantity is questioned ("Did you mean 20?"). The manager can fix it or keep it | A, W | S2 |
+| BR-42 | **Order sanity check:** a line ≥ 3× the outlet's usual quantity is questioned ("Did you mean 20?"). The manager can fix it or explicitly confirm keeping it. Boundary matches Figma's 60 vs usual 20; see ADR-0008 | A, W | S2 |
 | BR-43 | Arrival is shown as a **window** with its basis ("based on past runs"), **one line per order/van** | A | S1 |
 | BR-44 | **Deferral notice:** what moved, the reason in plain words (from the reason code, labelled "Written from the plan"), the new time, and what still arrives. Available in **Sinhala, Tamil and English** (language set in the account). Says **"First in line (moved once)"**. The store acknowledges it | A | S8 |
 | BR-45 | **A moved order is protected on the next run** (top priority) | E | S8, D3 |

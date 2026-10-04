@@ -440,6 +440,261 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  '/api/v1/stores/me/orders': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Home */
+    get: operations['home_api_v1_stores_me_orders_get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/v1/orders/{ref}': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Get Order */
+    get: operations['get_order_api_v1_orders__ref__get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/v1/outlets/{code}/usual-items': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Usual Items */
+    get: operations['usual_items_api_v1_outlets__code__usual_items_get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/v1/outlets/{code}/next-deliveries': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Next Deliveries */
+    get: operations['next_deliveries_api_v1_outlets__code__next_deliveries_get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/v1/orders/check': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Check */
+    post: operations['check_api_v1_orders_check_post']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/v1/orders': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Submit */
+    post: operations['submit_api_v1_orders_post']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/v1/outlets/{code}/driver-note': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Driver Note */
+    post: operations['driver_note_api_v1_outlets__code__driver_note_post']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/v1/notifications': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Notifications */
+    get: operations['notifications_api_v1_notifications_get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/v1/notifications/{notice_id}': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Notification */
+    get: operations['notification_api_v1_notifications__notice_id__get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/v1/notifications/{notice_id}/ack': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Acknowledge */
+    post: operations['acknowledge_api_v1_notifications__notice_id__ack_post']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/v1/notifications/{notice_id}/read': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Acknowledge */
+    post: operations['acknowledge_api_v1_notifications__notice_id__read_post']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/v1/orders/{ref}/receipt-draft': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Draft */
+    get: operations['draft_api_v1_orders__ref__receipt_draft_get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/v1/orders/{ref}/receipt': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Confirm */
+    post: operations['confirm_api_v1_orders__ref__receipt_post']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/v1/orders/{ref}/issues': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Report */
+    post: operations['report_api_v1_orders__ref__issues_post']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/v1/orders/{ref}/issues/check': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Check Report */
+    post: operations['check_report_api_v1_orders__ref__issues_check_post']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
 }
 export type webhooks = Record<string, never>
 export interface components {
@@ -567,6 +822,21 @@ export interface components {
        */
       notice_language: string
     }
+    /** DriverNoteIn */
+    DriverNoteIn: {
+      /** Text */
+      text: string
+    }
+    /** DriverNoteOut */
+    DriverNoteOut: {
+      /** Text */
+      text: string
+      /**
+       * Sent At
+       * Format: date-time
+       */
+      sent_at: string
+    }
     /** EntityRef */
     EntityRef: {
       /**
@@ -660,6 +930,16 @@ export interface components {
       /** Detail */
       detail?: components['schemas']['ValidationError'][]
     }
+    /** IssueIn */
+    IssueIn: {
+      /**
+       * Request Id
+       * Format: uuid
+       */
+      request_id: string
+      /** Lines */
+      lines: components['schemas']['ProblemLineIn'][]
+    }
     /** IssueItemOut */
     IssueItemOut: {
       /** Product Id */
@@ -675,79 +955,17 @@ export interface components {
       /** Photo Url */
       photo_url?: string | null
     }
-    /** IssueOut */
-    IssueOut: {
-      /**
-       * Id
-       * Format: uuid
-       */
-      id: string
-      /** Kind */
-      kind: string
-      /** Status */
-      status: string
-      /** Order Ref */
-      order_ref: string
-      /** Outlet Code */
-      outlet_code: string
-      /** District */
-      district: string
-      /** Temp Requirement */
-      temp_requirement: string
-      /** Vehicle Code */
-      vehicle_code: string | null
-      /** Driver Record Id */
-      driver_record_id: string | null
-      /** Driver Recorded At */
-      driver_recorded_at: string | null
-      /** Driver Uploaded At */
-      driver_uploaded_at: string | null
-      /** Driver Name */
-      driver_name: string | null
-      /** Driver Photo Url */
-      driver_photo_url: string | null
-      /** Store Recorded At */
-      store_recorded_at: string | null
-      /** Store Name */
-      store_name: string | null
-      /** Store Photo Url */
-      store_photo_url: string | null
-      /**
-       * Opened At
-       * Format: date-time
-       */
-      opened_at: string
-      /** Driver Qty */
-      driver_qty: number | null
-      /** Store Qty */
-      store_qty: number | null
-      /** Items */
-      items: components['schemas']['IssueItemOut'][]
-      /** Affected Cases */
-      affected_cases: number
-      /** Next Run */
-      next_run: string | null
-      /**
-       * Window Open
-       * Format: time
-       */
-      window_open: string
-      /**
-       * Window Close
-       * Format: time
-       */
-      window_close: string
-      /**
-       * Recount Due
-       * Format: date-time
-       */
-      recount_due: string
-      /** Resolution */
-      resolution: string | null
-      /** Note */
-      note: string | null
-      /** Resolved At */
-      resolved_at: string | null
+    /** IssuePreviewOut */
+    IssuePreviewOut: {
+      /** Good Cases */
+      good_cases: number
+    }
+    /** ItemIn */
+    ItemIn: {
+      /** Product Id */
+      product_id: string
+      /** Qty */
+      qty: number
     }
     /**
      * KnownShortfallOut
@@ -789,6 +1007,45 @@ export interface components {
       email: string
       /** Password */
       password: string
+    }
+    /** NotificationOut */
+    NotificationOut: {
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string
+      /** Kind */
+      kind: string
+      /** Order Ref */
+      order_ref: string | null
+      /** Reason Code */
+      reason_code: string | null
+      /** Lang */
+      lang: string
+      /** Title */
+      title: string
+      /** Body */
+      body: string
+      /** Next Run */
+      next_run: string | null
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string
+      /** Acked At */
+      acked_at: string | null
+      /**
+       * Source
+       * @default Written from the plan
+       */
+      source: string
+      /**
+       * Protection
+       * @default First in line (moved once)
+       */
+      protection: string
     }
     /** OpsOut */
     OpsOut: {
@@ -859,6 +1116,48 @@ export interface components {
       /** Stops */
       stops: components['schemas']['OpsStopOut'][]
     }
+    /** OrderCheckIn */
+    OrderCheckIn: {
+      /** Lines */
+      lines: components['schemas']['ItemIn'][]
+    }
+    /** OrderCheckOut */
+    OrderCheckOut: {
+      /** Warnings */
+      warnings: components['schemas']['QuantityWarning'][]
+      /**
+       * Delivery Date
+       * Format: date
+       */
+      delivery_date: string
+      /**
+       * Cutoff At
+       * Format: date-time
+       */
+      cutoff_at: string
+      /** Cutoff Seconds */
+      cutoff_seconds: number
+      /** After Cutoff */
+      after_cutoff: boolean
+    }
+    /** OrderLineOut */
+    OrderLineOut: {
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string
+      /** Product Id */
+      product_id: string
+      /** Name */
+      name: string
+      /** Qty Ordered */
+      qty_ordered: number
+      /** Qty Delivered */
+      qty_delivered: number | null
+      /** Qty Received */
+      qty_received: number | null
+    }
     /** OrderLineView */
     OrderLineView: {
       /** Product Id */
@@ -867,6 +1166,69 @@ export interface components {
       name: string
       /** Qty */
       qty: number
+    }
+    /** OrderOut */
+    OrderOut: {
+      /** Ref */
+      ref: string
+      /** Outlet Code */
+      outlet_code: string
+      /** Brand */
+      brand: string
+      /** District */
+      district: string
+      /** Temp Requirement */
+      temp_requirement: string
+      /**
+       * Delivery Date
+       * Format: date
+       */
+      delivery_date: string
+      /** Units */
+      units: number
+      /**
+       * Status
+       * @enum {string}
+       */
+      status:
+        | 'planned'
+        | 'loaded'
+        | 'in_transit'
+        | 'delivered'
+        | 'at_risk'
+        | 'late'
+        | 'deferred'
+        | 'pending_sync'
+        | 'on_hold'
+      /** Submission Status */
+      submission_status: string
+      /** Placed At */
+      placed_at: string | null
+      /** Receipt Confirmed */
+      receipt_confirmed: boolean
+      /** Receipt Confirmed At */
+      receipt_confirmed_at: string | null
+      /** Lines */
+      lines: components['schemas']['OrderLineOut'][]
+      /** Tracking */
+      tracking: components['schemas']['TrackingOut'][]
+    }
+    /** OrderSubmitIn */
+    OrderSubmitIn: {
+      /** Lines */
+      lines: components['schemas']['ItemIn'][]
+      /** Draft Ref */
+      draft_ref?: string | null
+      /**
+       * Confirm Unusual
+       * @default false
+       */
+      confirm_unusual: boolean
+      /**
+       * Request Id
+       * Format: uuid
+       */
+      request_id: string
     }
     /** PlanOut */
     PlanOut: {
@@ -906,6 +1268,22 @@ export interface components {
       /** Chilled Total */
       chilled_total: number
     }
+    /** ProblemLineIn */
+    ProblemLineIn: {
+      /** Order Line Id */
+      order_line_id?: string | null
+      /** Product Id */
+      product_id?: string | null
+      /**
+       * Problem
+       * @enum {string}
+       */
+      problem: 'missing' | 'damaged' | 'wrong_item' | 'warm'
+      /** Qty */
+      qty: number
+      /** Photo Url */
+      photo_url?: string | null
+    }
     /** PublishCheckOut */
     PublishCheckOut: {
       /** Can Publish */
@@ -924,6 +1302,101 @@ export interface components {
        * @default false
        */
       accept_late_risk: boolean
+    }
+    /** QuantityWarning */
+    QuantityWarning: {
+      /** Product Id */
+      product_id: string
+      /** Qty */
+      qty: number
+      /** Usual Qty */
+      usual_qty: number
+      /** Message */
+      message: string
+      /**
+       * Rule Id
+       * @default BR-42
+       */
+      rule_id: string
+    }
+    /** ReceiptCountIn */
+    ReceiptCountIn: {
+      /**
+       * Order Line Id
+       * Format: uuid
+       */
+      order_line_id: string
+      /** Store Qty */
+      store_qty: number
+    }
+    /** ReceiptDraftLine */
+    ReceiptDraftLine: {
+      /**
+       * Order Line Id
+       * Format: uuid
+       */
+      order_line_id: string
+      /** Product Id */
+      product_id: string
+      /** Name */
+      name: string
+      /** Ordered Qty */
+      ordered_qty: number
+      /** Driver Qty */
+      driver_qty: number | null
+      /** Store Qty */
+      store_qty: number | null
+    }
+    /** ReceiptDraftOut */
+    ReceiptDraftOut: {
+      /** Order Ref */
+      order_ref: string
+      /** Outlet Code */
+      outlet_code: string
+      /** Temp Requirement */
+      temp_requirement: string
+      /** Vehicle Code */
+      vehicle_code: string | null
+      /** Delivered At */
+      delivered_at: string | null
+      /** Receiver */
+      receiver: string | null
+      /** Photo Url */
+      photo_url: string | null
+      /** Driver Event Id */
+      driver_event_id: string | null
+      /** Can Confirm */
+      can_confirm: boolean
+      /** Confirmed */
+      confirmed: boolean
+      /** Total Cases */
+      total_cases: number
+      /** Lines */
+      lines: components['schemas']['ReceiptDraftLine'][]
+    }
+    /** ReceiptIn */
+    ReceiptIn: {
+      /** Lines */
+      lines?: components['schemas']['ReceiptCountIn'][] | null
+    }
+    /** ReceiptOut */
+    ReceiptOut: {
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string
+      /** Order Ref */
+      order_ref: string
+      /** Total Cases */
+      total_cases: number
+      /**
+       * Confirmed At
+       * Format: date-time
+       */
+      confirmed_at: string
+      /** Issue Id */
+      issue_id?: string | null
     }
     /** RepairApplyIn */
     RepairApplyIn: {
@@ -1191,6 +1664,34 @@ export interface components {
       /** Orders */
       orders: components['schemas']['StopOrderView'][]
     }
+    /** StoreHomeOut */
+    StoreHomeOut: {
+      /** Outlet Code */
+      outlet_code: string
+      /** District */
+      district: string
+      /** Brand */
+      brand: string
+      /**
+       * Now
+       * Format: date-time
+       */
+      now: string
+      ordering: components['schemas']['OrderCheckOut']
+      /**
+       * Window Open
+       * Format: time
+       */
+      window_open: string
+      /**
+       * Window Close
+       * Format: time
+       */
+      window_close: string
+      /** Orders */
+      orders: components['schemas']['OrderOut'][]
+      driver_note: components['schemas']['DriverNoteOut'] | null
+    }
     /** SyncEventIn */
     SyncEventIn: {
       /**
@@ -1286,6 +1787,55 @@ export interface components {
       expires_in: number
       user: components['schemas']['UserOut']
     }
+    /** TrackingOut */
+    TrackingOut: {
+      /**
+       * Stop Id
+       * Format: uuid
+       */
+      stop_id: string
+      /** Stop Seq */
+      stop_seq: number
+      /** Stop Count */
+      stop_count: number
+      /** Vehicle Code */
+      vehicle_code: string
+      /** Trip No */
+      trip_no: number
+      /** Version */
+      version: number
+      /** Planned Cases */
+      planned_cases: number
+      /** Plan Arrival */
+      plan_arrival: string | null
+      /** Likely From */
+      likely_from: string | null
+      /** Likely To */
+      likely_to: string | null
+      /**
+       * Status
+       * @enum {string}
+       */
+      status:
+        | 'planned'
+        | 'loaded'
+        | 'in_transit'
+        | 'delivered'
+        | 'at_risk'
+        | 'late'
+        | 'deferred'
+        | 'pending_sync'
+        | 'on_hold'
+      /**
+       * Basis
+       * @default based on past runs
+       */
+      basis: string
+      /** Event Time */
+      event_time?: string | null
+      /** Received At */
+      received_at?: string | null
+    }
     /** TripOut */
     TripOut: {
       /**
@@ -1377,6 +1927,17 @@ export interface components {
       /** Outlet Code */
       outlet_code: string | null
     }
+    /** UsualItemOut */
+    UsualItemOut: {
+      /** Product Id */
+      product_id: string
+      /** Name */
+      name: string
+      /** Is Chilled */
+      is_chilled: boolean
+      /** Usual Qty */
+      usual_qty: number | null
+    }
     /** ValidationError */
     ValidationError: {
       /** Location */
@@ -1442,6 +2003,102 @@ export interface components {
       context: {
         [key: string]: string | number | boolean | string[]
       }
+    }
+    /** IssueOut */
+    app__modules__issues__schemas__IssueOut: {
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string
+      /** Kind */
+      kind: string
+      /** Status */
+      status: string
+      /** Order Ref */
+      order_ref: string
+      /** Outlet Code */
+      outlet_code: string
+      /** District */
+      district: string
+      /** Temp Requirement */
+      temp_requirement: string
+      /** Vehicle Code */
+      vehicle_code: string | null
+      /** Driver Record Id */
+      driver_record_id: string | null
+      /** Driver Recorded At */
+      driver_recorded_at: string | null
+      /** Driver Uploaded At */
+      driver_uploaded_at: string | null
+      /** Driver Name */
+      driver_name: string | null
+      /** Driver Photo Url */
+      driver_photo_url: string | null
+      /** Store Recorded At */
+      store_recorded_at: string | null
+      /** Store Name */
+      store_name: string | null
+      /** Store Photo Url */
+      store_photo_url: string | null
+      /**
+       * Opened At
+       * Format: date-time
+       */
+      opened_at: string
+      /** Driver Qty */
+      driver_qty: number | null
+      /** Store Qty */
+      store_qty: number | null
+      /** Items */
+      items: components['schemas']['IssueItemOut'][]
+      /** Affected Cases */
+      affected_cases: number
+      /** Next Run */
+      next_run: string | null
+      /**
+       * Window Open
+       * Format: time
+       */
+      window_open: string
+      /**
+       * Window Close
+       * Format: time
+       */
+      window_close: string
+      /**
+       * Recount Due
+       * Format: date-time
+       */
+      recount_due: string
+      /** Resolution */
+      resolution: string | null
+      /** Note */
+      note: string | null
+      /** Resolved At */
+      resolved_at: string | null
+    }
+    /** IssueOut */
+    app__modules__receipts__schemas__IssueOut: {
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string
+      /** Order Ref */
+      order_ref: string
+      /**
+       * Kind
+       * @default store_report
+       */
+      kind: string
+      /** Status */
+      status: string
+      /**
+       * Receipt Id
+       * Format: uuid
+       */
+      receipt_id: string
     }
   }
   responses: never
@@ -1690,7 +2347,7 @@ export interface operations {
           [name: string]: unknown
         }
         content: {
-          'application/json': components['schemas']['IssueOut'][]
+          'application/json': components['schemas']['app__modules__issues__schemas__IssueOut'][]
         }
       }
       /** @description Validation Error */
@@ -1721,7 +2378,7 @@ export interface operations {
           [name: string]: unknown
         }
         content: {
-          'application/json': components['schemas']['IssueOut']
+          'application/json': components['schemas']['app__modules__issues__schemas__IssueOut']
         }
       }
       /** @description Validation Error */
@@ -1756,7 +2413,7 @@ export interface operations {
           [name: string]: unknown
         }
         content: {
-          'application/json': components['schemas']['IssueOut']
+          'application/json': components['schemas']['app__modules__issues__schemas__IssueOut']
         }
       }
       /** @description Validation Error */
@@ -2267,6 +2924,471 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['VehicleTodayOut']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  home_api_v1_stores_me_orders_get: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['StoreHomeOut']
+        }
+      }
+    }
+  }
+  get_order_api_v1_orders__ref__get: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        ref: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['OrderOut']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  usual_items_api_v1_outlets__code__usual_items_get: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        code: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['UsualItemOut'][]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  next_deliveries_api_v1_outlets__code__next_deliveries_get: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        code: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['OrderOut'][]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  check_api_v1_orders_check_post: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['OrderCheckIn']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['OrderCheckOut']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  submit_api_v1_orders_post: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['OrderSubmitIn']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['OrderOut'][]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  driver_note_api_v1_outlets__code__driver_note_post: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        code: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['DriverNoteIn']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['DriverNoteOut']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  notifications_api_v1_notifications_get: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['NotificationOut'][]
+        }
+      }
+    }
+  }
+  notification_api_v1_notifications__notice_id__get: {
+    parameters: {
+      query?: {
+        language?: ('en' | 'si' | 'ta') | null
+      }
+      header?: never
+      path: {
+        notice_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['NotificationOut']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  acknowledge_api_v1_notifications__notice_id__ack_post: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        notice_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['NotificationOut']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  acknowledge_api_v1_notifications__notice_id__read_post: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        notice_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['NotificationOut']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  draft_api_v1_orders__ref__receipt_draft_get: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        ref: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ReceiptDraftOut']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  confirm_api_v1_orders__ref__receipt_post: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        ref: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['ReceiptIn']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ReceiptOut']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  report_api_v1_orders__ref__issues_post: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        ref: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['IssueIn']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['app__modules__receipts__schemas__IssueOut']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  check_report_api_v1_orders__ref__issues_check_post: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        ref: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['IssueIn']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['IssuePreviewOut']
         }
       }
       /** @description Validation Error */
