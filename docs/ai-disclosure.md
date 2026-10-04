@@ -29,6 +29,16 @@ The brief requires us to explain which work was AI-assisted, which wasn't, and h
 | 2026-10-04 | Second handover | Codex (OpenAI) | Recorded merge order, statuses, measured S1 results, limitations, departures, integration risks and exact verification commands | Requested the report; retains merge, deployment and submission decisions |
 | 2026-10-04 | Cross-track contract integration | Codex (OpenAI) | Merged latest main into remaining PR branches, retained all routers, regenerated contracts and fixed the dispatcher IssueOut type collision using its endpoint response; ran combined API and web checks | Explicitly requested merge commits, regenerated contracts and checked pushes; lead retains PR merge decisions |
 
+## Lead implementation log (4 Oct 2026)
+
+| Date | Area | Tool | What the AI did | What we did |
+|---|---|---|---|---|
+| 2026-10-04 | Azure deployment, task 1.1 | Claude Code (Anthropic) | Created the Azure for Students VM (B1ms + swap), firewall rules and Docker; ran the first real `docker compose up` (prod overlay + Caddy); fixed the `CORS_ORIGINS` env parsing crash and the web healthcheck; verified a fresh-clone `cp .env.example .env && docker compose up` with seed data | Chose the VM size and cost limits, signed in to Azure, copied the dataset to the VM with scp, approved every firewall change |
+| 2026-10-04 | Sync API, task 1.2 | Claude Code (Anthropic) | Implemented `POST /sync` (idempotent by event id, commit per event, stale-plan and count conflicts that open `issues` rows), shortfall → hold, loader acknowledgement → hold release, `GET /sync/bootstrap` and `GET /vehicles/{code}/today`; wrote synthetic tests | Specified the protocol (docs/07) and the business rules; reviewed the PR and the API contract change (`rejected` status) |
+| 2026-10-04 | Driver UI, task 1.3 | Claude Code (Anthropic), Figma connector | Read the R1–R7 frames and rationales; built the Dexie outbox, ordered sync loop, sync bar and the R1, R2, R3, R4/R5 and R7 screens with existing tokens and exported Figma icons | Set scope and cut order; reviewed the screens against Figma |
+| 2026-10-04 | Integration, smoke and fixes | Claude Code (Anthropic) | Merged teammates' PRs on request; ran the walkthrough on a local seeded stack and on the live URL; fixed the walkthrough blockers it found (later trips unreachable, per-user outbox, receipt pre-fill field) | Signed in to every live account by hand (the agent never entered live credentials); decided what to cut and what counts as a blocker |
+| 2026-10-04 | Submission docs | Claude Code (Anthropic) | Drafted the README (setup, accounts, walkthrough from the QA results, departures, known gaps) and this log | Reviewed and approved the final text |
+
 ## Not AI-assisted
 - _To be completed by the team (e.g. the original wireframes and flows from the Designathon, decisions made in review)._
 
