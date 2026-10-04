@@ -25,9 +25,10 @@ Waypoint Group runs three retail brands (Fresh, Style, Tech) with 120 outlets, 6
 | **Store manager** | `store.out001@waypoint.demo` | OUT001 (order + receipt) |
 | Driver | `driver.veh007@waypoint.demo` | VEH007 (offline + count conflict) |
 | Store manager | `store.out074@waypoint.demo` | OUT074 (count conflict) |
-| Store manager | `store.out054@waypoint.demo` | OUT054 (deferral notice) |
+| Store manager | `store.out002@waypoint.demo` | OUT002 (deferral notice, S8) |
+| Store manager | `store.out054@waypoint.demo` | OUT054 (served on the live plan; kept for docs/09) |
 
-The first four are the one-account-per-role set the brief asks for. The other three make the offline and deferral stories easy to show.
+The first four are the one-account-per-role set the brief asks for. The others make the offline and deferral stories easy to show.
 
 ## Run it locally
 **Prerequisites:** Docker 24+ with Compose v2, and the organisers' **Tech-Triathlon 2026 dataset pack**.
@@ -63,7 +64,7 @@ Scenario S1: orders for **Tue 7 Apr 2026**, Peliyagoda DC. Use a phone-sized win
 | 2 | → Mon 16:05 | Dispatcher | Clock menu → **Mon 16:05** → **Generate plan** (≈15 s) | Draft: 72/85 served, 14/26 chilled, "Limit today: Reefer space · Why?"; pre-dawn and daytime timelines; OUT074 on VEH007. Generating before 16:00 is refused (BR-40) |
 | 3 | 16:10 | Dispatcher | **Fleet** tab | VEH038 "Switched off · No driver"; workshop vehicles locked off (BR-10) |
 | 4 | 16:12 | Dispatcher | **Deferred · 13** → read groups, reasons, priorities → **Confirm 13 deferrals** → **Review & publish** → **Publish plan v1** | "Published v1"; affected stores notified (BR-21 to BR-23) |
-| 5 | 16:25 | Store OUT054 | Open the notice | S8: what moved, why, and when it comes (BR-44) |
+| 5 | 16:25 | Store OUT002 | Sign in as `store.out002` → open the notice | S8: S1-003 deferred ("Delivery deferred"), why (lower priority, what it would displace) and the next run, Wed 8 Apr 03:30 (BR-44) |
 | 6 | → Tue 04:14 | Loader Dock 2 | **L1** trips in departure order → open VEH036's trip carrying **S1-005** (T1 on the greedy plan) → **Load** (L2, reverse stop order) → **Report a problem** → OUT003 · S1-005 → Missing → **2** → Short from chiller pick → **Send to dispatcher** | **L4**: van on hold (BR-24 to BR-27) |
 | 7 | 04:19 | Dispatcher | Live ops → the hold (or `/dispatch/shortfalls/<id>`) → **D6**: A is recommended ("Send 40 now, 2 more on Trip 2 this morning"); B re-picks all 42 (+25 min); C (40 now, 2 Wednesday) is flagged against OUT003's same-morning rule → **Apply A** | v2 published; v1 unchanged (BR-28 to BR-30) |
 | 8 | 04:27 | Loader | Reopen the same trip (it resolves to the latest version) → **L5 Review v2**: T1 OUT003 42 → 40, T2 gains a linked OUT003 +2 stop → **Acknowledge v2 · release van** → check every order → **Mark loaded** | Hold released → van **Loaded**; acknowledging v1 can't release it (BR-31) |
@@ -75,6 +76,10 @@ Scenario S1: orders for **Tue 7 Apr 2026**, Peliyagoda DC. Use a phone-sized win
 | 14 | 07:52 | Dispatcher | **D13**: both counts and evidence → decide | Resolved; both records kept (BR-52) |
 
 **If CP-SAT puts S1-005 on VEH036 T2:** report the shortfall on that trip. A is offered only if a later compatible trip exists; otherwise apply the recommended **B** (all 42, departure +25 min). The loader acknowledges the v2 trip and the driver sees 42 loaded / 42 ordered with no outstanding shortage.
+
+## Corrections to docs/09
+- **Step 5 uses OUT002, not OUT054.** On the live plan OUT054 is served (VEH006 T1), so it gets no notice. OUT002 / S1-003 is deferred and gets the S8 notice. Deferred outlets on the live greedy plan: OUT002, 009, 013, 030, 043, 044, 046, 060, 062, 065, 066, 067, 070.
+- **Steps 6–9:** S1-005 / OUT003 rides VEH036 **T1** on the live plan (docs/09 assumed the design's illustrative trip); the steps above follow the live plan.
 
 ## Significant departures from the Designathon submission
 Full list with reasons: [`docs/02-business-rules.md` → Departures](docs/02-business-rules.md#departures-from-the-submitted-design).
