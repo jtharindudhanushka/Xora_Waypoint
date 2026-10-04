@@ -34,40 +34,45 @@ jobs:
   web:
     name: Web · lint, types, tests, build
     runs-on: ubuntu-latest
-    if: ${{ hashFiles('apps/web/package-lock.json') != '' }}
-    defaults:
-      run:
-        working-directory: apps/web
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - id: detect
+        run: echo "present=$([ -f apps/web/package-lock.json ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+      - if: steps.detect.outputs.present == 'true'
+        uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
           cache-dependency-path: apps/web/package-lock.json
-      - run: npm ci
-      - run: npm run lint
-      - run: npm run format:check
-      - run: npm run typecheck
-      - run: npm test
-      - run: npm run build
+      - if: steps.detect.outputs.present == 'true'
+        working-directory: apps/web
+        run: |
+          npm ci
+          npm run lint
+          npm run format:check
+          npm run typecheck
+          npm test
+          npm run build
 
   engine:
     name: Engine · lint, types, tests
     runs-on: ubuntu-latest
-    if: ${{ hashFiles('packages/engine/pyproject.toml') != '' }}
-    defaults:
-      run:
-        working-directory: packages/engine
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - id: detect
+        run: echo "present=$([ -f packages/engine/pyproject.toml ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+      - if: steps.detect.outputs.present == 'true'
+        uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: pip install -e ".[dev]"
-      - run: ruff check . && ruff format --check .
-      - run: mypy --strict src
-      - run: pytest
+      - if: steps.detect.outputs.present == 'true'
+        working-directory: packages/engine
+        run: |
+          pip install -e ".[dev]"
+          ruff check .
+          ruff format --check .
+          mypy --strict src
+          pytest
 
   images:
     name: Docker images build
