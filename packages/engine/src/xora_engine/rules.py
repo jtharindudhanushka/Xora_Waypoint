@@ -125,7 +125,7 @@ def br12(assignment: Assignment, problem: Problem) -> bool:
     for trip in assignment.trips:
         for stop, arrival in zip(trip.stops, planned_arrivals(trip, problem), strict=True):
             order = problem.orders[stop.order_ref]
-            if order.dock_type == "mall_dock" and (
+            if (order.dock_type in ("mall_dock", "mall_bay") or order.mall_open is not None) and (
                 order.mall_open is None
                 or order.mall_close is None
                 or not order.mall_open <= arrival <= order.mall_close
