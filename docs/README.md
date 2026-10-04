@@ -15,5 +15,7 @@
 | 10 | [Testing & quality](10-testing-and-quality.md) | write tests, open PRs |
 | 11 | [Deployment](11-deployment.md) | deploy |
 | 12 | [Work breakdown](12-work-breakdown.md) | want to know who does what, and when |
+| 13 | [Figma screen map](13-figma-screen-map.md) | build any screen (**must match Figma exactly**) |
+| 14 | [AI handoff](14-ai-handoff.md) | start a fresh AI chat on a work package |
 | — | [ADRs](adr/) | want to know why a decision was made |
 | — | [AI disclosure](ai-disclosure.md) | used AI (log it there) |
