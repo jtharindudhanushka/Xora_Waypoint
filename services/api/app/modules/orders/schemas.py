@@ -68,6 +68,8 @@ class OrderLineOut(BaseModel):
 
 class TrackingOut(BaseModel):
     stop_id: UUID
+    stop_seq: int
+    stop_count: int
     vehicle_code: str
     trip_no: int
     version: int
