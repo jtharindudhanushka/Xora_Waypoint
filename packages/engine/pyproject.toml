@@ -3,7 +3,7 @@ name = "xora-engine"
 version = "0.1.0"
 description = "Pure delivery planning rules and optimisation"
 requires-python = ">=3.12"
-dependencies = []
+dependencies = ["ortools>=9.15,<9.16"]
 
 [project.optional-dependencies]
 dev = ["pytest>=8.3", "hypothesis>=6", "ruff>=0.6", "mypy>=1.11"]
@@ -33,4 +33,3 @@ target-version = "py312"
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "B", "UP", "SIM", "N", "RUF"]
 ignore = ["RUF001", "RUF002", "RUF003"]
-
