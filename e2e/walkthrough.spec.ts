@@ -279,8 +279,39 @@ test("step 5: OUT054 deferral notice and acknowledgement (BR-41/44)", async ({
   note("step5", { notice: notice.kind });
 });
 
-test("step 6: loader reports OUT003 short 2 (L2–L4 UI)", async () => {
-  test.skip(true, "Loader screens L1–L5 pending Dev 3 (feat/dock-ui)");
+test("step 6: loader reports OUT003 short 2 → van on hold (L1–L4, BR-26/27)", async ({
+  browser,
+  request,
+}) => {
+  test.skip(process.env.WALKTHROUGH_LOADER_UI !== "1", "Loader UI not deployed yet");
+  await setClock(request, "2026-04-07T04:14:00+05:30");
+  const day = await getJson(request, "/api/v1/vehicles/VEH036/today", "loader.dock2");
+  const trip = day.trips.find((t) =>
+    t.stops.some((s) => s.orders.some((o) => o.order_ref === "S1-005")),
+  );
+  expect(trip, "S1-005 must be on a VEH036 trip").toBeTruthy();
+  const { page, close } = await as(browser, "loader.dock2", "06-loader-shortfall");
+  await page.goto("/dock");
+  await page.getByRole("button", { name: new RegExp(`VEH036 · Trip ${trip.trip_no}`) }).click();
+  await page.waitForTimeout(1000);
+  await page.getByRole("button", { name: `Load VEH036 · Trip ${trip.trip_no}` }).click();
+  await expect(page.getByText("Load order")).toBeVisible();
+  // Load in reverse delivery order until the OUT003 order turns up short.
+  for (const box of (await page.getByRole("checkbox", { name: /^Loaded / }).all()).slice(0, 2))
+    if (!/S1-005/.test((await box.getAttribute("aria-label")) || "")) await box.check();
+  await page.waitForTimeout(1500);
+  await page.getByRole("button", { name: "Report a problem", exact: true }).click();
+  await page.getByRole("radio", { name: /S1-005/ }).check();
+  await page.getByRole("button", { name: "Missing", exact: true }).click();
+  await page.getByLabel("Cases short").fill("2");
+  await page.getByRole("button", { name: "Short from chiller pick" }).click();
+  await page.waitForTimeout(1500);
+  await page.getByRole("button", { name: "Send to dispatcher" }).click();
+  await expect(page.getByText("Departure on hold")).toBeVisible({ timeout: 20_000 });
+  await expect(page.getByText(/Sent to dispatch/)).toBeVisible({ timeout: 30_000 });
+  await page.waitForTimeout(2500);
+  await close();
+  note("step6", { trip: `VEH036 T${trip.trip_no}`, via: "loader UI" });
 });
 
 test("step 6 (API stand-in): loader shortfall puts the trip on hold (BR-26/27)", async ({
@@ -364,8 +395,30 @@ test("step 7: dispatcher resolves the hold with D6 option A (BR-28/29)", async (
   })() });
 });
 
-test("step 8: loader reviews v2 and acknowledges (L5 UI)", async () => {
-  test.skip(true, "Loader screens L1–L5 pending Dev 3 (feat/dock-ui)");
+test("step 8: loader reviews v2 and acknowledges → hold released (L5, BR-31)", async ({
+  browser,
+  request,
+}) => {
+  test.skip(process.env.WALKTHROUGH_LOADER_UI !== "1", "Loader UI not deployed yet");
+  await setClock(request, "2026-04-07T04:27:00+05:30");
+  const day = await getJson(request, "/api/v1/vehicles/VEH036/today", "loader.dock2");
+  expect(day.version.number, "v2 must be published").toBeGreaterThan(1);
+  const trip = day.trips.find((t) =>
+    t.stops.some((s) => s.orders.some((o) => o.order_ref === "S1-005")),
+  );
+  const { page, close } = await as(browser, "loader.dock2", "08-loader-ack");
+  await page.goto("/dock");
+  await page.getByRole("button", { name: new RegExp(`VEH036 · Trip ${trip.trip_no}`) }).click();
+  await page.getByRole("button", { name: `Load VEH036 · Trip ${trip.trip_no}` }).click();
+  const ack = page.getByRole("button", { name: /^Acknowledge v\d+ · release van$/ });
+  await expect(ack).toBeVisible();
+  await page.waitForTimeout(3000);
+  await ack.click();
+  await page.waitForTimeout(4000);
+  await close();
+  const after = await getJson(request, "/api/v1/vehicles/VEH036/today", "loader.dock2");
+  expect(after.trips.some((t) => t.on_hold), "hold released").toBe(false);
+  note("step8", { version: after.version.number, via: "loader UI" });
 });
 
 test("step 8 (API stand-in): loader acknowledges v2, hold released (BR-31)", async ({
