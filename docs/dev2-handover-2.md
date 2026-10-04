@@ -9,10 +9,10 @@ Tasks 2.6–2.9 are implemented on pushed feature branches. After the 20:30 feat
 | [#17](https://github.com/jtharindudhanushka/Xora_Waypoint/pull/17) | feat/engine-cpsat | main | Bounded CP-SAT with greedy hints, shared validation, honest status and fallback; engine/API dependency | Independent; four CI jobs green |
 | [#18](https://github.com/jtharindudhanushka/Xora_Waypoint/pull/18) | feat/dispatch-live-ops | main | D5, ranked exceptions, pending sync and validated immutable stop swaps | Updated against merged sync/deployment; four CI jobs green |
 | [#21](https://github.com/jtharindudhanushka/Xora_Waypoint/pull/21) | feat/dispatch-issues | main | D10/D13, six decisions, next-run orders, short claims, notifications and scoped SSE | Stacked on #18; four CI jobs green |
-| [#25](https://github.com/jtharindudhanushka/Xora_Waypoint/pull/25) | feat/dispatch-fidelity | main | Eight-frame review, planning spacing/type corrections and refreshed comparisons; deterministic repair timer fixture | Stacked on #21; four CI jobs green |
+| [#25](https://github.com/jtharindudhanushka/Xora_Waypoint/pull/25) | feat/dispatch-fidelity | main | Eight-frame review, planning spacing/type corrections and refreshed comparisons; deterministic repair timer fixture | Contains #17 and #21 for combined-stack verification; see final CI checks |
 | [#27](https://github.com/jtharindudhanushka/Xora_Waypoint/pull/27) | docs/dev2-handover-2 | main | Status, disclosure and this report | Stacked on #25; merge last; see current PR checks |
 
-All branches are retained; no PR was merged by Dev 2. Generated OpenAPI/client conflicts with the lead's merged #20 sync API were resolved by exporting the combined routers, preserving both tracks. Do not choose one side of a generated-file conflict: regenerate after integrating routes. #17 remains independent; the other feature branches intentionally contain preceding unmerged dispatcher work.
+All branches are retained; no PR was merged by Dev 2. Generated OpenAPI/client conflicts with the lead's merged #20 sync API were resolved by exporting the combined routers, preserving both tracks. Shared-router import conflicts with merged #26 driver UI were resolved by retaining both sets of routes. Do not choose one side of a generated-file conflict: regenerate after integrating routes. #17 remains independent; the other feature branches intentionally contain preceding unmerged dispatcher work. #25 also includes #17 so the final combined optimiser/dispatcher/driver/sync stack is tested before handover.
 
 ## 2. What works and how to walk through it
 
@@ -41,19 +41,19 @@ The seeded S1 generate → confirm → publish → checker path was verified loc
 
 ## 4. S1 result
 
-The latest CP-SAT S1 run recorded in #17 generated, confirmed and published through the API. The same local allocation was checked again during handover:
+The final integrated-stack S1 run generated, confirmed and published through the API. Verification now prints the actual solver status as well as KPIs:
 
 ```text
 FEASIBILITY: PASSED - every rule satisfied.
 orders served: 72 / 85
-chilled served: 17 / 26
-reefer volume used: 134.632 / 172.4 m³
+chilled served: 18 / 26
+reefer volume used: 137.532 / 172.4 m³
 deferrals: 13
-solve time: 11.604 seconds including setup and explanations
+solve time: 11.383 seconds including setup and explanations
 solver_status: FEASIBLE
 ```
 
-The CP search budget is 10 seconds with eight workers; preparation and explanation add time. Observed bounded runs returned 72–73 served and 16–18 chilled, so do not present a fixed optimum. The prior greedy baseline was 72 served / 14 chilled. VEH036 splits and OUT074 is served. Allocation CSVs and all organiser data remain local and ignored.
+The CP search budget is 10 seconds with eight workers; preparation and explanation add time. Another integrated run returned **75 served / 18 chilled / 136.247 m³ / 10 deferrals in 11.702 seconds**, also passing feasibility. Observed bounded runs returned 72–75 served and 16–18 chilled, so do not present a fixed optimum or the best observed run as a guaranteed result. The prior greedy baseline was 72 served / 14 chilled. VEH036 splits and OUT074 is served. Allocation CSVs and all organiser data remain local and ignored.
 
 ## 5. API, OpenAPI and database
 
