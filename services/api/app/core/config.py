@@ -2,12 +2,14 @@
 
 from __future__ import annotations
 
+import json
 from datetime import datetime
 from functools import lru_cache
 from pathlib import Path
+from typing import Annotated
 
 from pydantic import Field, field_validator
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic_settings import BaseSettings, NoDecode, SettingsConfigDict
 
 
 class Settings(BaseSettings):
@@ -23,7 +25,11 @@ class Settings(BaseSettings):
     jwt_algorithm: str = "HS256"
     jwt_ttl_hours: int = 12
 
-    cors_origins: list[str] = ["http://localhost:8080", "http://localhost:5173"]
+    # NoDecode: a comma-separated env value is split by the validator, not parsed as JSON.
+    cors_origins: Annotated[list[str], NoDecode] = [
+        "http://localhost:8080",
+        "http://localhost:5173",
+    ]
 
     dataset_dir: Path = Path("./datasets")
     demo_start: datetime = datetime.fromisoformat("2026-04-06T14:50:00+05:30")
@@ -33,7 +39,9 @@ class Settings(BaseSettings):
     @field_validator("cors_origins", mode="before")
     @classmethod
     def _split_origins(cls, value: object) -> object:
-        if isinstance(value, str) and not value.startswith("["):
+        if isinstance(value, str):
+            if value.startswith("["):
+                return json.loads(value)
             return [origin.strip() for origin in value.split(",") if origin.strip()]
         return value
 

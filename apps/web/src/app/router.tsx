@@ -1,6 +1,12 @@
 import { Navigate, createBrowserRouter } from 'react-router-dom'
 
 import { LoginPage } from '../features/auth/LoginPage'
+import { StoreShell } from '../features/store/StoreShell'
+import { StoreHome } from '../features/store/StoreHome'
+import { NewOrder } from '../features/store/NewOrder'
+import { ReceiptPage } from '../features/store/Receipt'
+import { ReportProblem } from '../features/store/ReportProblem'
+import { DeliveryNotice } from '../features/store/DeliveryNotice'
 import { RoleHome } from '../features/placeholder/RoleHome'
 import { PlanWorkspace } from '../features/dispatch/planning/PlanWorkspace'
 import { ShortfallWorkspace } from '../features/dispatch/repair/ShortfallWorkspace'
@@ -95,25 +101,15 @@ export const router = createBrowserRouter([
     path: '/store',
     element: (
       <RequireRole role="store_manager">
-        <PhoneShell tabs={[{ to: '/store', label: 'Home' }]} />
+        <StoreShell />
       </RequireRole>
     ),
     children: [
-      {
-        index: true,
-        element: (
-          <RoleHome
-            title="Home"
-            screens={[
-              'S1 Home + tracking',
-              'S2 New order',
-              'S5 Confirm receipt',
-              'S6 Report a problem',
-              'S8 Deferral notice',
-            ]}
-          />
-        ),
-      },
+      { index: true, element: <StoreHome /> },
+      { path: 'orders/new', element: <NewOrder /> },
+      { path: 'orders/:ref/receipt', element: <ReceiptPage /> },
+      { path: 'orders/:ref/issue', element: <ReportProblem /> },
+      { path: 'notices/:id', element: <DeliveryNotice /> },
     ],
   },
   { path: '*', element: <HomeRedirect /> },

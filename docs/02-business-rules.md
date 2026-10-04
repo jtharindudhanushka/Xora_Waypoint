@@ -71,7 +71,7 @@
 |---|---|---|---|
 | BR-40 | **Orders close at 16:00** for next-day delivery. After the cutoff, an order goes to the next operating day (per `calendar.is_operating`) | A | S2, S1 |
 | BR-41 | Chilled and dry are **separate orders** | A | S2 |
-| BR-42 | **Order sanity check:** a line > 3× the outlet's usual quantity is questioned ("Did you mean 20?"). The manager can fix it or keep it | A, W | S2 |
+| BR-42 | **Order sanity check:** a line ≥ 3× the outlet's usual quantity is questioned ("Did you mean 20?"). The manager can fix it or explicitly confirm keeping it. Boundary matches Figma's 60 vs usual 20; see ADR-0008 | A, W | S2 |
 | BR-43 | Arrival is shown as a **window** with its basis ("based on past runs"), **one line per order/van** | A | S1 |
 | BR-44 | **Deferral notice:** what moved, the reason in plain words (from the reason code, labelled "Written from the plan"), the new time, and what still arrives. Available in **Sinhala, Tamil and English** (language set in the account). Says **"First in line (moved once)"**. The store acknowledges it | A | S8 |
 | BR-45 | **A moved order is protected on the next run** (top priority) | E | S8, D3 |
@@ -120,3 +120,12 @@ Keep this list current. It goes into the README.
 | DEP-5 | D4 and D6 show late probabilities (illustrative 62% and 9% → 31%) | Real likely-late count and arrival-window changes, without a probability | Current travel-ratio model predicts windows, not calibrated probabilities; approved by Dev 2 on 4 Oct |
 | DEP-6 | Store notices sent in Sinhala, Tamil or English | English server template shared by preview and publication | Multilingual notification delivery remains a handover gap; approved by Dev 2 on 4 Oct |
 | DEP-7 | D6 Call the dock connects to the loader | Visible, disabled until a dock phone number is configured | No dock contact number is supplied; approved by Dev 2 on 4 Oct |
+
+### Pending Store fidelity decisions (Dev 3)
+
+- S8's **Call dispatch** has no configured phone number. A number or explicit approval
+  for a disabled demo action was requested on 4 October; the UI PR must not claim
+  this interaction is verified while the answer is pending.
+- S6 supports photo references through the existing `photo_url` contract. Binary
+  photo upload/storage has not been specified. Approval for a photo-link demo flow,
+  or a request to implement Store upload, was requested before final UI sign-off.
