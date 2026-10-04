@@ -1,0 +1,45 @@
+# Full stack: database → api (migrate + seed + serve) → web.  Usage: docker compose up --build
+# The organisers' dataset pack must be in ./datasets (gitignored; see README › Quick start).
+name: xora
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-xora}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-change-me}
+      POSTGRES_DB: ${POSTGRES_DB:-xora}
+      TZ: UTC
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-xora} -d ${POSTGRES_DB:-xora}"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+
+  api:
+    build: ./services/api
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-xora}:${POSTGRES_PASSWORD:-change-me}@db:5432/${POSTGRES_DB:-xora}
+      DATASET_DIR: /datasets
+    volumes:
+      - ${DATASET_DIR:-./datasets}:/datasets:ro
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  web:
+    build: ./apps/web
+    ports:
+      - "8080:8080"
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  db-data:

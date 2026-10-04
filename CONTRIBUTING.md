@@ -43,6 +43,22 @@ We show our engineering process, so the history matters as much as the code.
    ```
 4. Open the PR with the template, link the WP and the BR ids, and ask a teammate to merge.
 
+## Running without Docker (fast dev loop)
+```bash
+# API (Python 3.12)
+cd services/api
+python -m venv .venv && . .venv/bin/activate        # Windows: .venv\Scriptsctivate
+pip install -e ".[dev]"
+export DATABASE_URL=postgresql+psycopg://xora:change-me@localhost:5432/xora DATASET_DIR=../../datasets
+alembic upgrade head && python -m app.seed && uvicorn app.main:app --reload
+# Web (Node 22)
+cd apps/web && npm ci && npm run dev                # http://localhost:5173, proxies /api to :8000
+```
+After changing an API schema or route:
+```bash
+python services/api/scripts/export_openapi.py && (cd apps/web && npm run gen:api)
+```
+
 ## Rules of the road
 - Business rules live in `packages/engine` (planning) or the API service layer. **Never** only in the UI. Reference `BR-xx`.
 - API shapes come from Pydantic → OpenAPI. Regenerate the TS client:
@@ -56,5 +72,5 @@ We show our engineering process, so the history matters as much as the code.
 
 ## Code style
 - **Python:** ruff (format + lint), mypy; type hints everywhere.
-- **TypeScript:** strict; eslint + prettier.
+- **TypeScript:** strict; oxlint + prettier.
 - **Naming:** `snake_case` (Python, DB), `camelCase` (TS), `PascalCase` (components).

@@ -111,14 +111,14 @@ def seed_demo(session: Session, ds: Dataset, demo_start: datetime) -> dict[str, 
     session.flush()
 
     for ref, items in extras["order_lines"].items():
-        order = by_ref.get(ref)
-        if order is None:
+        target = by_ref.get(ref)
+        if target is None:
             raise SeedError(f"demo_extras.yaml lists lines for unknown order {ref}")
         total = sum(items.values())
-        if order.status != "draft" and total != order.units:
-            raise SeedError(f"{ref}: item cases {total} ≠ dataset order_units {order.units}")
+        if target.status != "draft" and total != target.units:
+            raise SeedError(f"{ref}: item cases {total} ≠ dataset order_units {target.units}")
         for product_id, cases in items.items():
-            session.add(OrderLine(order_id=order.id, product_id=product_id, qty_ordered=cases))
+            session.add(OrderLine(order_id=target.id, product_id=product_id, qty_ordered=cases))
 
     fleet = ds.read("Test Data/task2b_peak_day_fleet.csv")
     switched_off: dict[str, str] = scenario.get("switched_off", {})

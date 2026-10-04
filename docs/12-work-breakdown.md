@@ -11,6 +11,8 @@
 | **Dev 4** | WFH | **Store** UI (WP-4) → dispatcher ops/issues (WP-5) → e2e (WP-6) |
 
 ## Work packages
+> **WP-0 status (13:30–16:00): built** on branches `chore/repo-tooling`, `feat/api-skeleton`, `feat/db-schema`, `feat/seed`, `feat/auth-clock-stream`, `feat/web-shell`, `chore/compose-ci`. Merge order is in the PR list.
+
 | WP | Scope | Depends on | Done when |
 |---|---|---|---|
 | **WP-0 Foundation** | Monorepo skeleton; `docker-compose.yml` (db, api, web) + `.env.example`; FastAPI app factory, config, logging, `/health`; SQLAlchemy + Alembic + **all tables from [04](04-data-model.md)**; seed (dataset validation + reference + S1 + demo extras); auth (login, JWT, role guards); Clock service + `/clock`; SSE endpoint; Vite React app shell with router, auth, header, tokens; generated API client; CI workflow | — | `docker compose up` → log in as all 4 roles → empty role homes |
