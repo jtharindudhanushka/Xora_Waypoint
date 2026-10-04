@@ -1,7 +1,9 @@
+const slowMo = Number(process.env.WALKTHROUGH_SLOWMO || 0);
+
 module.exports = {
   testDir: __dirname,
   testMatch: "walkthrough.spec.ts",
-  timeout: 60_000,
+  timeout: slowMo ? 300_000 : 120_000,
   workers: 1,
   retries: 0,
   reporter: "list",
@@ -10,9 +12,10 @@ module.exports = {
     ...(process.env.PLAYWRIGHT_CHANNEL
       ? { channel: process.env.PLAYWRIGHT_CHANNEL }
       : {}),
+    ...(slowMo ? { launchOptions: { slowMo } } : {}),
     viewport: { width: 390, height: 844 },
     trace: "off",
-    screenshot: "off",
+    screenshot: "only-on-failure",
     video: "off",
   },
 };
