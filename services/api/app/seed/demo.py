@@ -134,11 +134,15 @@ def seed_demo(session: Session, ds: Dataset, demo_start: datetime) -> dict[str, 
         )
 
     for note in extras.get("driver_notes", []):
+        for_date = date.fromisoformat(str(note["for_date"]))
+        # Demo-day send time (Colombo), not the real time the seed ran (BR-39 note header).
+        sent_local = datetime.fromisoformat(f"{for_date}T{note.get('sent_at', '04:50')}:00+05:30")
         session.add(
             DriverNote(
                 outlet_code=note["outlet"],
-                for_date=date.fromisoformat(str(note["for_date"])),
+                for_date=for_date,
                 text=note["text"],
+                sent_at=sent_local.astimezone(UTC),
             )
         )
 
