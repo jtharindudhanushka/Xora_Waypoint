@@ -227,6 +227,16 @@ def detail(db: Session, clock: Clock, user: User, identifier: uuid.UUID) -> Dock
         load_list=lines,
         hold=hold,
         previous_version=parent.number if parent else None,
+        previous_departure=next(
+            (
+                t.planned_depart
+                for t in parent.trips
+                if (t.vehicle_code, t.trip_no) == (trip.vehicle_code, trip.trip_no)
+            ),
+            None,
+        )
+        if parent
+        else None,
         changes=changes,
         shortfall_reasons=list(SHORTFALL_REASONS),
         server_time=now,

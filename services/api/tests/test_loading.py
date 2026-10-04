@@ -101,11 +101,14 @@ def test_br31_newer_version_requires_ack_and_old_link_resolves(client, session_m
         plan = db.get(Plan, field["plan_id"])
         parent = plan.versions[0]
         version, trip, _ = _version(db, plan, 2, 203, parent)
+        trip.planned_depart = time(5, 5)
         db.commit()
         new_id = str(trip.id)
         version_id = version.id
     detail = read(client, field["trip"])
     assert detail["id"] == new_id
+    assert detail["previous_departure"] == "04:40:00"
+    assert detail["departure"] == "05:05:00"
     assert detail["version"]["needs_acknowledgement"]
     assert [(c["before"], c["after"]) for c in detail["changes"]] == [(205, 203)]
     with session_maker() as db:

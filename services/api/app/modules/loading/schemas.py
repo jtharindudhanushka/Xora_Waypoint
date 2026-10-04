@@ -86,6 +86,7 @@ class DockDetail(DockTrip):
     load_list: list[DockLine]
     hold: DockHold | None
     previous_version: int | None
+    previous_departure: time | None
     changes: list[DockChange]
     shortfall_reasons: list[str]
     server_time: datetime

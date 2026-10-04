@@ -944,6 +944,8 @@ export interface components {
       hold: components['schemas']['DockHold'] | null
       /** Previous Version */
       previous_version: number | null
+      /** Previous Departure */
+      previous_departure: string | null
       /** Changes */
       changes: components['schemas']['DockChange'][]
       /** Shortfall Reasons */

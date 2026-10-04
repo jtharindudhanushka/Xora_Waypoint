@@ -225,7 +225,7 @@ export function DockTripPage() {
           <input
             aria-label={`Loaded ${l.order_ref}`}
             type="checkbox"
-            className="size-9 shrink-0 accent-brand"
+            className="size-9 shrink-0 appearance-none rounded-md border-2 border-primary checked:border-brand checked:bg-brand"
             checked={loaded || Boolean(checked.get(l.order_id))}
             disabled={loaded}
             onChange={(e) =>
@@ -569,7 +569,11 @@ function Revision({
           Plan v{trip.previous_version} → v{trip.version.number}
         </p>
         <h1 className="text-[28px] font-semibold leading-[34px] tracking-[-0.28px]">
-          {own.length} {own.length === 1 ? 'change' : 'changes'} to this load
+      {own.length + (trip.previous_departure !== trip.departure ? 1 : 0)}{' '}
+      {own.length + (trip.previous_departure !== trip.departure ? 1 : 0) === 1
+            ? 'change'
+            : 'changes'}{' '}
+          to this load
         </h1>
       </div>
       <Caption meta={`v${trip.previous_version} → v${trip.version.number}`}>Load order</Caption>
@@ -607,6 +611,7 @@ function Revision({
             value={`${c.before} → 0 cases`}
           />
         ))}
+      {trip.previous_departure !== trip.departure && <KeyValue label="Departure" value={time(trip.previous_departure) + " → " + time(trip.departure)} />}
       {other.map((c) => (
         <div
           key={`${c.vehicle}:${c.trip_no}:${c.order_id}`}
@@ -645,3 +650,4 @@ function Revision({
     </>
   )
 }
+
