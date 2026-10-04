@@ -103,3 +103,12 @@ def test_br13_solver_failure_keeps_validated_greedy(monkeypatch):
     assert result.solver_status == "GREEDY"
     assert result.assignment == _greedy(problem, DEFAULT_POLICY)
     assert not validate(result.assignment, problem)
+
+
+def test_br14_cpsat_repeats_for_same_input_regardless_of_row_order():
+    problem = packing([4, 4, 6, 6, 6])
+    reversed_rows = replace(problem, orders=dict(reversed(list(problem.orders.items()))))
+    results = [plan(p, time_limit_s=1) for p in (problem, reversed_rows, problem)]
+    assert all(r.assignment == results[0].assignment for r in results)
+    assert all(r.solver_status == results[0].solver_status for r in results)
+    assert all(not validate(r.assignment, problem) for r in results)

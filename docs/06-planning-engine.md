@@ -67,8 +67,12 @@ The weights are **assumptions**, kept in `policy.py` defaults, shown in the UI (
 
 **Scale check:** S1 is 85 orders × (27 switched-on vehicles × 2 trips), after pruning. It solves in seconds.
 
-Implementation: `cpsat.py` uses OR-Tools 9.15, eight workers and a maximum ten-second
-solver budget. A brief Fresh neighbourhood search strengthens the initial greedy
+Implementation: `cpsat.py` uses OR-Tools 9.15, eight workers, fixed seed 0 and
+deterministic interleaved batches of 16 ([ADR-0009](adr/0009-repeatable-planning-search.md)).
+Canonical order, vehicle and lock ordering makes DB row order irrelevant. The maximum
+ten-second wall-clock solver budget is also bounded by deterministic work: 0.5 units
+for the Fresh neighbourhood and 2.2 for the full search at the default limit.
+A brief Fresh neighbourhood search strengthens the initial greedy
 hint; the full model uses the remaining budget. kg, m³ and litres are conservatively
 scaled by 1,000,000, with the same 1e-6 capacity epsilon. Objective value/trip/fuel
 coefficients use scale 1,000. Symmetry ordering applies only to unlocked slots.
@@ -81,7 +85,9 @@ its greedy slot, then the entire candidate is validated again. Failure, timeout
 without a solution, a worse candidate or broken locks returns GREEDY. OPTIMAL is
 reported only for an unchanged, validated globally solved integer model; repaired
 or time-limited incumbents report FEASIBLE. API elapsed time also includes model
-construction, validation and explanations, so it can exceed ten seconds.
+construction, validation and explanations, so it can exceed ten seconds. If the
+wall-clock cap interrupts a deterministic search before its work budget completes,
+the result is GREEDY instead of a timing-dependent partial incumbent.
 
 ## Explanations (BR-15 to BR-17)
 - **Reason code per deferral:** try to insert the order into every vehicle and trip and keep the *first* blocking rule. If it fits somewhere but wasn't chosen, the code is `LOWER_PRIORITY`.

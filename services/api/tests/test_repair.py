@@ -8,9 +8,9 @@ from sqlalchemy import select
 
 from app.core.clock import Clock
 from app.core.deps import DbDep, get_clock
-from app.models import ClockSetting, Order, OutletProfile, User
+from app.models import ClockSetting, Order, OutletProfile, User, Vehicle, VehicleDay
 from app.modules.loading.models import Hold, Shortfall
-from app.modules.planning.models import PlanVersion, Trip
+from app.modules.planning.models import PlanVersion, Stop, StopOrder, Trip
 from app.modules.sync.models import Event
 from tests.conftest import auth_header
 from tests.test_planning import (
@@ -299,3 +299,182 @@ async def test_br30_repair_publishes_scoped_sse(client, shortfall_data, session_
             assert (await dock.get()).event == "plan.published"
             assert (await driver.get()).data["version_id"] == str(version.id)
             assert other.empty()
+
+
+def test_br29_br31_br34_trip_two_report_repair_ack_and_driver_prefill(
+    client, session_maker, request
+):
+    """Synthetic CP-SAT-shaped plan: the shortfall order rides T2, not T1."""
+    request.getfixturevalue("planning_data")
+    with session_maker() as db:
+        for order in db.scalars(select(Order)):
+            order.weight_kg = 600
+            order.days_since_last_served = 0
+        db.add(OutletProfile(outlet_code="TEST1", split_rule="same_morning_only", language="en"))
+        loader = db.scalar(select(User).where(User.role == "loader"))
+        loader.dock = "Test Dock"
+        driver = db.scalar(select(User).where(User.role == "driver"))
+        driver.vehicle_code = "TESTV"
+        db.commit()
+    plan = generate(client)
+    anchor = datetime(2026, 10, 4, 12, tzinfo=UTC)
+    with session_maker() as db:
+        version = db.get(PlanVersion, uuid.UUID(plan["id"]))
+        version.solver_status = "FEASIBLE"
+        for trip in version.trips:
+            departure = 210 if trip.trip_no == 1 else 274
+            trip.planned_depart = time(departure // 60, departure % 60)
+            for stop in trip.stops:
+                arrival = departure + 24
+                stop.plan_arrival = time(arrival // 60, arrival % 60)
+        source = next(t for t in version.trips if t.trip_no == 2)
+        order = db.get(Order, source.stops[0].orders[0].order_id)
+        order.units = source.stops[0].orders[0].planned_cases = 42
+        order_id, order_ref, source_id = str(order.id), order.ref, str(source.id)
+        db.add(
+            Vehicle(
+                code="TESTV2",
+                type="van",
+                temp="reefer",
+                weight_cap_kg=1000,
+                volume_cap_m3=10,
+                fuel_type="diesel",
+                km_per_l=10,
+                weekly_fuel_quota_l=100,
+                depot="TestDepot",
+            )
+        )
+        later_order = Order(
+            ref="TEST-LATER",
+            outlet_code="TEST1",
+            brand="Fresh",
+            temp_requirement="chilled",
+            delivery_date=DAY,
+            units=10,
+            weight_kg=100,
+            volume_m3=1,
+            status="placed",
+            days_since_last_served=0,
+        )
+        db.add(later_order)
+        db.flush()
+        db.add(VehicleDay(vehicle_code="TESTV2", date=DAY, status="available", switched_on=True))
+        later = Trip(
+            version_id=version.id,
+            vehicle_code="TESTV2",
+            trip_no=1,
+            brand="Fresh",
+            district="TestDistrict",
+            lane="predawn",
+            planned_depart=time(6),
+            plan_minutes=40,
+            litres=2.4,
+            weight_kg=100,
+            volume_m3=1,
+        )
+        db.add(later)
+        db.flush()
+        stop = Stop(
+            trip_id=later.id,
+            seq=1,
+            outlet_code="TEST1",
+            plan_arrival=time(6, 24),
+            likely_from=time(6, 24),
+            likely_to=time(6, 24),
+        )
+        db.add(stop)
+        db.flush()
+        db.add(StopOrder(stop_id=stop.id, order_id=later_order.id, planned_cases=10))
+        db.commit()
+    dispatch = auth_header(client, "dispatcher")
+    response = client.post(
+        f"/api/v1/plan-versions/{plan['id']}/publish",
+        headers=dispatch,
+        json={"accept_late_risk": True},
+    )
+    assert response.status_code == 200, response.text
+    with session_maker() as db:
+        setting = db.get(ClockSetting, 1)
+        setting.demo_now = datetime(2026, 4, 6, 22, 49, tzinfo=UTC)
+        setting.set_at = anchor
+        db.commit()
+
+    def frozen_clock(db: DbDep) -> Clock:
+        return Clock(db, real_now=lambda: anchor)
+
+    client.app.dependency_overrides[get_clock] = frozen_clock
+    loader_headers = auth_header(client, "loader")
+
+    def sync(event_type, trip_id, version_id, payload):
+        response = client.post(
+            "/api/v1/sync",
+            headers=loader_headers,
+            json={
+                "device_id": "synthetic-dock",
+                "events": [
+                    {
+                        "event_id": str(uuid.uuid4()),
+                        "type": event_type,
+                        "entity": {"type": "trip", "id": trip_id},
+                        "plan_version_id": version_id,
+                        "event_time": "2026-04-07T04:18:00+05:30",
+                        "payload": payload,
+                    }
+                ],
+            },
+        )
+        assert response.status_code == 200, response.text
+        assert response.json()["results"][0]["status"] == "accepted", response.text
+
+    sync(
+        "shortfall_reported",
+        source_id,
+        plan["id"],
+        {
+            "order_id": order_id,
+            "kind": "missing",
+            "qty": 2,
+            "reason": "short_from_chiller_pick",
+        },
+    )
+    with session_maker() as db:
+        shortfall_id = str(db.scalar(select(Shortfall)).id)
+    body = options(client, (shortfall_id, source_id, plan["id"]))
+    choices = {option["label"]: option for option in body["options"]}
+    assert set(choices) == {"A", "B", "C"}
+    assert choices["A"]["recommended"] and not choices["A"]["breaks_store_rule"]
+    assert choices["C"]["breaks_store_rule"]
+    response = client.post(
+        f"/api/v1/shortfalls/{shortfall_id}/apply",
+        headers=dispatch,
+        json={"option_id": choices["A"]["id"]},
+    )
+    assert response.status_code == 200, response.text
+    v2 = response.json()
+    assert v2["number"] == 2 and v2["status"] == "published"
+    new_source = next(t for t in v2["trips"] if t["vehicle_code"] == "TESTV" and t["trip_no"] == 2)
+    portions = [
+        o["cases"]
+        for t in v2["trips"]
+        for s in t["stops"]
+        for o in s["orders"]
+        if o["order_ref"] == order_ref
+    ]
+    assert sorted(portions) == [2, 40]
+    sync("trip_acknowledged", source_id, plan["id"], {})
+    with session_maker() as db:
+        hold = db.scalar(select(Hold))
+        assert hold.status == "active" and str(hold.trip_id) == new_source["id"]
+        assert db.get(Trip, uuid.UUID(source_id)).stops[0].orders[0].planned_cases == 42
+    sync("trip_acknowledged", new_source["id"], v2["id"], {})
+    with session_maker() as db:
+        assert db.scalar(select(Hold)).status == "released"
+    driver = client.get("/api/v1/vehicles/TESTV/today", headers=auth_header(client, "driver"))
+    assert driver.status_code == 200, driver.text
+    driver_source = next(t for t in driver.json()["trips"] if t["trip_no"] == 2)
+    driver_order = next(
+        o for s in driver_source["stops"] for o in s["orders"] if o["order_ref"] == order_ref
+    )
+    assert driver_order["planned_cases"] == 40
+    assert driver_order["known_shortfall"]["qty"] == 2
+    assert not driver_source["on_hold"]
