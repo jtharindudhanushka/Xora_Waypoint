@@ -1,0 +1,44 @@
+# ── Competition data: NEVER commit (public repo; T&C forbid publishing data or derivatives) ──
+datasets/
+data/
+*.csv
+*.parquet
+*.xlsx
+*.pdf
+*.dump
+*.sql.gz
+models/artifacts/
+check_allocation.py
+
+# ── Secrets ──
+.env
+.env.*
+!.env.example
+
+# ── Python ──
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+*.egg-info/
+
+# ── Node ──
+node_modules/
+dist/
+build/
+.vite/
+coverage/
+playwright-report/
+test-results/
+
+# ── OS / editors ──
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
