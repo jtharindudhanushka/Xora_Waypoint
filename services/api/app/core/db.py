@@ -5,7 +5,7 @@ from __future__ import annotations
 from collections.abc import Iterator
 from datetime import datetime
 from functools import lru_cache
-from typing import Any
+from typing import Any, ClassVar
 
 from sqlalchemy import JSON, DateTime, MetaData, create_engine
 from sqlalchemy.dialects.postgresql import JSONB
@@ -29,7 +29,7 @@ JSONType = JSON().with_variant(JSONB(), "postgresql")
 
 class Base(DeclarativeBase):
     metadata = MetaData(naming_convention=NAMING_CONVENTION)
-    type_annotation_map: dict[Any, Any] = {
+    type_annotation_map: ClassVar[dict[Any, Any]] = {
         datetime: DateTime(timezone=True),
         dict[str, Any]: JSONType,
         list[Any]: JSONType,
