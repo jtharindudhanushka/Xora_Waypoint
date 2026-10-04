@@ -10,7 +10,7 @@ Tasks 2.6–2.9 are implemented on pushed feature branches. After the 20:30 feat
 | [#18](https://github.com/jtharindudhanushka/Xora_Waypoint/pull/18) | feat/dispatch-live-ops | main | D5, ranked exceptions, pending sync and validated immutable stop swaps | Updated against merged sync/deployment; four CI jobs green |
 | [#21](https://github.com/jtharindudhanushka/Xora_Waypoint/pull/21) | feat/dispatch-issues | main | D10/D13, six decisions, next-run orders, short claims, notifications and scoped SSE | Stacked on #18; four CI jobs green |
 | [#25](https://github.com/jtharindudhanushka/Xora_Waypoint/pull/25) | feat/dispatch-fidelity | main | Eight-frame review, planning spacing/type corrections and refreshed comparisons; deterministic repair timer fixture | Stacked on #21; four CI jobs green |
-| This documentation PR | docs/dev2-handover-2 | main | Status, disclosure and this report | Stacked on #25; merge last |
+| [#27](https://github.com/jtharindudhanushka/Xora_Waypoint/pull/27) | docs/dev2-handover-2 | main | Status, disclosure and this report | Stacked on #25; merge last; see current PR checks |
 
 All branches are retained; no PR was merged by Dev 2. Generated OpenAPI/client conflicts with the lead's merged #20 sync API were resolved by exporting the combined routers, preserving both tracks. Do not choose one side of a generated-file conflict: regenerate after integrating routes. #17 remains independent; the other feature branches intentionally contain preceding unmerged dispatcher work.
 
