@@ -1,4 +1,4 @@
-import { NavLink, Outlet } from 'react-router-dom'
+import { NavLink, Outlet, useLocation } from 'react-router-dom'
 import { FigmaIcon } from '../ui/FigmaIcon'
 
 import { useSession } from '../auth/useSession'
@@ -21,6 +21,7 @@ const NAV = [
 
 /** Dispatcher desktop frame: nav, depot, demo clock and user (Figma: Hi-fi · Dispatcher). */
 export function DesktopShell() {
+  const location = useLocation()
   const { user, signOut } = useSession()
   const clock = useClock()
   const setClock = useSetClock()
@@ -34,24 +35,24 @@ export function DesktopShell() {
           </span>
           <span className="text-base font-semibold">Waypoint</span>
         </div>
-        <nav className="flex h-full gap-6">
+        <nav className="flex h-full gap-1">
           {NAV.map((item) => (
             <NavLink
               key={item.to}
               to={item.to}
               className={({ isActive }) =>
-                `flex items-center border-b-2 px-1 text-sm font-semibold ${isActive ? 'border-brand text-primary' : 'border-transparent text-secondary'}`
+                `flex items-center border-b-2 px-3 text-sm font-semibold ${isActive || (item.to === '/dispatch/ops' && location.pathname.startsWith('/dispatch/shortfalls/')) ? 'border-brand text-primary' : 'border-transparent text-secondary'}`
               }
             >
               {item.label}
             </NavLink>
           ))}
         </nav>
-        <span className="ml-auto flex items-center gap-2 rounded-sm border border-line bg-surface px-3 py-1.5 text-xs font-semibold">
+        <span className="ml-auto flex items-center gap-1.5 rounded-md border border-line bg-surface px-2.5 py-1.5 text-sm leading-[18px] font-semibold">
           {user?.depot} DC
           <FigmaIcon name="chevron" />
         </span>
-        <label className="relative flex items-center gap-2 text-sm">
+        <label className="relative flex items-center gap-1.5 text-sm text-secondary">
           <FigmaIcon name="clock" />
           <span className="font-mono text-[13px]">{formatClock(clock.data?.now)}</span>
           <select
@@ -71,7 +72,7 @@ export function DesktopShell() {
         <button
           type="button"
           onClick={signOut}
-          className="flex items-center gap-2 text-xs font-semibold text-primary"
+          className="flex items-center gap-2 text-sm font-semibold text-primary"
         >
           <span className="flex size-7 items-center justify-center rounded-full bg-inverse font-semibold text-on-inverse">
             {user?.name
