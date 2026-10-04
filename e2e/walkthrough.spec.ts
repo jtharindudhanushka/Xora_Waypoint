@@ -21,7 +21,13 @@ const videoDir = process.env.WALKTHROUGH_VIDEO_DIR;
 const password = process.env.WALKTHROUGH_PASSWORD || "demo1234";
 const PHONE = { width: 390, height: 844 };
 const DESKTOP = { width: 1440, height: 900 };
-const results = {};
+const results = (() => {
+  try {
+    return JSON.parse(fs.readFileSync(process.env.WALKTHROUGH_RESULTS, "utf8"));
+  } catch {
+    return {};
+  }
+})();
 
 function note(key, value) {
   results[key] = value;
