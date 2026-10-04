@@ -380,10 +380,104 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  '/api/v1/sync': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /**
+     * Sync
+     * @description Apply a device outbox in order; idempotent by `event_id` (BR-35 to BR-37, BR-52, BR-53).
+     */
+    post: operations['sync_api_v1_sync_post']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/v1/sync/bootstrap': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Bootstrap
+     * @description Everything a field device needs to work offline today (docs/07 › Client side, BR-38).
+     */
+    get: operations['bootstrap_api_v1_sync_bootstrap_get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/v1/vehicles/{code}/today': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Vehicle Today
+     * @description Published trips, stops, two clocks, notes and known shortfalls (BR-32 to BR-34, BR-39).
+     */
+    get: operations['vehicle_today_api_v1_vehicles__code__today_get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
 }
 export type webhooks = Record<string, never>
 export interface components {
   schemas: {
+    /** BootstrapOut */
+    BootstrapOut: {
+      /**
+       * Server Time
+       * Format: date-time
+       */
+      server_time: string
+      /**
+       * Operating Date
+       * Format: date
+       */
+      operating_date: string
+      user: components['schemas']['BootstrapUserOut']
+      /** Vehicles */
+      vehicles: components['schemas']['VehicleTodayOut'][]
+    }
+    /** BootstrapUserOut */
+    BootstrapUserOut: {
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string
+      /** Name */
+      name: string
+      /** Role */
+      role: string
+      /** Depot */
+      depot: string | null
+      /** Dock */
+      dock: string | null
+      /** Vehicle Code */
+      vehicle_code: string | null
+    }
     /** BottleneckOut */
     BottleneckOut: {
       /** Resource */
@@ -472,6 +566,16 @@ export interface components {
        * @default en
        */
       notice_language: string
+    }
+    /** EntityRef */
+    EntityRef: {
+      /**
+       * Type
+       * @enum {string}
+       */
+      type: 'trip' | 'stop' | 'order'
+      /** Id */
+      id: string
     }
     /** ExceptionOut */
     ExceptionOut: {
@@ -645,6 +749,23 @@ export interface components {
       /** Resolved At */
       resolved_at: string | null
     }
+    /**
+     * KnownShortfallOut
+     * @description A loading shortfall already reported for this order: pre-filled and locked (BR-34).
+     */
+    KnownShortfallOut: {
+      /**
+       * Shortfall Id
+       * Format: uuid
+       */
+      shortfall_id: string
+      /** Kind */
+      kind: string
+      /** Qty */
+      qty: number
+      /** Reason */
+      reason: string
+    }
     /** KpisOut */
     KpisOut: {
       /** Orders Served */
@@ -737,6 +858,15 @@ export interface components {
       brand: string
       /** Stops */
       stops: components['schemas']['OpsStopOut'][]
+    }
+    /** OrderLineView */
+    OrderLineView: {
+      /** Product Id */
+      product_id: string
+      /** Name */
+      name: string
+      /** Qty */
+      qty: number
     }
     /** PlanOut */
     PlanOut: {
@@ -958,6 +1088,25 @@ export interface components {
       /** Top Up Of Order Ref */
       top_up_of_order_ref?: string | null
     }
+    /** StopOrderView */
+    StopOrderView: {
+      /**
+       * Order Id
+       * Format: uuid
+       */
+      order_id: string
+      /** Order Ref */
+      order_ref: string
+      /** Temp Requirement */
+      temp_requirement: string
+      /** Planned Cases */
+      planned_cases: number
+      /** Top Up Of Order Ref */
+      top_up_of_order_ref?: string | null
+      /** Lines */
+      lines: components['schemas']['OrderLineView'][]
+      known_shortfall?: components['schemas']['KnownShortfallOut'] | null
+    }
     /** StopOut */
     StopOut: {
       /**
@@ -981,6 +1130,132 @@ export interface components {
       status: string
       /** Orders */
       orders: components['schemas']['StopOrderOut'][]
+    }
+    /** StopView */
+    StopView: {
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string
+      /** Seq */
+      seq: number
+      /** Outlet Code */
+      outlet_code: string
+      /** District */
+      district: string
+      /** Status */
+      status: string
+      /** Plan Arrival */
+      plan_arrival: string | null
+      /** Likely From */
+      likely_from: string | null
+      /** Likely To */
+      likely_to: string | null
+      /** At Risk */
+      at_risk: boolean
+      /**
+       * Window Open
+       * Format: time
+       */
+      window_open: string
+      /**
+       * Window Close
+       * Format: time
+       */
+      window_close: string
+      /** Dock Type */
+      dock_type: string
+      /** Parking Constraint */
+      parking_constraint: string
+      /** Mall Window Open */
+      mall_window_open: string | null
+      /** Mall Window Close */
+      mall_window_close: string | null
+      /** Access Note */
+      access_note: string | null
+      /** Contact Name */
+      contact_name: string | null
+      /** Store Note */
+      store_note: string | null
+      /** Arrived At */
+      arrived_at: string | null
+      /** Outcome */
+      outcome: string | null
+      /** Orders */
+      orders: components['schemas']['StopOrderView'][]
+    }
+    /** SyncEventIn */
+    SyncEventIn: {
+      /**
+       * Event Id
+       * Format: uuid
+       */
+      event_id: string
+      /**
+       * Type
+       * @enum {string}
+       */
+      type:
+        | 'trip_acknowledged'
+        | 'load_checked'
+        | 'trip_loaded'
+        | 'shortfall_reported'
+        | 'arrived'
+        | 'outcome_recorded'
+        | 'note_added'
+      entity: components['schemas']['EntityRef']
+      /** Plan Version Id */
+      plan_version_id?: string | null
+      /**
+       * Event Time
+       * Format: date-time
+       */
+      event_time: string
+      /** Seq */
+      seq?: number | null
+      /** Payload */
+      payload?: {
+        [key: string]: unknown
+      }
+    }
+    /** SyncIn */
+    SyncIn: {
+      /** Device Id */
+      device_id: string
+      /** Events */
+      events: components['schemas']['SyncEventIn'][]
+    }
+    /** SyncOut */
+    SyncOut: {
+      /** Results */
+      results: components['schemas']['SyncResultOut'][]
+      /**
+       * Server Time
+       * Format: date-time
+       */
+      server_time: string
+    }
+    /** SyncResultOut */
+    SyncResultOut: {
+      /**
+       * Event Id
+       * Format: uuid
+       */
+      event_id: string
+      /**
+       * Status
+       * @enum {string}
+       */
+      status: 'accepted' | 'duplicate' | 'conflict' | 'rejected'
+      /** Conflict Id */
+      conflict_id?: string | null
+      /** Code */
+      code?: string | null
+      /** Rule Id */
+      rule_id?: string | null
+      /** Detail */
+      detail?: string | null
     }
     /** TokenOut */
     TokenOut: {
@@ -1035,6 +1310,36 @@ export interface components {
       /** Protected Outlets */
       protected_outlets?: string[]
     }
+    /** TripView */
+    TripView: {
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string
+      /** Trip No */
+      trip_no: number
+      /** Lane */
+      lane: string
+      /** Brand */
+      brand: string
+      /** District */
+      district: string
+      /** Planned Depart */
+      planned_depart: string | null
+      /** Plan Minutes */
+      plan_minutes: number
+      /** Weight Kg */
+      weight_kg: number
+      /** Volume M3 */
+      volume_m3: number
+      /** On Hold */
+      on_hold: boolean
+      /** Hold Shortfall Id */
+      hold_shortfall_id: string | null
+      /** Stops */
+      stops: components['schemas']['StopView'][]
+    }
     /** UserOut */
     UserOut: {
       /**
@@ -1072,6 +1377,46 @@ export interface components {
       input?: unknown
       /** Context */
       ctx?: Record<string, never>
+    }
+    /** VehicleTodayOut */
+    VehicleTodayOut: {
+      /** Vehicle Code */
+      vehicle_code: string
+      /** Vehicle Type */
+      vehicle_type: string
+      /** Vehicle Temp */
+      vehicle_temp: string
+      /**
+       * Operating Date
+       * Format: date
+       */
+      operating_date: string
+      /**
+       * Server Time
+       * Format: date-time
+       */
+      server_time: string
+      version: components['schemas']['VersionView'] | null
+      /** Trips */
+      trips: components['schemas']['TripView'][]
+    }
+    /** VersionView */
+    VersionView: {
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string
+      /** Number */
+      number: number
+      /** Published At */
+      published_at: string | null
+      /** Change Reason */
+      change_reason: string | null
+      /** Acknowledged */
+      acknowledged: boolean
+      /** Acked At */
+      acked_at: string | null
     }
     /** ViolationOut */
     ViolationOut: {
@@ -1813,6 +2158,103 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['PlanOut']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  sync_api_v1_sync_post: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['SyncIn']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['SyncOut']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  bootstrap_api_v1_sync_bootstrap_get: {
+    parameters: {
+      query?: {
+        date?: string | null
+      }
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['BootstrapOut']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  vehicle_today_api_v1_vehicles__code__today_get: {
+    parameters: {
+      query?: {
+        date?: string | null
+      }
+      header?: never
+      path: {
+        code: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['VehicleTodayOut']
         }
       }
       /** @description Validation Error */
