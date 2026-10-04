@@ -79,13 +79,13 @@ export function PublishDialog({
         CHECKS
       </div>
       {checks.map(([text, ok]) => (
-        <div key={text} className="flex items-center gap-2 px-5 py-2">
+        <div key={text} className="flex items-center gap-2.5 px-5 py-2">
           <FigmaIcon name={ok ? 'check' : 'alert'} />
           <span>{text}</span>
         </div>
       ))}
       {warnings > 0 && (
-        <div className="flex gap-2 px-5 py-2 text-warning-fg">
+        <div className="flex gap-2.5 px-5 py-2 text-warning-fg">
           <FigmaIcon name="alert" />
           <span>{warnings} stops likely late (realistic clock)</span>
         </div>

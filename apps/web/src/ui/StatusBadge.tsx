@@ -35,9 +35,17 @@ export function StatusBadge({
 }: {
   status: Status
   label?: string
-  variant?: 'figma'
+  variant?: 'figma' | 'text'
 }) {
   const style = STYLES[status]
+  if (variant === 'text')
+    return (
+      <span
+        className={`text-sm leading-[18px] font-semibold ${style.className.split(' ').find((c) => c.startsWith('text-'))}`}
+      >
+        {label ?? style.label}
+      </span>
+    )
   return (
     <span
       className={`inline-flex items-center rounded-sm text-xs font-semibold ${variant === 'figma' ? `gap-1.5 py-[3px] pl-[7px] pr-2 leading-4 ${status === 'pending_sync' ? 'border border-dashed border-line-strong bg-surface text-secondary' : style.className}` : `gap-1 px-2 py-0.5 ${style.className}`}`}
