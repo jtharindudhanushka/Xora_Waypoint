@@ -73,6 +73,57 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  '/api/v1/ops/{operating_date}': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Get Ops */
+    get: operations['get_ops_api_v1_ops__operating_date__get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/v1/exceptions': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Get Exceptions */
+    get: operations['get_exceptions_api_v1_exceptions_get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/v1/exceptions/{identifier}/apply-fix': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Apply Fix */
+    post: operations['apply_fix_api_v1_exceptions__identifier__apply_fix_post']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   '/api/v1/stream': {
     parameters: {
       query?: never
@@ -371,6 +422,49 @@ export interface components {
        */
       notice_language: string
     }
+    /** ExceptionOut */
+    ExceptionOut: {
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string
+      /** Kind */
+      kind: string
+      /** Impact */
+      impact: number
+      /** Title */
+      title: string
+      /** Detail */
+      detail: string | null
+      /** Entity Type */
+      entity_type: string
+      /** Entity Id */
+      entity_id: string
+      /** Suggested Fix */
+      suggested_fix: {
+        [key: string]: unknown
+      }
+      /** Status */
+      status: string
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string
+    }
+    /** FixOut */
+    FixOut: {
+      /**
+       * Exception Id
+       * Format: uuid
+       */
+      exception_id: string
+      /** Status */
+      status: string
+      /** Version Id */
+      version_id?: string | null
+    }
     /** FleetOut */
     FleetOut: {
       /** Vehicle Code */
@@ -434,6 +528,75 @@ export interface components {
       email: string
       /** Password */
       password: string
+    }
+    /** OpsOut */
+    OpsOut: {
+      /**
+       * Operating Date
+       * Format: date
+       */
+      operating_date: string
+      /** Depot */
+      depot: string
+      /**
+       * Version Id
+       * Format: uuid
+       */
+      version_id: string
+      /** Number */
+      number: number
+      /** Delivered */
+      delivered: number
+      /** Stops Total */
+      stops_total: number
+      /** On Time */
+      on_time: number
+      /** Pending Sync */
+      pending_sync: number
+      /** Exceptions */
+      exceptions: components['schemas']['ExceptionOut'][]
+      /** Trips */
+      trips: components['schemas']['OpsTripOut'][]
+    }
+    /** OpsStopOut */
+    OpsStopOut: {
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string
+      /** Seq */
+      seq: number
+      /** Outlet Code */
+      outlet_code: string
+      /** Status */
+      status: string
+      /** Likely From */
+      likely_from: string | null
+      /** Likely To */
+      likely_to: string | null
+      /** Actual At */
+      actual_at: string | null
+      /** Top Up Cases */
+      top_up_cases: number
+    }
+    /** OpsTripOut */
+    OpsTripOut: {
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string
+      /** Vehicle Code */
+      vehicle_code: string
+      /** Trip No */
+      trip_no: number
+      /** District */
+      district: string
+      /** Brand */
+      brand: string
+      /** Stops */
+      stops: components['schemas']['OpsStopOut'][]
     }
     /** PlanOut */
     PlanOut: {
@@ -897,6 +1060,99 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['ClockOut']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  get_ops_api_v1_ops__operating_date__get: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        operating_date: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['OpsOut']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  get_exceptions_api_v1_exceptions_get: {
+    parameters: {
+      query?: {
+        status?: 'open' | 'resolved'
+      }
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ExceptionOut'][]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  apply_fix_api_v1_exceptions__identifier__apply_fix_post: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        identifier: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['FixOut']
         }
       }
       /** @description Validation Error */

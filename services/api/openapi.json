@@ -162,6 +162,158 @@
         ]
       }
     },
+    "/api/v1/ops/{operating_date}": {
+      "get": {
+        "tags": [
+          "operations"
+        ],
+        "summary": "Get Ops",
+        "operationId": "get_ops_api_v1_ops__operating_date__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "operating_date",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "title": "Operating Date"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OpsOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/exceptions": {
+      "get": {
+        "tags": [
+          "operations"
+        ],
+        "summary": "Get Exceptions",
+        "operationId": "get_exceptions_api_v1_exceptions_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": [
+                "open",
+                "resolved"
+              ],
+              "type": "string",
+              "default": "open",
+              "title": "Status"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ExceptionOut"
+                  },
+                  "title": "Response Get Exceptions Api V1 Exceptions Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/exceptions/{identifier}/apply-fix": {
+      "post": {
+        "tags": [
+          "operations"
+        ],
+        "summary": "Apply Fix",
+        "operationId": "apply_fix_api_v1_exceptions__identifier__apply_fix_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "identifier",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Identifier"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FixOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/stream": {
       "get": {
         "tags": [
@@ -1068,6 +1220,105 @@
         ],
         "title": "DeferralOut"
       },
+      "ExceptionOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "kind": {
+            "type": "string",
+            "title": "Kind"
+          },
+          "impact": {
+            "type": "number",
+            "title": "Impact"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "detail": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Detail"
+          },
+          "entity_type": {
+            "type": "string",
+            "title": "Entity Type"
+          },
+          "entity_id": {
+            "type": "string",
+            "title": "Entity Id"
+          },
+          "suggested_fix": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Suggested Fix"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "kind",
+          "impact",
+          "title",
+          "detail",
+          "entity_type",
+          "entity_id",
+          "suggested_fix",
+          "status",
+          "created_at"
+        ],
+        "title": "ExceptionOut"
+      },
+      "FixOut": {
+        "properties": {
+          "exception_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Exception Id"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "version_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Version Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "exception_id",
+          "status"
+        ],
+        "title": "FixOut"
+      },
       "FleetOut": {
         "properties": {
           "vehicle_code": {
@@ -1241,6 +1492,187 @@
           "password"
         ],
         "title": "LoginRequest"
+      },
+      "OpsOut": {
+        "properties": {
+          "operating_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Operating Date"
+          },
+          "depot": {
+            "type": "string",
+            "title": "Depot"
+          },
+          "version_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Version Id"
+          },
+          "number": {
+            "type": "integer",
+            "title": "Number"
+          },
+          "delivered": {
+            "type": "integer",
+            "title": "Delivered"
+          },
+          "stops_total": {
+            "type": "integer",
+            "title": "Stops Total"
+          },
+          "on_time": {
+            "type": "integer",
+            "title": "On Time"
+          },
+          "pending_sync": {
+            "type": "integer",
+            "title": "Pending Sync"
+          },
+          "exceptions": {
+            "items": {
+              "$ref": "#/components/schemas/ExceptionOut"
+            },
+            "type": "array",
+            "title": "Exceptions"
+          },
+          "trips": {
+            "items": {
+              "$ref": "#/components/schemas/OpsTripOut"
+            },
+            "type": "array",
+            "title": "Trips"
+          }
+        },
+        "type": "object",
+        "required": [
+          "operating_date",
+          "depot",
+          "version_id",
+          "number",
+          "delivered",
+          "stops_total",
+          "on_time",
+          "pending_sync",
+          "exceptions",
+          "trips"
+        ],
+        "title": "OpsOut"
+      },
+      "OpsStopOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "seq": {
+            "type": "integer",
+            "title": "Seq"
+          },
+          "outlet_code": {
+            "type": "string",
+            "title": "Outlet Code"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "likely_from": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Likely From"
+          },
+          "likely_to": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Likely To"
+          },
+          "actual_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Actual At"
+          },
+          "top_up_cases": {
+            "type": "integer",
+            "title": "Top Up Cases"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "seq",
+          "outlet_code",
+          "status",
+          "likely_from",
+          "likely_to",
+          "actual_at",
+          "top_up_cases"
+        ],
+        "title": "OpsStopOut"
+      },
+      "OpsTripOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "vehicle_code": {
+            "type": "string",
+            "title": "Vehicle Code"
+          },
+          "trip_no": {
+            "type": "integer",
+            "title": "Trip No"
+          },
+          "district": {
+            "type": "string",
+            "title": "District"
+          },
+          "brand": {
+            "type": "string",
+            "title": "Brand"
+          },
+          "stops": {
+            "items": {
+              "$ref": "#/components/schemas/OpsStopOut"
+            },
+            "type": "array",
+            "title": "Stops"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "vehicle_code",
+          "trip_no",
+          "district",
+          "brand",
+          "stops"
+        ],
+        "title": "OpsTripOut"
       },
       "PlanOut": {
         "properties": {

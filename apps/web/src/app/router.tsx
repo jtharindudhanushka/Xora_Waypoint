@@ -4,6 +4,7 @@ import { LoginPage } from '../features/auth/LoginPage'
 import { RoleHome } from '../features/placeholder/RoleHome'
 import { PlanWorkspace } from '../features/dispatch/planning/PlanWorkspace'
 import { ShortfallWorkspace } from '../features/dispatch/repair/ShortfallWorkspace'
+import { LiveOpsWorkspace } from '../features/dispatch/ops/LiveOpsWorkspace'
 import { DesktopShell } from './DesktopShell'
 import { HomeRedirect, RequireRole } from './guards'
 import { PhoneShell } from './PhoneShell'
@@ -27,12 +28,7 @@ export const router = createBrowserRouter([
       },
       {
         path: 'ops',
-        element: (
-          <RoleHome
-            title="Live operations"
-            screens={['D5 Live ops', 'D10 Store report', 'D13 Reconcile']}
-          />
-        ),
+        element: <LiveOpsWorkspace />,
       },
     ],
   },
