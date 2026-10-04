@@ -42,7 +42,7 @@ export function FleetTab({ plan, date }: { plan: Plan; date: string }) {
           {(fleet.error ?? actions.switchFleet.error ?? actions.generate.error)?.message}
         </p>
       )}
-      <div className="grid grid-cols-[56px_150px_200px_220px_160px_1fr] gap-4 border-b border-line bg-canvas px-6 py-2 text-[11px] font-semibold tracking-[0.44px] text-secondary">
+      <div className="grid grid-cols-[56px_150px_200px_220px_160px_1fr] gap-4 border-b border-line bg-canvas px-6 py-2 text-[11px] leading-[14px] font-semibold tracking-[0.66px] text-secondary uppercase">
         {['', 'Vehicle', 'Capacity', 'Fuel this week', 'Status', 'Planned'].map((s) => (
           <span key={s}>{s}</span>
         ))}
@@ -77,19 +77,23 @@ export function FleetTab({ plan, date }: { plan: Plan; date: string }) {
               {v.temp === 'reefer' ? 'Reefer' : 'Dry'} {v.type === 'van' ? 'van' : 'truck'}
             </div>
           </div>
-          <div className="font-mono text-[13px]">
+          <div
+            className={`font-mono text-[11px] leading-[14px] tracking-[0.22px] ${v.status === 'workshop' ? 'text-tertiary' : ''}`}
+          >
             {v.volume_cap_m3.toFixed(1)} m³ · {v.weight_cap_kg.toLocaleString('en-GB')} kg
           </div>
           <div>
-            <div className="font-mono text-[13px]">
+            <div
+              className={`font-mono text-[11px] leading-[14px] tracking-[0.22px] ${v.status === 'workshop' ? 'text-tertiary' : ''}`}
+            >
               {v.status === 'workshop'
                 ? '—'
                 : `${v.fuel_used_l.toFixed(0)} / ${(v.fuel_used_l + v.fuel_remaining_l).toFixed(0)} L`}
             </div>
             {v.status !== 'workshop' && (
-              <div className="mt-1.5 h-1 w-[180px] rounded-[1px] bg-sunken">
+              <div className="mt-1 h-1 w-[180px] bg-line">
                 <div
-                  className="h-full bg-line-strong"
+                  className="h-full bg-inverse"
                   style={{
                     width: `${(v.fuel_used_l / (v.fuel_used_l + v.fuel_remaining_l || 1)) * 100}%`,
                   }}
@@ -99,6 +103,7 @@ export function FleetTab({ plan, date }: { plan: Plan; date: string }) {
           </div>
           <div>
             <StatusBadge
+              variant="text"
               status={
                 v.status === 'workshop' ? 'workshop' : v.switched_on ? 'available' : 'switched_off'
               }
@@ -111,7 +116,7 @@ export function FleetTab({ plan, date }: { plan: Plan; date: string }) {
               }
             />
           </div>
-          <div className="text-secondary">
+          <div className="font-mono text-[11px] leading-[14px] tracking-[0.22px]">
             {plan.trips
               .filter((t) => t.vehicle_code === v.vehicle_code)
               .map((t) => `T${t.trip_no}`)

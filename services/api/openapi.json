@@ -162,6 +162,320 @@
         ]
       }
     },
+    "/api/v1/ops/{operating_date}": {
+      "get": {
+        "tags": [
+          "operations"
+        ],
+        "summary": "Get Ops",
+        "operationId": "get_ops_api_v1_ops__operating_date__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "operating_date",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "title": "Operating Date"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OpsOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/exceptions": {
+      "get": {
+        "tags": [
+          "operations"
+        ],
+        "summary": "Get Exceptions",
+        "operationId": "get_exceptions_api_v1_exceptions_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": [
+                "open",
+                "resolved"
+              ],
+              "type": "string",
+              "default": "open",
+              "title": "Status"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ExceptionOut"
+                  },
+                  "title": "Response Get Exceptions Api V1 Exceptions Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/exceptions/{identifier}/apply-fix": {
+      "post": {
+        "tags": [
+          "operations"
+        ],
+        "summary": "Apply Fix",
+        "operationId": "apply_fix_api_v1_exceptions__identifier__apply_fix_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "identifier",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Identifier"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FixOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/issues": {
+      "get": {
+        "tags": [
+          "issues"
+        ],
+        "summary": "List Issues",
+        "operationId": "list_issues_api_v1_issues_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": [
+                "open",
+                "resolved"
+              ],
+              "type": "string",
+              "default": "open",
+              "title": "Status"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/app__modules__issues__schemas__IssueOut"
+                  },
+                  "title": "Response List Issues Api V1 Issues Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/issues/{identifier}": {
+      "get": {
+        "tags": [
+          "issues"
+        ],
+        "summary": "Get Issue",
+        "operationId": "get_issue_api_v1_issues__identifier__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "identifier",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Identifier"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/app__modules__issues__schemas__IssueOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/issues/{identifier}/resolve": {
+      "post": {
+        "tags": [
+          "issues"
+        ],
+        "summary": "Resolve",
+        "operationId": "resolve_api_v1_issues__identifier__resolve_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "identifier",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Identifier"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResolveIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/app__modules__issues__schemas__IssueOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/stream": {
       "get": {
         "tags": [
@@ -1665,7 +1979,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/IssueOut"
+                  "$ref": "#/components/schemas/app__modules__receipts__schemas__IssueOut"
                 }
               }
             }
@@ -2128,6 +2442,105 @@
         ],
         "title": "EntityRef"
       },
+      "ExceptionOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "kind": {
+            "type": "string",
+            "title": "Kind"
+          },
+          "impact": {
+            "type": "number",
+            "title": "Impact"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "detail": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Detail"
+          },
+          "entity_type": {
+            "type": "string",
+            "title": "Entity Type"
+          },
+          "entity_id": {
+            "type": "string",
+            "title": "Entity Id"
+          },
+          "suggested_fix": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Suggested Fix"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "kind",
+          "impact",
+          "title",
+          "detail",
+          "entity_type",
+          "entity_id",
+          "suggested_fix",
+          "status",
+          "created_at"
+        ],
+        "title": "ExceptionOut"
+      },
+      "FixOut": {
+        "properties": {
+          "exception_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Exception Id"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "version_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Version Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "exception_id",
+          "status"
+        ],
+        "title": "FixOut"
+      },
       "FleetOut": {
         "properties": {
           "vehicle_code": {
@@ -2261,40 +2674,70 @@
         ],
         "title": "IssueIn"
       },
-      "IssueOut": {
+      "IssueItemOut": {
         "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid",
-            "title": "Id"
+          "product_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Product Id"
           },
-          "order_ref": {
+          "name": {
             "type": "string",
-            "title": "Order Ref"
+            "title": "Name"
           },
-          "kind": {
-            "type": "string",
-            "title": "Kind",
-            "default": "store_report"
+          "driver_qty": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Driver Qty"
           },
-          "status": {
-            "type": "string",
-            "title": "Status"
+          "problem": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Problem"
           },
-          "receipt_id": {
-            "type": "string",
-            "format": "uuid",
-            "title": "Receipt Id"
+          "problem_qty": {
+            "type": "integer",
+            "title": "Problem Qty"
+          },
+          "photo_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Photo Url"
           }
         },
         "type": "object",
         "required": [
-          "id",
-          "order_ref",
-          "status",
-          "receipt_id"
+          "product_id",
+          "name",
+          "driver_qty",
+          "problem",
+          "problem_qty"
         ],
-        "title": "IssueOut"
+        "title": "IssueItemOut"
       },
       "IssuePreviewOut": {
         "properties": {
@@ -2522,6 +2965,187 @@
           "acked_at"
         ],
         "title": "NotificationOut"
+      },
+      "OpsOut": {
+        "properties": {
+          "operating_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Operating Date"
+          },
+          "depot": {
+            "type": "string",
+            "title": "Depot"
+          },
+          "version_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Version Id"
+          },
+          "number": {
+            "type": "integer",
+            "title": "Number"
+          },
+          "delivered": {
+            "type": "integer",
+            "title": "Delivered"
+          },
+          "stops_total": {
+            "type": "integer",
+            "title": "Stops Total"
+          },
+          "on_time": {
+            "type": "integer",
+            "title": "On Time"
+          },
+          "pending_sync": {
+            "type": "integer",
+            "title": "Pending Sync"
+          },
+          "exceptions": {
+            "items": {
+              "$ref": "#/components/schemas/ExceptionOut"
+            },
+            "type": "array",
+            "title": "Exceptions"
+          },
+          "trips": {
+            "items": {
+              "$ref": "#/components/schemas/OpsTripOut"
+            },
+            "type": "array",
+            "title": "Trips"
+          }
+        },
+        "type": "object",
+        "required": [
+          "operating_date",
+          "depot",
+          "version_id",
+          "number",
+          "delivered",
+          "stops_total",
+          "on_time",
+          "pending_sync",
+          "exceptions",
+          "trips"
+        ],
+        "title": "OpsOut"
+      },
+      "OpsStopOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "seq": {
+            "type": "integer",
+            "title": "Seq"
+          },
+          "outlet_code": {
+            "type": "string",
+            "title": "Outlet Code"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "likely_from": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Likely From"
+          },
+          "likely_to": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Likely To"
+          },
+          "actual_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Actual At"
+          },
+          "top_up_cases": {
+            "type": "integer",
+            "title": "Top Up Cases"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "seq",
+          "outlet_code",
+          "status",
+          "likely_from",
+          "likely_to",
+          "actual_at",
+          "top_up_cases"
+        ],
+        "title": "OpsStopOut"
+      },
+      "OpsTripOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "vehicle_code": {
+            "type": "string",
+            "title": "Vehicle Code"
+          },
+          "trip_no": {
+            "type": "integer",
+            "title": "Trip No"
+          },
+          "district": {
+            "type": "string",
+            "title": "District"
+          },
+          "brand": {
+            "type": "string",
+            "title": "Brand"
+          },
+          "stops": {
+            "items": {
+              "$ref": "#/components/schemas/OpsStopOut"
+            },
+            "type": "array",
+            "title": "Stops"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "vehicle_code",
+          "trip_no",
+          "district",
+          "brand",
+          "stops"
+        ],
+        "title": "OpsTripOut"
       },
       "OrderCheckIn": {
         "properties": {
@@ -3411,6 +4035,39 @@
         ],
         "title": "RepairStopOut"
       },
+      "ResolveIn": {
+        "properties": {
+          "resolution": {
+            "type": "string",
+            "enum": [
+              "redeliver",
+              "credit",
+              "reject",
+              "driver_stands",
+              "store_stands",
+              "recount"
+            ],
+            "title": "Resolution"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 2000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          }
+        },
+        "type": "object",
+        "required": [
+          "resolution"
+        ],
+        "title": "ResolveIn"
+      },
       "ServeInsteadIn": {
         "properties": {
           "confirm": {
@@ -3674,6 +4331,14 @@
             "type": "integer",
             "title": "Planned Cases"
           },
+          "weight_kg": {
+            "type": "number",
+            "title": "Weight Kg"
+          },
+          "volume_m3": {
+            "type": "number",
+            "title": "Volume M3"
+          },
           "top_up_of_order_ref": {
             "anyOf": [
               {
@@ -3709,6 +4374,8 @@
           "order_ref",
           "temp_requirement",
           "planned_cases",
+          "weight_kg",
+          "volume_m3",
           "lines"
         ],
         "title": "StopOrderView"
@@ -3932,6 +4599,18 @@
             ],
             "title": "Store Note"
           },
+          "store_note_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Store Note At"
+          },
           "arrived_at": {
             "anyOf": [
               {
@@ -3983,6 +4662,7 @@
           "access_note",
           "contact_name",
           "store_note",
+          "store_note_at",
           "arrived_at",
           "outcome",
           "orders"
@@ -4226,6 +4906,40 @@
               }
             ],
             "title": "Detail"
+          },
+          "driver_qty": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Driver Qty"
+          },
+          "store_qty": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Store Qty"
+          },
+          "store_time": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Store Time"
           }
         },
         "type": "object",
@@ -4902,6 +5616,308 @@
           "context"
         ],
         "title": "ViolationOut"
+      },
+      "app__modules__issues__schemas__IssueOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "kind": {
+            "type": "string",
+            "title": "Kind"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "order_ref": {
+            "type": "string",
+            "title": "Order Ref"
+          },
+          "outlet_code": {
+            "type": "string",
+            "title": "Outlet Code"
+          },
+          "district": {
+            "type": "string",
+            "title": "District"
+          },
+          "temp_requirement": {
+            "type": "string",
+            "title": "Temp Requirement"
+          },
+          "vehicle_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Vehicle Code"
+          },
+          "driver_record_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Driver Record Id"
+          },
+          "driver_recorded_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Driver Recorded At"
+          },
+          "driver_uploaded_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Driver Uploaded At"
+          },
+          "driver_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Driver Name"
+          },
+          "driver_photo_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Driver Photo Url"
+          },
+          "store_recorded_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Store Recorded At"
+          },
+          "store_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Store Name"
+          },
+          "store_photo_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Store Photo Url"
+          },
+          "opened_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Opened At"
+          },
+          "driver_qty": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Driver Qty"
+          },
+          "store_qty": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Store Qty"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/IssueItemOut"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "affected_cases": {
+            "type": "integer",
+            "title": "Affected Cases"
+          },
+          "next_run": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Run"
+          },
+          "window_open": {
+            "type": "string",
+            "format": "time",
+            "title": "Window Open"
+          },
+          "window_close": {
+            "type": "string",
+            "format": "time",
+            "title": "Window Close"
+          },
+          "recount_due": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Recount Due"
+          },
+          "resolution": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Resolution"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          },
+          "resolved_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Resolved At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "kind",
+          "status",
+          "order_ref",
+          "outlet_code",
+          "district",
+          "temp_requirement",
+          "vehicle_code",
+          "driver_record_id",
+          "driver_recorded_at",
+          "driver_uploaded_at",
+          "driver_name",
+          "driver_photo_url",
+          "store_recorded_at",
+          "store_name",
+          "store_photo_url",
+          "opened_at",
+          "driver_qty",
+          "store_qty",
+          "items",
+          "affected_cases",
+          "next_run",
+          "window_open",
+          "window_close",
+          "recount_due",
+          "resolution",
+          "note",
+          "resolved_at"
+        ],
+        "title": "IssueOut"
+      },
+      "app__modules__receipts__schemas__IssueOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "order_ref": {
+            "type": "string",
+            "title": "Order Ref"
+          },
+          "kind": {
+            "type": "string",
+            "title": "Kind",
+            "default": "store_report"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "receipt_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Receipt Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "order_ref",
+          "status",
+          "receipt_id"
+        ],
+        "title": "IssueOut"
       }
     },
     "securitySchemes": {

@@ -6,6 +6,8 @@ from datetime import UTC, datetime, time
 import pytest
 from sqlalchemy import select
 
+from app.core.clock import Clock
+from app.core.deps import DbDep, get_clock
 from app.models import ClockSetting, Order, OutletProfile, User
 from app.modules.loading.models import Hold, Shortfall
 from app.modules.planning.models import PlanVersion, Trip
@@ -71,8 +73,16 @@ def shortfall_data(client, session_maker, request):
                 created_at=report_time,
             )
         )
-        db.get(ClockSetting, 1).demo_now = datetime(2026, 4, 6, 22, 49, tzinfo=UTC)
+        setting = db.get(ClockSetting, 1)
+        setting.demo_now = datetime(2026, 4, 6, 22, 49, tzinfo=UTC)
+        anchor = datetime(2026, 10, 4, 12, tzinfo=UTC)
+        setting.set_at = anchor
         db.commit()
+
+        def frozen_clock(db: DbDep) -> Clock:
+            return Clock(db, real_now=lambda: anchor)
+
+        client.app.dependency_overrides[get_clock] = frozen_clock
         return str(shortfall.id), str(source.id), plan["id"]
 
 
@@ -266,7 +276,6 @@ def test_br27_repair_preserves_other_active_holds(client, shortfall_data, sessio
 
 @pytest.mark.asyncio
 async def test_br30_repair_publishes_scoped_sse(client, shortfall_data, session_maker):
-    from app.core.clock import Clock
     from app.modules.repair import service
     from app.modules.repair.repository import Repository
     from app.modules.stream.broker import broker
@@ -283,7 +292,7 @@ async def test_br30_repair_publishes_scoped_sse(client, shortfall_data, session_
             version = await service.apply(
                 Repository(db, "TestDepot"),
                 user,
-                Clock(db),
+                client.app.dependency_overrides[get_clock](db),
                 uuid.UUID(shortfall_data[0]),
                 option_id,
             )

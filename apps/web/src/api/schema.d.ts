@@ -73,6 +73,108 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  '/api/v1/ops/{operating_date}': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Get Ops */
+    get: operations['get_ops_api_v1_ops__operating_date__get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/v1/exceptions': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Get Exceptions */
+    get: operations['get_exceptions_api_v1_exceptions_get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/v1/exceptions/{identifier}/apply-fix': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Apply Fix */
+    post: operations['apply_fix_api_v1_exceptions__identifier__apply_fix_post']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/v1/issues': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** List Issues */
+    get: operations['list_issues_api_v1_issues_get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/v1/issues/{identifier}': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Get Issue */
+    get: operations['get_issue_api_v1_issues__identifier__get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/v1/issues/{identifier}/resolve': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Resolve */
+    post: operations['resolve_api_v1_issues__identifier__resolve_post']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   '/api/v1/stream': {
     parameters: {
       query?: never
@@ -745,6 +847,49 @@ export interface components {
       /** Id */
       id: string
     }
+    /** ExceptionOut */
+    ExceptionOut: {
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string
+      /** Kind */
+      kind: string
+      /** Impact */
+      impact: number
+      /** Title */
+      title: string
+      /** Detail */
+      detail: string | null
+      /** Entity Type */
+      entity_type: string
+      /** Entity Id */
+      entity_id: string
+      /** Suggested Fix */
+      suggested_fix: {
+        [key: string]: unknown
+      }
+      /** Status */
+      status: string
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string
+    }
+    /** FixOut */
+    FixOut: {
+      /**
+       * Exception Id
+       * Format: uuid
+       */
+      exception_id: string
+      /** Status */
+      status: string
+      /** Version Id */
+      version_id?: string | null
+    }
     /** FleetOut */
     FleetOut: {
       /** Vehicle Code */
@@ -795,27 +940,20 @@ export interface components {
       /** Lines */
       lines: components['schemas']['ProblemLineIn'][]
     }
-    /** IssueOut */
-    IssueOut: {
-      /**
-       * Id
-       * Format: uuid
-       */
-      id: string
-      /** Order Ref */
-      order_ref: string
-      /**
-       * Kind
-       * @default store_report
-       */
-      kind: string
-      /** Status */
-      status: string
-      /**
-       * Receipt Id
-       * Format: uuid
-       */
-      receipt_id: string
+    /** IssueItemOut */
+    IssueItemOut: {
+      /** Product Id */
+      product_id: string | null
+      /** Name */
+      name: string
+      /** Driver Qty */
+      driver_qty: number | null
+      /** Problem */
+      problem: string | null
+      /** Problem Qty */
+      problem_qty: number
+      /** Photo Url */
+      photo_url?: string | null
     }
     /** IssuePreviewOut */
     IssuePreviewOut: {
@@ -908,6 +1046,75 @@ export interface components {
        * @default First in line (moved once)
        */
       protection: string
+    }
+    /** OpsOut */
+    OpsOut: {
+      /**
+       * Operating Date
+       * Format: date
+       */
+      operating_date: string
+      /** Depot */
+      depot: string
+      /**
+       * Version Id
+       * Format: uuid
+       */
+      version_id: string
+      /** Number */
+      number: number
+      /** Delivered */
+      delivered: number
+      /** Stops Total */
+      stops_total: number
+      /** On Time */
+      on_time: number
+      /** Pending Sync */
+      pending_sync: number
+      /** Exceptions */
+      exceptions: components['schemas']['ExceptionOut'][]
+      /** Trips */
+      trips: components['schemas']['OpsTripOut'][]
+    }
+    /** OpsStopOut */
+    OpsStopOut: {
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string
+      /** Seq */
+      seq: number
+      /** Outlet Code */
+      outlet_code: string
+      /** Status */
+      status: string
+      /** Likely From */
+      likely_from: string | null
+      /** Likely To */
+      likely_to: string | null
+      /** Actual At */
+      actual_at: string | null
+      /** Top Up Cases */
+      top_up_cases: number
+    }
+    /** OpsTripOut */
+    OpsTripOut: {
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string
+      /** Vehicle Code */
+      vehicle_code: string
+      /** Trip No */
+      trip_no: number
+      /** District */
+      district: string
+      /** Brand */
+      brand: string
+      /** Stops */
+      stops: components['schemas']['OpsStopOut'][]
     }
     /** OrderCheckIn */
     OrderCheckIn: {
@@ -1248,6 +1455,16 @@ export interface components {
        */
       window_close: string
     }
+    /** ResolveIn */
+    ResolveIn: {
+      /**
+       * Resolution
+       * @enum {string}
+       */
+      resolution: 'redeliver' | 'credit' | 'reject' | 'driver_stands' | 'store_stands' | 'recount'
+      /** Note */
+      note?: string | null
+    }
     /** ServeInsteadIn */
     ServeInsteadIn: {
       /**
@@ -1357,6 +1574,10 @@ export interface components {
       temp_requirement: string
       /** Planned Cases */
       planned_cases: number
+      /** Weight Kg */
+      weight_kg: number
+      /** Volume M3 */
+      volume_m3: number
       /** Top Up Of Order Ref */
       top_up_of_order_ref?: string | null
       /** Lines */
@@ -1434,6 +1655,8 @@ export interface components {
       contact_name: string | null
       /** Store Note */
       store_note: string | null
+      /** Store Note At */
+      store_note_at: string | null
       /** Arrived At */
       arrived_at: string | null
       /** Outcome */
@@ -1540,6 +1763,12 @@ export interface components {
       rule_id?: string | null
       /** Detail */
       detail?: string | null
+      /** Driver Qty */
+      driver_qty?: number | null
+      /** Store Qty */
+      store_qty?: number | null
+      /** Store Time */
+      store_time?: string | null
     }
     /** TokenOut */
     TokenOut: {
@@ -1775,6 +2004,102 @@ export interface components {
         [key: string]: string | number | boolean | string[]
       }
     }
+    /** IssueOut */
+    app__modules__issues__schemas__IssueOut: {
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string
+      /** Kind */
+      kind: string
+      /** Status */
+      status: string
+      /** Order Ref */
+      order_ref: string
+      /** Outlet Code */
+      outlet_code: string
+      /** District */
+      district: string
+      /** Temp Requirement */
+      temp_requirement: string
+      /** Vehicle Code */
+      vehicle_code: string | null
+      /** Driver Record Id */
+      driver_record_id: string | null
+      /** Driver Recorded At */
+      driver_recorded_at: string | null
+      /** Driver Uploaded At */
+      driver_uploaded_at: string | null
+      /** Driver Name */
+      driver_name: string | null
+      /** Driver Photo Url */
+      driver_photo_url: string | null
+      /** Store Recorded At */
+      store_recorded_at: string | null
+      /** Store Name */
+      store_name: string | null
+      /** Store Photo Url */
+      store_photo_url: string | null
+      /**
+       * Opened At
+       * Format: date-time
+       */
+      opened_at: string
+      /** Driver Qty */
+      driver_qty: number | null
+      /** Store Qty */
+      store_qty: number | null
+      /** Items */
+      items: components['schemas']['IssueItemOut'][]
+      /** Affected Cases */
+      affected_cases: number
+      /** Next Run */
+      next_run: string | null
+      /**
+       * Window Open
+       * Format: time
+       */
+      window_open: string
+      /**
+       * Window Close
+       * Format: time
+       */
+      window_close: string
+      /**
+       * Recount Due
+       * Format: date-time
+       */
+      recount_due: string
+      /** Resolution */
+      resolution: string | null
+      /** Note */
+      note: string | null
+      /** Resolved At */
+      resolved_at: string | null
+    }
+    /** IssueOut */
+    app__modules__receipts__schemas__IssueOut: {
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string
+      /** Order Ref */
+      order_ref: string
+      /**
+       * Kind
+       * @default store_report
+       */
+      kind: string
+      /** Status */
+      status: string
+      /**
+       * Receipt Id
+       * Format: uuid
+       */
+      receipt_id: string
+    }
   }
   responses: never
   parameters: never
@@ -1899,6 +2224,196 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['ClockOut']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  get_ops_api_v1_ops__operating_date__get: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        operating_date: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['OpsOut']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  get_exceptions_api_v1_exceptions_get: {
+    parameters: {
+      query?: {
+        status?: 'open' | 'resolved'
+      }
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ExceptionOut'][]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  apply_fix_api_v1_exceptions__identifier__apply_fix_post: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        identifier: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['FixOut']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  list_issues_api_v1_issues_get: {
+    parameters: {
+      query?: {
+        status?: 'open' | 'resolved'
+      }
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['app__modules__issues__schemas__IssueOut'][]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  get_issue_api_v1_issues__identifier__get: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        identifier: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['app__modules__issues__schemas__IssueOut']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  resolve_api_v1_issues__identifier__resolve_post: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        identifier: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['ResolveIn']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['app__modules__issues__schemas__IssueOut']
         }
       }
       /** @description Validation Error */
@@ -2838,7 +3353,7 @@ export interface operations {
           [name: string]: unknown
         }
         content: {
-          'application/json': components['schemas']['IssueOut']
+          'application/json': components['schemas']['app__modules__receipts__schemas__IssueOut']
         }
       }
       /** @description Validation Error */
