@@ -2712,6 +2712,10 @@
             "type": "string",
             "title": "Outlet Code"
           },
+          "temp_requirement": {
+            "type": "string",
+            "title": "Temp Requirement"
+          },
           "vehicle_code": {
             "anyOf": [
               {
@@ -2793,6 +2797,7 @@
         "required": [
           "order_ref",
           "outlet_code",
+          "temp_requirement",
           "vehicle_code",
           "delivered_at",
           "receiver",
@@ -3410,6 +3415,14 @@
             "format": "uuid",
             "title": "Stop Id"
           },
+          "stop_seq": {
+            "type": "integer",
+            "title": "Stop Seq"
+          },
+          "stop_count": {
+            "type": "integer",
+            "title": "Stop Count"
+          },
           "vehicle_code": {
             "type": "string",
             "title": "Vehicle Code"
@@ -3510,6 +3523,8 @@
         "type": "object",
         "required": [
           "stop_id",
+          "stop_seq",
+          "stop_count",
           "vehicle_code",
           "trip_no",
           "version",

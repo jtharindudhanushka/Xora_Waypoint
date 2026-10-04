@@ -992,6 +992,8 @@ export interface components {
       order_ref: string
       /** Outlet Code */
       outlet_code: string
+      /** Temp Requirement */
+      temp_requirement: string
       /** Vehicle Code */
       vehicle_code: string | null
       /** Delivered At */
@@ -1264,6 +1266,10 @@ export interface components {
        * Format: uuid
        */
       stop_id: string
+      /** Stop Seq */
+      stop_seq: number
+      /** Stop Count */
+      stop_count: number
       /** Vehicle Code */
       vehicle_code: string
       /** Trip No */

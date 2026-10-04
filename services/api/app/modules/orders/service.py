@@ -363,6 +363,8 @@ def tracking(db: Session, order: Order, clock: Clock) -> list[TrackingOut]:
         out.append(
             TrackingOut(
                 stop_id=stop.id,
+                stop_seq=stop.seq,
+                stop_count=len(trip.stops),
                 vehicle_code=trip.vehicle_code,
                 trip_no=trip.trip_no,
                 version=version.number,

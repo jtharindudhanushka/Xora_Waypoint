@@ -47,6 +47,7 @@ class ReceiptDraftLine(BaseModel):
 class ReceiptDraftOut(BaseModel):
     order_ref: str
     outlet_code: str
+    temp_requirement: str
     vehicle_code: str | None
     delivered_at: datetime | None
     receiver: str | None

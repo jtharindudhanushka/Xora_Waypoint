@@ -70,6 +70,7 @@ def draft(db: Session, user: User, clock: Clock, order: Order) -> ReceiptDraftOu
     return ReceiptDraftOut(
         order_ref=order.ref,
         outlet_code=order.outlet_code,
+        temp_requirement=order.temp_requirement,
         vehicle_code=tracks[0].vehicle_code if tracks else None,
         delivered_at=ensure_utc(outcome.event_time).astimezone(COLOMBO) if outcome else None,
         receiver=payload.get("receiver_name"),
