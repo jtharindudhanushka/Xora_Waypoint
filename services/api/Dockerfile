@@ -5,13 +5,13 @@ WORKDIR /app
 
 FROM base AS deps
 COPY services/api/pyproject.toml ./
-COPY packages/engine /engine
-RUN pip install --prefix=/install /engine
+COPY packages/engine /packages/engine
 RUN mkdir app && touch app/__init__.py && pip install --prefix=/install .
 
 FROM base AS runtime
 RUN useradd --create-home --uid 10001 xora
 COPY --from=deps /install /usr/local
+COPY packages/engine /packages/engine
 COPY services/api .
 RUN pip install --no-deps . && chown -R xora:xora /app
 USER xora
