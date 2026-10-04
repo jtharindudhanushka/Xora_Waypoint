@@ -7,7 +7,7 @@ import { NewOrder } from '../features/store/NewOrder'
 import { ReceiptPage } from '../features/store/Receipt'
 import { ReportProblem } from '../features/store/ReportProblem'
 import { DeliveryNotice } from '../features/store/DeliveryNotice'
-import { RoleHome } from '../features/placeholder/RoleHome'
+import { DockPage, DockShell, DockTripPage } from '../features/dock/DockPage'
 import { PlanWorkspace } from '../features/dispatch/planning/PlanWorkspace'
 import { ShortfallWorkspace } from '../features/dispatch/repair/ShortfallWorkspace'
 import { LiveOpsWorkspace } from '../features/dispatch/ops/LiveOpsWorkspace'
@@ -18,7 +18,6 @@ import { StopPage } from '../features/driver/StopPage'
 import { DriverShell, TripPage } from '../features/driver/TripPage'
 import { DesktopShell } from './DesktopShell'
 import { HomeRedirect, RequireRole } from './guards'
-import { PhoneShell } from './PhoneShell'
 
 export const router = createBrowserRouter([
   { path: '/', element: <HomeRedirect /> },
@@ -48,25 +47,12 @@ export const router = createBrowserRouter([
     path: '/dock',
     element: (
       <RequireRole role="loader">
-        <PhoneShell tabs={[{ to: '/dock', label: 'Trips' }]} />
+        <DockShell />
       </RequireRole>
     ),
     children: [
-      {
-        index: true,
-        element: (
-          <RoleHome
-            title="Loading trips"
-            screens={[
-              'L1 Trips',
-              'L2 Load trip',
-              'L3 Report shortfall',
-              'L4 On hold',
-              'L5 Review revision',
-            ]}
-          />
-        ),
-      },
+      { index: true, element: <DockPage /> },
+      { path: 'trips/:id', element: <DockTripPage /> },
     ],
   },
   {
