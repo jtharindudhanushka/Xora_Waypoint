@@ -174,7 +174,13 @@ function NeedsReview({ event }: { event: OutboxEvent }) {
             r?.store_qty != null ? String(r.store_qty) : '—',
           ],
           ['Time', hhmm(event.event_time), hhmm(r?.store_time)],
-          ['Evidence', `Photo ${recordRef(event.event_id)}`, 'Shelf count'],
+          [
+            'Evidence',
+            (event.payload as { photo_taken_at?: string | null }).photo_taken_at
+              ? `Photo ${recordRef(event.event_id)}`
+              : `Record ${recordRef(event.event_id)}`,
+            'Shelf count',
+          ],
         ]
       : [['Reason', r?.detail ?? '', r?.rule_id ?? '']]
   return (

@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { Link, Outlet, useNavigate } from 'react-router-dom'
+import { Link, Outlet, useNavigate, useSearchParams } from 'react-router-dom'
 
 import { enqueue, hhmm, isPending, startSyncLoop, useOutbox } from '../field/outbox'
 import { Caption, FieldButton, FieldHeader, FieldTabBar, Icon, SyncBar } from '../field/ui'
@@ -44,7 +44,9 @@ function slowdown(trip: TripView): string | null {
     .map((s) => {
       const plan = minutes(s.plan_arrival)
       const likely = minutes(s.likely_from)
-      return depart !== null && plan !== null && likely !== null && plan > depart
+      // A window clamped to the store opening says nothing about road speed: skip it.
+      const clamped = likely !== null && likely <= (minutes(s.window_open) ?? -1)
+      return depart !== null && plan !== null && likely !== null && plan > depart && !clamped
         ? (likely - depart) / (plan - depart)
         : null
     })
@@ -75,11 +77,13 @@ export function TripPage() {
   const { data: day, error, isPending: loading } = useVehicleToday()
   const events = useOutbox()
   const navigate = useNavigate()
+  const [params] = useSearchParams()
 
   if (loading) return <Message text="Loading today’s trip…" />
   if (error || !day) return <Message text={error?.message ?? 'No trip today'} />
   const { acked, outcomes } = localState(events)
-  const trip = currentTrip(day, outcomes)
+  const picked = Number(params.get('trip'))
+  const trip = day.trips.find((t) => t.trip_no === picked) ?? currentTrip(day, outcomes)
   if (!day.version || !trip) return <Message text="No published trip for your vehicle today." />
 
   const version = day.version
@@ -184,6 +188,17 @@ export function TripPage() {
           </p>
         </div>
       )}
+      {day.trips
+        .filter((t) => t.id !== trip.id)
+        .map((t) => (
+          <Link
+            key={t.id}
+            to={`/driver?trip=${t.trip_no}`}
+            className="flex w-full items-center gap-2 px-4 py-3 text-sm font-semibold leading-[18px] text-brand-text underline"
+          >
+            Trip {t.trip_no} · {t.district} · departs {time(t.planned_depart)}
+          </Link>
+        ))}
       <div className="flex-1" />
       <div className="w-full px-4 py-3">
         {!isAcked ? (
