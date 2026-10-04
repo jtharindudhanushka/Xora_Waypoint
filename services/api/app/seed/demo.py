@@ -143,9 +143,7 @@ def seed_demo(session: Session, ds: Dataset, demo_start: datetime) -> dict[str, 
         )
 
     # The demo clock runs forward from demo_start, anchored at the real time of seeding.
-    session.merge(
-        ClockSetting(id=1, demo_now=demo_start.astimezone(UTC), set_at=datetime.now(UTC))
-    )
+    session.merge(ClockSetting(id=1, demo_now=demo_start.astimezone(UTC), set_at=datetime.now(UTC)))
     session.flush()
     return {
         "users": len(extras["users"]),
