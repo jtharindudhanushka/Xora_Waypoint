@@ -6,6 +6,8 @@ The brief requires us to explain which work was AI-assisted, which wasn't, and h
 |---|---|---|---|---|
 | 2026-10-04 | Docs / architecture | Claude Code (Anthropic), with the Figma connector | Read the submitted Figma file and video transcript; extracted business rules; drafted the architecture, data model, API contract, engine spec, ADRs and work breakdown | Chose the stack and architecture after comparing options; set scope and team split; reviewed and approved every doc |
 
+| 2026-10-04 | Local workspace setup | Codex (OpenAI) | Read repository instructions and core docs; downloaded the project; copied the organiser pack from waypoint into gitignored datasets/ and verified file hashes and required paths | Requested setup; next implementation scope pending |
+
 ## Not AI-assisted
 - _To be completed by the team (e.g. the original wireframes and flows from the Designathon, decisions made in review)._
 
