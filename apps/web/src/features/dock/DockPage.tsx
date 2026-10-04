@@ -75,6 +75,7 @@ export function DockPage() {
     <>
       <PhoneStatus serverTime={day.server_time} />
       <FieldHeader
+        signOut
         title={`Loading · ${date}`}
         subtitle={`${day.depot} DC · ${day.dock ?? 'Dock'} · Plan v${day.version?.number ?? '—'}`}
       />

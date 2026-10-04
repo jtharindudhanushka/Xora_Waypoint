@@ -37,11 +37,15 @@ export function FieldHeader({
   title,
   subtitle,
   back,
+  signOut = false,
 }: {
   title: string
   subtitle: string
   back?: string
+  /** Show a Sign out action, for field roles without the tab bar (loader). */
+  signOut?: boolean
 }) {
+  const navigate = useNavigate()
   return (
     <header className="flex w-full items-center gap-2 border-b border-line bg-surface px-4 pb-[10px] pt-2">
       {back && (
@@ -53,6 +57,18 @@ export function FieldHeader({
         <p className="truncate text-base leading-5 text-primary">{title}</p>
         <p className="truncate text-sm leading-[18px] text-secondary">{subtitle}</p>
       </div>
+      {signOut && (
+        <button
+          type="button"
+          className="flex h-11 shrink-0 items-center text-sm font-semibold text-brand-text"
+          onClick={() => {
+            setSession(null)
+            navigate('/login')
+          }}
+        >
+          Sign out
+        </button>
+      )}
     </header>
   )
 }
