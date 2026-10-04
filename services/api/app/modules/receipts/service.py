@@ -74,6 +74,7 @@ def draft(db: Session, user: User, clock: Clock, order: Order) -> ReceiptDraftOu
         delivered_at=ensure_utc(outcome.event_time).astimezone(COLOMBO) if outcome else None,
         receiver=payload.get("receiver_name"),
         photo_url=payload.get("photo_url"),
+        driver_event_id=outcome.event_id if outcome else None,
         confirmed=confirmed,
         can_confirm=bool(lines) and all(line.driver_qty is not None for line in lines),
         total_cases=sum(line.driver_qty or 0 for line in lines),
@@ -183,6 +184,7 @@ def confirm(db: Session, user: User, clock: Clock, ref: str, body: ReceiptIn) ->
                 opened_at=clock.now(),
                 driver_qty=sum(driver_counts.values()),
                 store_qty=sum(counts.values()),
+                driver_event_id=view.driver_event_id,
             )
         )
     db.commit()
@@ -215,6 +217,15 @@ def report(db: Session, user: User, clock: Clock, ref: str, body: IssueIn) -> Is
     totals: dict[uuid.UUID, int] = {}
     seen: set[tuple[uuid.UUID, str]] = set()
     for entry in body.lines:
+        if entry.order_line_id is None:
+            product = db.get(Product, entry.product_id) if entry.product_id else None
+            if not product or product.brand != order.brand or entry.problem != "wrong_item":
+                raise DomainError(
+                    "INVALID_EXTRA_ITEM",
+                    "Select a wrong item from this store's catalogue",
+                    rule_id="BR-47",
+                )
+            continue
         line = by_id.get(entry.order_line_id)
         if line is None or (entry.order_line_id, entry.problem) in seen:
             raise DomainError(
@@ -259,7 +270,8 @@ def report(db: Session, user: User, clock: Clock, ref: str, body: IssueIn) -> Is
         opened_at=clock.now(),
         driver_qty=view.total_cases,
         store_qty=receipt.total_cases,
-        store_photo_url=view.photo_url,
+        driver_event_id=view.driver_event_id,
+        store_photo_url=next((entry.photo_url for entry in body.lines if entry.photo_url), None),
     )
     db.add(issue)
     db.flush()
@@ -268,7 +280,9 @@ def report(db: Session, user: User, clock: Clock, ref: str, body: IssueIn) -> Is
             IssueLine(
                 issue_id=issue.id,
                 order_line_id=entry.order_line_id,
-                product_id=by_id[entry.order_line_id].product_id,
+                product_id=by_id[entry.order_line_id].product_id
+                if entry.order_line_id
+                else entry.product_id,
                 problem=entry.problem,
                 qty=entry.qty,
                 photo_url=entry.photo_url,

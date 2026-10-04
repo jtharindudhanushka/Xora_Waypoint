@@ -12,10 +12,12 @@ from sqlalchemy.orm import Session
 from app.core.clock import COLOMBO, Clock, ensure_utc
 from app.core.errors import ConflictError, DomainError, ForbiddenError, NotFoundError
 from app.modules.auth.models import User
-from app.modules.catalog.models import CalendarDay, Outlet, Product, UsualQuantity
+from app.modules.catalog.models import CalendarDay, Outlet, OutletProfile, Product, UsualQuantity
 from app.modules.loading.models import Hold
 from app.modules.ops.models import Notification
+from app.modules.orders.catalogue import CASE_MEASUREMENTS
 from app.modules.orders.models import DriverNote, Order, OrderLine
+from app.modules.orders.notices import PROTECTION, REASONS, SOURCE, TITLE, Language, language_index
 from app.modules.orders.schemas import (
     DriverNoteOut,
     NotificationOut,
@@ -107,9 +109,7 @@ def check(db: Session, user: User, clock: Clock, body: OrderCheckIn) -> OrderChe
     }
     for line in body.lines:
         qty = usual.get(line.product_id)
-        if (
-            qty and line.qty > qty * 3
-        ):  # BR-42; boundary decision pending specification clarification.
+        if qty and line.qty >= qty * 3:  # BR-42: Figma's 60 vs usual 20 is questioned.
             out.warnings.append(
                 QuantityWarning(
                     product_id=line.product_id,
@@ -199,10 +199,47 @@ def submit(db: Session, user: User, clock: Clock, body: OrderSubmitIn) -> list[O
             "SEPARATE_ORDERS", "Submit chilled and dry items as separate orders", rule_id="BR-41"
         )
     if draft is None:
-        raise DomainError(
-            "CATALOGUE_MEASUREMENTS_REQUIRED",
-            "New-order case measurements are not configured; submit a saved draft",
+        if any(line.product_id not in CASE_MEASUREMENTS for line in positive):
+            raise DomainError(
+                "CATALOGUE_MEASUREMENTS_REQUIRED",
+                "Case measurements are not configured for this item",
+            )
+        created = []
+        for chilled in sorted(groups, reverse=True):
+            items = [line for line in positive if products[line.product_id].is_chilled == chilled]
+            order = Order(
+                ref="APP-" + uuid.uuid5(body.request_id, str(chilled)).hex[:16],
+                outlet_code=outlet.code,
+                brand=outlet.brand,
+                temp_requirement="chilled" if chilled else "ambient",
+                delivery_date=checked.delivery_date,
+                units=sum(line.qty for line in items),
+                weight_kg=sum(CASE_MEASUREMENTS[line.product_id][0] * line.qty for line in items),
+                volume_m3=sum(CASE_MEASUREMENTS[line.product_id][1] * line.qty for line in items),
+                status="placed",
+                source="app",
+                placed_at=clock.now(),
+                placed_by=user.id,
+            )
+            db.add(order)
+            db.flush()
+            for item in items:
+                db.add(
+                    OrderLine(order_id=order.id, product_id=item.product_id, qty_ordered=item.qty)
+                )
+            created.append(order)
+        audit(
+            db,
+            user,
+            clock,
+            "order.placed",
+            "outlet",
+            outlet.code,
+            {"refs": [o.ref for o in created], "request": fingerprint},
+            body.request_id,
         )
+        db.commit()
+        return [order_out(db, o, clock) for o in created]
     # Existing S1 aggregate kg/m³ are authoritative, including its corrected 80-case draft.
     existing = {line.product_id: line for line in draft.lines}
     for entry in body.lines:
@@ -218,7 +255,11 @@ def submit(db: Session, user: User, clock: Clock, body: OrderSubmitIn) -> list[O
     for product_id, line in existing.items():
         if product_id not in {x.product_id for x in body.lines}:
             db.delete(line)
-    draft.units = sum(x.qty for x in positive)
+    units = sum(x.qty for x in positive)
+    ratio = units / draft.units
+    draft.weight_kg = float(draft.weight_kg) * ratio
+    draft.volume_m3 = float(draft.volume_m3) * ratio
+    draft.units = units
     draft.delivery_date = checked.delivery_date
     draft.status = "placed"
     draft.placed_at = clock.now()
@@ -416,16 +457,27 @@ def home(db: Session, user: User, clock: Clock) -> StoreHomeOut:
     )
 
 
-def notification_out(db: Session, notice: Notification) -> NotificationOut:
+def notification_out(
+    db: Session, notice: Notification, language: Language | None = None
+) -> NotificationOut:
     order = db.get(Order, notice.order_id) if notice.order_id else None
+    profile = db.get(OutletProfile, notice.outlet_code) if notice.outlet_code else None
+    lang = language or cast(Language, profile.language if profile else notice.lang)
+    index = language_index(lang)
+    body = notice.body
+    if notice.kind == "deferral" and lang != "en":
+        reason = REASONS.get(notice.reason_code or "", REASONS["LOWER_PRIORITY"])[index]
+        body = f"{order.ref if order else ''}: {reason}\n{notice.data.get('next_run', '')}"
     return NotificationOut(
         id=notice.id,
         kind=notice.kind,
         order_ref=order.ref if order else None,
         reason_code=notice.reason_code,
-        lang=notice.lang,
-        title=notice.title,
-        body=notice.body,
+        lang=lang,
+        title=TITLE[index] if notice.kind == "deferral" else notice.title,
+        body=body,
+        source=SOURCE[index],
+        protection=PROTECTION[index],
         next_run=notice.data.get("next_run"),
         created_at=ensure_utc(notice.created_at).astimezone(COLOMBO),
         acked_at=ensure_utc(notice.acked_at).astimezone(COLOMBO) if notice.acked_at else None,

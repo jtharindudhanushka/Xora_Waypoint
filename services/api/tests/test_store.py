@@ -408,3 +408,103 @@ def test_br43_br54_tracking_reads_latest_published_events(client, store_data, se
         assert db.get(Stop, stop_id).status == "planned"
         assert db.get(PlanVersion, version_id).status == "published"
         assert len(list(db.scalars(select(Event)))) == 2
+
+
+@pytest.mark.parametrize("qty, warned", [(59, False), (60, True), (61, True)])
+def test_br42_figma_boundary(client, store_data, qty, warned):
+    response = client.post(
+        "/api/v1/orders/check",
+        headers=auth_header(client, "store_manager"),
+        json={"lines": [{"product_id": "test-milk", "qty": qty}]},
+    )
+    assert bool(response.json()["warnings"]) is warned
+
+
+def test_br41_new_app_orders_split_temperature_and_replay(
+    client, store_data, session_maker, monkeypatch
+):
+    from app.modules.orders.catalogue import CASE_MEASUREMENTS
+
+    monkeypatch.setitem(CASE_MEASUREMENTS, "test-milk", (10, 0.02))
+    monkeypatch.setitem(CASE_MEASUREMENTS, "test-rice", (20, 0.04))
+    request = {
+        "request_id": str(uuid.uuid4()),
+        "lines": [{"product_id": "test-milk", "qty": 5}, {"product_id": "test-rice", "qty": 3}],
+    }
+    headers = auth_header(client, "store_manager")
+    response = client.post("/api/v1/orders", headers=headers, json=request)
+    assert response.status_code == 200, response.text
+    assert {x["temp_requirement"] for x in response.json()} == {"chilled", "ambient"}
+    assert len(response.json()) == 2
+    assert len(client.post("/api/v1/orders", headers=headers, json=request).json()) == 2
+    with session_maker() as db:
+        created = list(db.scalars(select(Order).where(Order.ref.like("APP-%"))))
+        assert len(created) == 2
+        assert sum(float(o.weight_kg) for o in created) == 110
+
+
+def test_br06_draft_changed_cases_scale_capacity(client, store_data, session_maker):
+    request = body(40)
+    response = client.post(
+        "/api/v1/orders", headers=auth_header(client, "store_manager"), json=request
+    )
+    assert response.status_code == 200
+    with session_maker() as db:
+        order = db.scalar(select(Order))
+        assert order.units == 48
+        assert float(order.weight_kg) == 480
+        assert float(order.volume_m3) == 4.8
+
+
+def test_br44_notices_language_and_recipient_privacy(client, store_data, session_maker):
+    from app.modules.catalog.models import OutletProfile
+
+    with session_maker() as db:
+        db.add(OutletProfile(outlet_code="STORE1", language="si", split_rule="any"))
+        dispatcher = db.scalar(select(User).where(User.role == "dispatcher"))
+        notice = Notification(
+            outlet_code="STORE1",
+            kind="deferral",
+            title="Delivery deferred",
+            reason_code="NO_REEFER_CAPACITY",
+            body="Refrigerated trucks are full.",
+            lang="en",
+            created_at=NOW,
+        )
+        private = Notification(
+            outlet_code="STORE1",
+            recipient_user_id=dispatcher.id,
+            kind="decision",
+            title="Private",
+            body="Private",
+            lang="en",
+            created_at=NOW,
+        )
+        db.add_all([notice, private])
+        db.commit()
+        notice_id, private_id = str(notice.id), str(private.id)
+    headers = auth_header(client, "store_manager")
+    response = client.get(f"/api/v1/notifications/{notice_id}", headers=headers)
+    assert response.json()["lang"] == "si"
+    assert "ශීතකරණ" in response.json()["body"]
+    tamil = client.get(f"/api/v1/notifications/{notice_id}?language=ta", headers=headers)
+    assert tamil.json()["lang"] == "ta"
+    assert "குளிரூட்டப்பட்ட" in tamil.json()["body"]
+    assert client.get(f"/api/v1/notifications/{private_id}", headers=headers).status_code == 404
+
+
+def test_br47_additional_wrong_item_keeps_good_receipt(client, store_data, session_maker):
+    delivered(session_maker)
+    request = {
+        "request_id": str(uuid.uuid4()),
+        "lines": [{"product_id": "test-rice", "problem": "wrong_item", "qty": 1}],
+    }
+    response = client.post(
+        "/api/v1/orders/SYN-DRAFT/issues",
+        headers=auth_header(client, "store_manager"),
+        json=request,
+    )
+    assert response.status_code == 200, response.text
+    with session_maker() as db:
+        assert db.scalar(select(Receipt)).total_cases == 28
+        assert db.scalar(select(Issue)).lines[0].product_id == "test-rice"
