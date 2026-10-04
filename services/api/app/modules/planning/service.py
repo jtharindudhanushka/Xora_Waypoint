@@ -520,7 +520,13 @@ async def publish(
                 lang="en",
                 title="Delivery deferred",
                 body=deferral_notice(deferred, order),
-                data={"version_id": str(version.id), "next_run": str(deferred.next_run)},
+                data={
+                    "version_id": str(version.id),
+                    # ISO with the Colombo offset; the store UI parses it (QA B1).
+                    "next_run": ensure_utc(deferred.next_run).astimezone(COLOMBO).isoformat()
+                    if deferred.next_run
+                    else None,
+                },
                 created_at=now,
             )
         )

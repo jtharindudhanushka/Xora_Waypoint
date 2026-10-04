@@ -32,7 +32,9 @@ export function StopPage() {
   const found = findStop(day, id)
   if (!day || !found) return <Message text="Stop not found on this phone." />
   const { trip, stop } = found
-  const { arrived, outcomes } = localState(events)
+  const { acked, arrived, outcomes } = localState(events)
+  // BR-32: acknowledge the current version before starting (QA B5).
+  const isAcked = Boolean(day.version?.acknowledged || (day.version && acked.has(day.version.id)))
   const hasArrived = Boolean(stop.arrived_at || arrived.has(stop.id))
   const done = Boolean(stop.outcome || outcomes.has(stop.id))
   const status = done
@@ -132,9 +134,9 @@ export function StopPage() {
         <FieldButton
           className="flex-1"
           disabled={done || trip.on_hold}
-          onClick={() => void onArrived()}
+          onClick={() => (isAcked ? void onArrived() : navigate('/driver'))}
         >
-          {hasArrived ? 'Record delivery' : 'Arrived'}
+          {!isAcked ? 'Acknowledge the plan first' : hasArrived ? 'Record delivery' : 'Arrived'}
         </FieldButton>
       </div>
     </div>
