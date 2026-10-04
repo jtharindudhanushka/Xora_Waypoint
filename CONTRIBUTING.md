@@ -29,6 +29,7 @@ We show our engineering process, so the history matters as much as the code.
 | **Never delete branches** | Keep every branch after merging; it's part of the record of how we worked. Untick "delete branch" on GitHub |
 | **Stacked PRs merge in order** | Merge the parent first; the child PR's base then moves to `main` automatically |
 | **Rebase only your own unmerged branch** | Never rewrite `main` or a branch someone else has pulled; never force-push `main` |
+| **No AI co-author trailers — strictly** | Commit messages and PR descriptions must **not** contain `Co-Authored-By: Claude`, `Generated with …`, or any other AI-agent attribution or signature. Commits are authored by the team member who made them. AI use is disclosed in one place only: [`docs/ai-disclosure.md`](docs/ai-disclosure.md) |
 
 ### Day-to-day
 1. Pick your work package in [`docs/12-work-breakdown.md`](docs/12-work-breakdown.md).

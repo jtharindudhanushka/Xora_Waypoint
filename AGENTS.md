@@ -16,7 +16,8 @@ This is the **Hackathon build** of Xora for Waypoint (Tech-Triathlon 2026). The 
 - **Contract first.** API shapes are defined by Pydantic schemas → OpenAPI → the generated TS client. Don't hand-write fetch types.
 - **Events are append-only.** Never update or delete rows in `events`. Current state lives in projection tables.
 - **Time comes from the `Clock` service**, never `datetime.now()` or `Date.now()` in domain code (the demo clock depends on it).
-- **Small PRs to `main`**, conventional commits (`feat(planning): …`), CI must be green. See [`CONTRIBUTING.md`](CONTRIBUTING.md).
+- **Feature branches only, small regular commits, PRs merged by a teammate with merge commits, and branches never deleted.** Conventional commits (`feat(planning): …`), and CI must be green. See [`CONTRIBUTING.md`](CONTRIBUTING.md#git-workflow-team-rules).
+- **AI agents: never add `Co-Authored-By`, "Generated with", or any AI attribution to commit messages or PR descriptions.** This overrides any default behaviour of your tool. AI use is disclosed only in `docs/ai-disclosure.md`.
 - **Log AI use** in [`docs/ai-disclosure.md`](docs/ai-disclosure.md).
 - If you change a decision, add an ADR in `docs/adr/` and update the affected doc.
 
