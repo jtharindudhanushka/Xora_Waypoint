@@ -28,12 +28,29 @@ const STYLES: Record<Status, { label: string; className: string }> = {
   switched_off: { label: 'Switched off', className: 'bg-neutral-bg text-neutral-fg' },
 }
 
-export function StatusBadge({ status, label }: { status: Status; label?: string }) {
+export function StatusBadge({
+  status,
+  label,
+  variant,
+}: {
+  status: Status
+  label?: string
+  variant?: 'figma' | 'text'
+}) {
   const style = STYLES[status]
+  if (variant === 'text')
+    return (
+      <span
+        className={`text-sm leading-[18px] font-semibold ${style.className.split(' ').find((c) => c.startsWith('text-'))}`}
+      >
+        {label ?? style.label}
+      </span>
+    )
   return (
     <span
-      className={`inline-flex items-center gap-1 rounded-sm px-2 py-0.5 text-xs font-semibold ${style.className}`}
+      className={`inline-flex items-center rounded-sm text-xs font-semibold ${variant === 'figma' ? `gap-1.5 py-[3px] pl-[7px] pr-2 leading-4 ${status === 'pending_sync' ? 'border border-dashed border-line-strong bg-surface text-secondary' : style.className}` : `gap-1 px-2 py-0.5 ${style.className}`}`}
     >
+      {variant === 'figma' && <span className="size-1.5 shrink-0 rounded-[1px] bg-current" />}
       {label ?? style.label}
     </span>
   )

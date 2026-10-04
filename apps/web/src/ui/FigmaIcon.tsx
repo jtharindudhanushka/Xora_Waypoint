@@ -14,6 +14,8 @@ const ASSETS = {
   alert: 'af399.svg',
   pause: '102e0.svg',
   home: '18bd0.svg',
+  camera: '24d78.svg',
+  issueInfo: '69525.svg',
 } as const
 
 export function FigmaIcon({ name }: { name: keyof typeof ASSETS }) {

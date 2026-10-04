@@ -77,7 +77,7 @@ export function Timeline({
                         setSelectedId(t.id)
                         setClosed(false)
                       }}
-                      className={`absolute top-3 h-10 overflow-hidden rounded-sm border px-2 pt-1.5 text-left ${selected?.id === t.id ? 'border-brand bg-brand-subtle text-primary' : risk ? 'border-warning-fg bg-warning-bg text-warning-fg' : 'border-line-strong bg-sunken text-primary'}`}
+                      className={`absolute top-3 flex h-10 flex-col items-start justify-start overflow-hidden rounded-sm border px-2 pt-1.5 text-left ${selected?.id === t.id ? 'border-2 border-brand bg-brand-subtle text-primary' : risk ? 'border-warning-fg bg-warning-bg text-warning-fg' : 'border-line-strong bg-sunken text-primary'}`}
                       style={{
                         left: `${((minute(t.planned_depart) - start) / duration) * 100}%`,
                         width: `${(t.plan_minutes / duration) * 100}%`,
@@ -105,33 +105,33 @@ export function Timeline({
             </div>
           </div>
         ))}
-        <div className="flex items-center gap-5 border-b border-line px-6 py-3 text-xs text-secondary">
-          <span className="mr-auto" />
+        <div className="flex items-center gap-6 px-6 py-3 text-xs text-secondary">
+          {vehicles.length > 7 ? (
+            <button
+              className="mr-auto font-semibold text-primary"
+              onClick={() => setExpanded(!expanded)}
+            >
+              {expanded ? 'Show fewer' : `+ ${vehicles.length - 7} more vehicles`}
+            </button>
+          ) : (
+            <span className="mr-auto" />
+          )}
           <span className="flex items-center gap-2">
-            <i className="h-2 w-4 rounded-sm bg-sunken" />
+            <i className="h-2.5 w-5 rounded-[1px] border border-line-strong bg-sunken" />
             Trip · bar = plan time
+          </span>
+          <span className="flex items-center gap-2">
+            <i className="h-2.5 w-5 rounded-[1px] border border-warning-fg bg-warning-bg" />
+            Likely late
+          </span>
+          <span className="flex items-center gap-2">
+            <i className="h-2.5 w-5 rounded-[1px] border border-brand bg-brand-subtle" />
+            Selected
           </span>
           <span className="flex items-center gap-2">
             <i className="h-1 w-4 bg-inverse" />
             Load %
           </span>
-          <span className="flex items-center gap-2">
-            <i className="h-2 w-4 rounded-sm bg-warning-bg" />
-            Likely late
-          </span>
-          <span className="flex items-center gap-2">
-            <i className="h-2 w-4 rounded-sm border border-brand bg-brand-subtle" />
-            Selected
-          </span>
-          {vehicles.length > 7 && (
-            <button
-              className="ml-auto font-semibold text-primary"
-              onClick={() => setExpanded(!expanded)}
-            >
-              {expanded ? 'Show fewer' : `+ ${vehicles.length - 7} more vehicles`}{' '}
-              <span aria-hidden>↓</span>
-            </button>
-          )}
         </div>
       </div>
       {selected && (
@@ -144,7 +144,7 @@ export function Timeline({
               <h2 className="text-lg leading-6 font-semibold">
                 {selected.vehicle_code} · Trip {selected.trip_no}
               </h2>
-              <p className="mt-1 font-mono text-[11px] text-secondary">
+              <p className="mt-1 font-mono text-[11px] leading-[14px] tracking-[0.22px] text-secondary">
                 {vehicleLabel(vehicle)} · {selected.district} ·{' '}
                 {selected.planned_depart?.slice(0, 5)}
               </p>
@@ -175,7 +175,7 @@ export function Timeline({
                     })}
                   </span>
                 </div>
-                <div className="mt-1.5 h-1.5 rounded-[1px] bg-sunken">
+                <div className="mt-1.5 h-1.5 rounded-[1px] bg-line">
                   <div
                     className="h-full rounded-[1px] bg-line-strong"
                     style={{
@@ -187,16 +187,16 @@ export function Timeline({
               </div>
             ))}
           </div>
-          <div className="flex px-5 pt-3.5 pb-1.5 text-[11px] font-semibold text-secondary">
+          <div className="flex px-5 pt-3.5 pb-1.5 text-[11px] leading-[14px] font-semibold text-secondary">
             <span className="uppercase tracking-[0.66px]">Stops</span>
             <span className="ml-auto font-mono font-medium">Plan · Likely</span>
           </div>
           <div className="overflow-auto">
             {selected.stops.map((s) => (
               <div key={s.id} className="flex items-center gap-3 border-b border-line px-5 py-3">
-                <span className="font-mono text-[13px] text-secondary">{s.seq}</span>
-                <div className="flex-1 text-base font-semibold">{s.outlet_code}</div>
-                <div className="font-mono text-[11px]">
+                <span className="font-mono text-[13px] leading-[18px] text-secondary">{s.seq}</span>
+                <div className="flex-1 text-base leading-5 font-semibold">{s.outlet_code}</div>
+                <div className="font-mono text-[11px] leading-[14px]">
                   {s.plan_arrival?.slice(0, 5)} · {s.likely_from?.slice(0, 5)}–
                   {s.likely_to?.slice(0, 5)}
                 </div>
@@ -207,7 +207,7 @@ export function Timeline({
             <div key={i} className="border-b border-line bg-danger-bg px-5 py-3 text-danger-fg">
               <div className="flex gap-2">
                 <FigmaIcon name="lock" />
-                <span>{v.message}</span>
+                <span className="font-semibold">{v.message}</span>
               </div>
             </div>
           ))}

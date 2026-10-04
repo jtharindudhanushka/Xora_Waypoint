@@ -3,6 +3,7 @@ import { useQueryClient } from '@tanstack/react-query'
 
 import { Button } from '../../../ui/Button'
 import { FigmaIcon } from '../../../ui/FigmaIcon'
+import { Checkbox } from '../../../ui/Checkbox'
 import { serveInstead, usePlanningActions, type Deferral, type Plan } from './api'
 import { dayLabel } from './format'
 
@@ -80,13 +81,13 @@ export function DeferredTab({ plan, date }: { plan: Plan; date: string }) {
         const rows = plan.deferrals.filter((d) => d.group === group)
         return (
           <section key={group}>
-            <div className="flex px-5 pt-4 pb-2 text-[11px] font-semibold tracking-[0.66px] uppercase text-secondary">
+            <div className="flex px-5 pt-4 pb-2 text-[11px] leading-[14px] font-semibold tracking-[0.66px] uppercase text-secondary">
               <span>
                 {group === 'unavoidable'
                   ? `No space anywhere · ${rows.length}`
                   : `Bumped by a higher priority · ${rows.length}`}
               </span>
-              <span className="ml-auto font-mono">
+              <span className="ml-auto font-mono font-medium tracking-[0.22px] normal-case">
                 {group === 'unavoidable'
                   ? 'No reefer trip left can take it'
                   : 'You can serve one instead'}
@@ -104,8 +105,7 @@ export function DeferredTab({ plan, date }: { plan: Plan; date: string }) {
                 }}
                 className="flex items-start gap-4 border-b border-line px-5 py-3"
               >
-                <input
-                  type="checkbox"
+                <Checkbox
                   aria-label={`Confirm ${d.order_ref}`}
                   checked={selected.includes(d.id)}
                   disabled={d.confirmed || plan.status !== 'draft'}
@@ -114,10 +114,10 @@ export function DeferredTab({ plan, date }: { plan: Plan; date: string }) {
                       e.target.checked ? [...selected, d.id] : selected.filter((id) => id !== d.id),
                     )
                   }
-                  className="mt-1 h-[22px] w-[22px] shrink-0 accent-[var(--bg-inverse)]"
+                  className="mt-1"
                 />
                 <div className="w-[170px] shrink-0">
-                  <div className="text-sm font-semibold">
+                  <div className="text-sm leading-[18px] font-semibold">
                     {d.outlet_code} · {d.district}
                   </div>
                   <div className="mt-0.5 whitespace-nowrap font-mono text-[11px] leading-[14px] text-secondary">
@@ -134,7 +134,7 @@ export function DeferredTab({ plan, date }: { plan: Plan; date: string }) {
                 </div>
                 <div className="min-w-0 flex-1">
                   <span
-                    className={`mb-1.5 inline-block rounded-sm px-1.5 py-[3px] font-mono text-[11px] leading-[14px] ${group === 'unavoidable' ? 'bg-danger-bg text-danger-fg' : 'bg-warning-bg text-warning-fg'}`}
+                    className={`mb-1.5 inline-block rounded-sm px-1.5 py-[3px] font-mono text-[11px] leading-[14px] tracking-[0.22px] ${group === 'unavoidable' ? 'bg-danger-bg text-danger-fg' : 'bg-warning-bg text-warning-fg'}`}
                   >
                     {d.reason_code.replaceAll('_', ' ')}
                   </span>
@@ -178,9 +178,11 @@ export function DeferredTab({ plan, date }: { plan: Plan; date: string }) {
                     </div>
                   )}
                 </div>
-                <div className="w-[130px] shrink-0 text-right text-xs text-secondary">
-                  Next run
-                  <div className="mt-1 font-mono text-[11px] text-primary">
+                <div className="w-[130px] shrink-0 text-right text-xs leading-[14px] text-secondary">
+                  <span className="text-[11px] leading-[14px] font-semibold tracking-[0.66px] uppercase">
+                    Next run
+                  </span>
+                  <div className="mt-0.5 font-mono text-[11px] tracking-[0.22px] text-primary">
                     {d.next_run ? `${dayLabel(d.next_run)} · 03:30` : 'To be confirmed'}
                   </div>
                   {d.confirmed && (
@@ -196,23 +198,18 @@ export function DeferredTab({ plan, date }: { plan: Plan; date: string }) {
         )
       })}
       {preview && (
-        <div className="mx-5 my-4 rounded-md border border-line px-3.5 py-3">
-          <div className="flex text-[11px] font-semibold tracking-[0.66px] uppercase text-secondary">
+        <div className="flex flex-col gap-2 px-5 py-4">
+          <div className="text-[11px] leading-[14px] font-semibold tracking-[0.66px] uppercase text-secondary">
             Store notice · preview
-            <button
-              className="ml-auto"
-              onClick={() => setPreview(null)}
-              aria-label="Close store notice"
-            >
-              <FigmaIcon name="close" />
-            </button>
           </div>
-          <p className="mt-2">
-            {preview.notice_body || preview.explanation || preview.reason_code}
-          </p>
-          <p className="mt-2 font-mono text-[11px] text-secondary">
-            Auto-written from the plan · English
-          </p>
+          <div className="flex flex-col gap-1.5 rounded-md border border-line px-3.5 py-3">
+            <p className="text-sm leading-5">
+              “{preview.notice_body || preview.explanation || preview.reason_code}”
+            </p>
+            <p className="font-mono text-[11px] leading-[14px] tracking-[0.22px] text-tertiary">
+              Auto-written from the plan · English
+            </p>
+          </div>
         </div>
       )}
     </div>

@@ -102,7 +102,12 @@ def main() -> None:
                 writer.writerow(["S1", ref, "served" if vehicle else "deferred", vehicle, number])
         print(
             json.dumps(
-                {"status": plan["status"], "solve_ms": plan["solve_ms"], "kpis": plan["kpis"]},
+                {
+                    "status": plan["status"],
+                    "solver_status": plan["solver_status"],
+                    "solve_ms": plan["solve_ms"],
+                    "kpis": plan["kpis"],
+                },
                 indent=2,
             )
         )
