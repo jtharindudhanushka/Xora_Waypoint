@@ -2,7 +2,7 @@
 
 import uuid
 from dataclasses import asdict
-from datetime import date, datetime, time, timedelta
+from datetime import UTC, date, datetime, time, timedelta
 from time import perf_counter
 from typing import Any
 
@@ -12,7 +12,7 @@ from xora_engine import Assignment, Problem, validate
 from xora_engine import plan as engine_plan
 from xora_engine.fuel import trip_litres
 
-from app.core.clock import COLOMBO, Clock
+from app.core.clock import COLOMBO, Clock, ensure_utc
 from app.core.errors import ConflictError, DomainError, ForbiddenError, NotFoundError
 from app.modules.auth.models import User
 from app.modules.catalog.models import CalendarDay, Outlet
@@ -184,7 +184,7 @@ def generate(
                 priority=deferred.priority,
                 displaces=list(deferred.displaces),
                 explanation=deferred.explanation,
-                next_run=datetime.combine(next_run, time(3, 30), tzinfo=COLOMBO)
+                next_run=datetime.combine(next_run, time(3, 30), tzinfo=COLOMBO).astimezone(UTC)
                 if next_run
                 else None,
             )
@@ -195,7 +195,7 @@ def generate(
         clock,
         "plan.generated",
         version,
-        {"solver": "GREEDY", "forced_order": force_order_ref},
+        {"solver": result.solver_status, "forced_order": force_order_ref},
     )
     repo.db.commit()
     return repo.version(version.id)
@@ -288,7 +288,8 @@ def plan_out(repo: Repository, version: PlanVersion) -> PlanOut:
                 priority=float(d.priority),
                 explanation=d.explanation,
                 displaces=d.displaces,
-                next_run=d.next_run.date() if d.next_run else None,
+                # BR-15/BR-21: UTC 22:00 is the next day's 03:30 Colombo run.
+                next_run=ensure_utc(d.next_run).astimezone(COLOMBO).date() if d.next_run else None,
                 repeat_skip=by_id[d.order_id].deferred_yesterday
                 or by_id[d.order_id].days_since_last_served >= 3,
                 confirmed=d.confirmed_by is not None,
@@ -307,7 +308,11 @@ def plan_out(repo: Repository, version: PlanVersion) -> PlanOut:
 
 def deferral_notice(deferred: Deferral, order: Order) -> str:
     """BR-21: preview and delivered notification use the identical server template."""
-    next_label = deferred.next_run.isoformat() if deferred.next_run else "to be confirmed"
+    next_label = (
+        ensure_utc(deferred.next_run).astimezone(COLOMBO).isoformat()
+        if deferred.next_run
+        else "to be confirmed"
+    )
     return (
         f"{order.ref}: {deferred.explanation or deferred.reason_code}. "
         f"Next run: {next_label}. Written from the plan."
