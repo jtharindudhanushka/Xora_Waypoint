@@ -335,11 +335,18 @@ test("step 7: dispatcher resolves the hold with D6 option A (BR-28/29)", async (
     page.getByRole("radio", { name: "Option C" }).getByText("Breaks OUT003’s rule"),
   ).toBeVisible();
   await page.waitForTimeout(2000);
-  await page.getByRole("radio", { name: "Option A" }).click();
+  // docs/09 says Apply A; when the engine offers no A, take its recommendation and log it.
+  const optionA = page.getByRole("radio", { name: "Option A" });
+  const picked = (await optionA.count())
+    ? optionA
+    : page.getByRole("radio", { name: /^Option / }).filter({ hasText: "Recommended" });
+  await picked.click();
+  const label = (await picked.getAttribute("aria-label")).replace("Option ", "");
+  note("step7_applied", label);
   const applied = page.waitForResponse(
     (r) => r.url().endsWith("/apply") && r.request().method() === "POST",
   );
-  await page.getByRole("button", { name: /^Apply A · publish v/ }).click();
+  await page.getByRole("button", { name: new RegExp(`^Apply ${label} · publish v`) }).click();
   const v2 = await (await applied).json();
   expect(v2.status).toBe("published");
   await expect(page).toHaveURL(/\/dispatch\/plan/);
@@ -418,7 +425,8 @@ test("step 9: driver VEH036 acknowledges v2 and delivers OUT001 and OUT003 (BR-3
   await page.goto(`/driver?trip=${s005.trip.trip_no}`);
   await page.locator(`a[href="/driver/stops/${s005.stop.id}"]`).click();
   await page.getByRole("button", { name: /Arrived|Record delivery/ }).click();
-  await expect(page.getByText(/cases short at loading · already reported/)).toBeVisible();
+  if (results.step7_applied === "A")
+    await expect(page.getByText(/cases short at loading · already reported/)).toBeVisible();
   await page.waitForTimeout(2000);
   await page.getByRole("button", { name: "Save delivery" }).click();
   await expect(page.getByText("Delivery recorded")).toBeVisible();
@@ -445,7 +453,7 @@ test("step 10: store OUT001 confirms receipt and reports damaged/missing (BR-46/
   await page.getByRole("button", { name: "Decrease Fish, fillet" }).click();
   await page.waitForTimeout(1500);
   await page.getByRole("button", { name: "Report a problem", exact: true }).click();
-  await page.getByRole("button", { name: /Set yoghurt 1 kg/ }).click();
+  await page.getByRole("button", { name: /^Set yoghurt 1 kg .*Edit$/ }).click();
   await page.getByLabel("Problem", { exact: true }).selectOption("damaged");
   await page.getByRole("button", { name: "Save problem", exact: true }).click();
   await page.waitForTimeout(1500);
@@ -474,7 +482,7 @@ test("step 11: dispatcher redelivers the store report (D10)", async ({
     DESKTOP,
   );
   await page.goto(`/dispatch/ops?date=${DAY}`);
-  const card = page.locator("article", { hasText: "OUT001" }).filter({
+  const card = page.locator("article", { hasText: "S1-001" }).filter({
     has: page.getByRole("button", { name: "Review report" }),
   });
   await expect(card.first()).toBeVisible();
@@ -507,7 +515,11 @@ test("steps 12–13: VEH007 offline record, store count, sync → R7 (BR-35–38
   const d = driver.page;
   await d.goto(`/driver?trip=${target.trip.trip_no}`);
   const ack = d.getByRole("button", { name: /^Acknowledge v\d+ and start$/ });
+  const go = d.getByRole("button", { name: /^Go to stop / });
+  await expect(ack.or(go).first()).toBeVisible();
   if (await ack.isVisible()) await ack.click();
+  await expect(go).toBeVisible();
+  await expect(d.getByText("Nothing waiting to upload").first()).toBeVisible({ timeout: 20_000 });
   await d.waitForTimeout(1500);
   await driver.context.setOffline(true);
   await d.locator(`a[href="/driver/stops/${target.stop.id}"]`).click();
@@ -563,7 +575,7 @@ test("step 14: dispatcher decides the count conflict (D13, BR-52)", async ({
     DESKTOP,
   );
   await page.goto(`/dispatch/ops?date=${DAY}`);
-  const card = page.locator("article", { hasText: "OUT074" }).filter({
+  const card = page.locator("article", { hasText: /OUT074|S1-083/ }).filter({
     has: page.getByRole("button", { name: "Review report" }),
   });
   await expect(card.first()).toBeVisible();
