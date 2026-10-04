@@ -4,7 +4,7 @@ from datetime import datetime
 from typing import Literal
 from uuid import UUID
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 
 class ReceiptCountIn(BaseModel):
@@ -17,10 +17,17 @@ class ReceiptIn(BaseModel):
 
 
 class ProblemLineIn(BaseModel):
-    order_line_id: UUID
+    order_line_id: UUID | None = None
+    product_id: str | None = None
     problem: Literal["missing", "damaged", "wrong_item", "warm"]
     qty: int = Field(gt=0, le=100000)
     photo_url: str | None = Field(default=None, max_length=300)
+
+    @model_validator(mode="after")
+    def has_item(self) -> "ProblemLineIn":
+        if self.order_line_id is None and self.product_id is None:
+            raise ValueError("Select an order line or an additional catalogue item")
+        return self
 
 
 class IssueIn(BaseModel):
@@ -44,6 +51,7 @@ class ReceiptDraftOut(BaseModel):
     delivered_at: datetime | None
     receiver: str | None
     photo_url: str | None
+    driver_event_id: UUID | None
     can_confirm: bool
     confirmed: bool
     total_cases: int

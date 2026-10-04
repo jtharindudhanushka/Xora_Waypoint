@@ -1210,6 +1210,27 @@
               "format": "uuid",
               "title": "Notice Id"
             }
+          },
+          {
+            "name": "language",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "en",
+                    "si",
+                    "ta"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Language"
+            }
           }
         ],
         "responses": {
@@ -2467,9 +2488,27 @@
       "ProblemLineIn": {
         "properties": {
           "order_line_id": {
-            "type": "string",
-            "format": "uuid",
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Order Line Id"
+          },
+          "product_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Product Id"
           },
           "problem": {
             "type": "string",
@@ -2502,7 +2541,6 @@
         },
         "type": "object",
         "required": [
-          "order_line_id",
           "problem",
           "qty"
         ],
@@ -2719,6 +2757,18 @@
             ],
             "title": "Photo Url"
           },
+          "driver_event_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Driver Event Id"
+          },
           "can_confirm": {
             "type": "boolean",
             "title": "Can Confirm"
@@ -2747,6 +2797,7 @@
           "delivered_at",
           "receiver",
           "photo_url",
+          "driver_event_id",
           "can_confirm",
           "confirmed",
           "total_cases",

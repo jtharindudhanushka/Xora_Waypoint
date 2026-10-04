@@ -9,6 +9,7 @@ from app.core.deps import ClockDep, DbDep, require_roles
 from app.modules.auth.models import User
 from app.modules.orders import service
 from app.modules.orders.models import DriverNote
+from app.modules.orders.notices import Language
 from app.modules.orders.schemas import (
     DriverNoteIn,
     DriverNoteOut,
@@ -94,8 +95,10 @@ def notifications(db: DbDep, user: StoreUser) -> list[NotificationOut]:
 
 
 @router.get("/notifications/{notice_id}", response_model=NotificationOut)
-def notification(notice_id: UUID, db: DbDep, user: StoreUser) -> NotificationOut:
-    return service.notification_out(db, service.notice_for(db, user, notice_id))
+def notification(
+    notice_id: UUID, db: DbDep, user: StoreUser, language: Language | None = None
+) -> NotificationOut:
+    return service.notification_out(db, service.notice_for(db, user, notice_id), language)
 
 
 @router.post("/notifications/{notice_id}/read", response_model=NotificationOut)

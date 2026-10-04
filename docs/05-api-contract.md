@@ -113,3 +113,37 @@ Filtered per user scope. Each event is `event: <type>` + `data: <json>`.
 | `exception.created` · `exception.updated` | dispatcher |
 | `notification.created` | store |
 | `clock.changed` | all |
+
+## Store implementation (Dev 3, task 3.1)
+
+`GET /stores/me/orders` returns the authenticated outlet, clock-derived ordering
+cutoff/date, today/upcoming/recent orders, item lines, driver note and one tracking
+entry per order/trip in the latest published version. `GET /orders/{ref}` has the
+same order view. Internal draft/placed states use `submission_status`; tracking
+uses only BR-54 statuses. Published stops and event rows are read-only.
+
+`POST /orders/check` and `POST /orders` share BR-40/42 guards. Submission accepts
+`{request_id, draft_ref?, lines:[{product_id,qty}], confirm_unusual?}`. A questioned
+quantity requires explicit confirmation; no write occurs on rejection. Zero/omitted
+items remove lines from a saved draft. New app orders split by temperature.
+ADR-0008 records the Figma ≥3× boundary and original demo case measurements.
+Replay of an identical request id returns the existing orders; another payload
+under that id returns 409.
+
+`GET /notifications/{id}?language=en|si|ta` supports the account language and an
+explicit reading language. Only deferral reason-code templates are translated;
+other existing notices retain their authored text. Both `/read` (task request) and
+`/ack` (original contract) acknowledge once and append a separate audit event.
+
+`POST /orders/{ref}/receipt` accepts `{}` for the driver's item counts, or
+`{lines:[{order_line_id,store_qty}]}`. Repeating an acceptance is idempotent; changing
+an accepted receipt returns 409. Count differences create a `count_conflict` issue,
+with both records retained. A receipt with explicit counts can precede offline sync.
+
+`POST /orders/{ref}/issues` accepts `{request_id,lines:[{order_line_id?,product_id?,
+problem,qty,photo_url?}]}`. Normal lines identify the order line. An additional
+catalogue item identifies `product_id` and `wrong_item`. Good counts are confirmed
+and a `store_report` plus item rows/exception are created for D10. Driver evidence
+is linked by `driver_event_id`. Optional photo references are accepted; binary
+photo upload is outside this contract. Invalid lines create nothing. Request replay
+is idempotent; all audit events are append-only.
