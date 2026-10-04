@@ -4,6 +4,12 @@ import { LoginPage } from '../features/auth/LoginPage'
 import { RoleHome } from '../features/placeholder/RoleHome'
 import { PlanWorkspace } from '../features/dispatch/planning/PlanWorkspace'
 import { ShortfallWorkspace } from '../features/dispatch/repair/ShortfallWorkspace'
+import { LiveOpsWorkspace } from '../features/dispatch/ops/LiveOpsWorkspace'
+import { IssueWorkspace } from '../features/dispatch/issues/IssueWorkspace'
+import { OutcomePage } from '../features/driver/OutcomePage'
+import { RecordPage, UploadsPage } from '../features/driver/RecordPage'
+import { StopPage } from '../features/driver/StopPage'
+import { DriverShell, TripPage } from '../features/driver/TripPage'
 import { DesktopShell } from './DesktopShell'
 import { HomeRedirect, RequireRole } from './guards'
 import { PhoneShell } from './PhoneShell'
@@ -21,18 +27,14 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <Navigate to="plan" replace /> },
       { path: 'shortfalls/:id', element: <ShortfallWorkspace /> },
+      { path: 'issues/:id', element: <IssueWorkspace /> },
       {
         path: 'plan',
         element: <PlanWorkspace />,
       },
       {
         path: 'ops',
-        element: (
-          <RoleHome
-            title="Live operations"
-            screens={['D5 Live ops', 'D10 Store report', 'D13 Reconcile']}
-          />
-        ),
+        element: <LiveOpsWorkspace />,
       },
     ],
   },
@@ -65,30 +67,15 @@ export const router = createBrowserRouter([
     path: '/driver',
     element: (
       <RequireRole role="driver">
-        <PhoneShell
-          tabs={[
-            { to: '/driver', label: 'Trip' },
-            { to: '/driver/uploads', label: 'Uploads' },
-          ]}
-        />
+        <DriverShell />
       </RequireRole>
     ),
     children: [
-      {
-        index: true,
-        element: (
-          <RoleHome title="Today’s trip" screens={['R1 Trip', 'R2 Stop', 'R3 Record outcome']} />
-        ),
-      },
-      {
-        path: 'uploads',
-        element: (
-          <RoleHome
-            title="Uploads"
-            screens={['R4 Saved offline', 'R5 Uploaded', 'R7 Needs review']}
-          />
-        ),
-      },
+      { index: true, element: <TripPage /> },
+      { path: 'stops/:id', element: <StopPage /> },
+      { path: 'stops/:id/outcome', element: <OutcomePage /> },
+      { path: 'records/:eventId', element: <RecordPage /> },
+      { path: 'uploads', element: <UploadsPage /> },
     ],
   },
   {

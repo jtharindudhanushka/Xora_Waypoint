@@ -34,7 +34,22 @@ The **published plan version** is the hand-off point:
 | 1.5 | **Store** S1, S2 (cutoff + 3× check), S8 notice, S5 + S6 receipt and issues | `feat/store-ui` | Walkthrough 1, 5, 10 | 19:00 |
 | 1.6 | Redeploy · README walkthrough + departures · AI disclosure · **video 5–8 min** · submit the form | `docs/submission` | Form submitted | 21:00 |
 
-**Unassigned (pick up only if ahead):** D5 Live ops, D10 store-report decision, D13 reconcile (WP-5), and the Playwright e2e (WP-6).
+**Updated assignment:** D5, D10 and D13 are assigned to Dev 2 in the second track below. The lead owns the combined live walkthrough and deployment.
+
+## Dev 2 — second assignment / final status (4 October)
+
+The revised feature freeze is **20:30 Sri Lanka time**, submission **22:00**. After freeze, finish only work already in progress plus verification, merge fixes and handover. Original tasks 2.1–2.5 and their first handover are merged (#11–16); the earlier table records their original delivery checkpoints.
+
+| Task | Branch | Status | PR / exact remaining work |
+|---|---|---|---|
+| 2.6 CP-SAT | feat/engine-cpsat | **Done** | #17 pushed; 71 engine tests; S1 checker passes. Final integrated run: 72 served / 18 chilled; another run reached 75 / 18. Prototype 79/21 not reached. Lead merges. |
+| 2.7 Live operations / D5 | feat/dispatch-live-ops | **Done with limitation** | #18 pushed; ranked exceptions, pending sync, validated stop swaps and immutable publication. Live departure-delay forecasting remains a gap. Lead verifies field projections. |
+| 2.8 Store report / offline reconciliation | feat/dispatch-issues | **Done with integration gaps** | #21 pushed, stacked on #18; D10/D13, six resolutions, original evidence, notifications/SSE. Loading pick-note display, recount follow-up and external credit processing remain unconnected. |
+| 2.9 Eight-screen fidelity pass | feat/dispatch-fidelity | **Done** | #25 pushed, stacked on #21; comparisons/checklist in docs/qa/dev2-fidelity.md. Existing approved departures retained. |
+| Second handover | docs/dev2-handover-2 | **Done** | Separate PR targeting main, stacked on #25; eight-section report in docs/dev2-handover-2.md. |
+| Drag-and-drop trip editing | feat/dispatch-edit | **Not started** | No new stretch work after freeze. |
+
+The lead's merged sync/deployment contracts and driver routing were integrated into #18/#21/#25. Generated contracts were regenerated; shared route imports preserve both tracks. #25 includes #17 for final combined-stack verification. Lead field endpoints and driver/dock/store feature code were not modified by Dev 2. See [the second handover](dev2-handover-2.md) for merge order, checks, S1 metrics and verification commands.
 
 ## Timeline
 | Time | Lead | Dev 2 |

@@ -227,12 +227,33 @@ def plan(
     time_limit_s: float = 10,
     force_order_ref: str | None = None,
 ) -> PlanResult:
-    """Greedy is deterministic; callers measure elapsed time outside this pure library."""
+    """Optimise from a validated greedy hint; callers measure elapsed time outside the library."""
     if time_limit_s <= 0:
         raise ValueError("time_limit_s must be positive")
     if force_order_ref is not None and force_order_ref not in problem.orders:
         raise ValueError("Unknown forced order")
     assignment = _greedy(problem, policy, locks, forced=force_order_ref)
+    status = "GREEDY"
+    try:
+        from xora_engine.cpsat import optimise
+    except ImportError:
+        pass  # Dependency/load failures keep the validated fallback available.
+    else:
+        assignment, status = optimise(
+            assignment, problem, policy, locks, time_limit_s, force_order_ref
+        )
+    return explain(assignment, problem, policy, locks, status, force_order_ref)
+
+
+def explain(
+    assignment: Assignment,
+    problem: Problem,
+    policy: Policy = DEFAULT_POLICY,
+    locks: tuple[Trip, ...] = (),
+    solver_status: str = "GREEDY",
+    force_order_ref: str | None = None,
+) -> PlanResult:
+    """One BR-15–18 explanation and KPI path for both solver backends."""
     served = {s.order_ref for t in assignment.trips for s in t.stops}
     if force_order_ref is not None and force_order_ref not in served:
         raise ValueError("This order cannot be served without breaking a hard rule or a trip lock")
@@ -298,7 +319,7 @@ def plan(
         reefer_total,
     )
     bottleneck = _bottleneck(assignment, problem, deferrals, reefer_used, reefer_total)
-    return PlanResult(assignment, windows, tuple(deferrals), kpis, bottleneck)
+    return PlanResult(assignment, windows, tuple(deferrals), kpis, bottleneck, solver_status)
 
 
 def _blocking_reason(order: Order, problem: Problem) -> str:
