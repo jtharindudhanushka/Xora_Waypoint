@@ -44,4 +44,4 @@ order_lines:                          # cases per item; sums must equal order_un
   S1-083: {milk-1l: 70, yoghurt-1kg: 50, butter-200g: 25, chicken-whole: 40, fish-fillet: 20} # 205
 
 driver_notes:
-  - {outlet: OUT001, for_date: 2026-04-07, text: Front shutter shut till 07:00 · unload at the side lane}
+  - {outlet: OUT001, for_date: 2026-04-07, sent_at: "04:50", text: Front shutter shut till 07:00 · unload at the side lane}
