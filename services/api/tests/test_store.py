@@ -508,3 +508,24 @@ def test_br47_additional_wrong_item_keeps_good_receipt(client, store_data, sessi
     with session_maker() as db:
         assert db.scalar(select(Receipt)).total_cases == 28
         assert db.scalar(select(Issue)).lines[0].product_id == "test-rice"
+
+
+def test_br47_known_driver_shortage_is_not_subtracted_twice(client, store_data, session_maker):
+    delivered(session_maker)
+    with session_maker() as db:
+        fish = db.scalar(select(OrderLine).where(OrderLine.product_id == "test-fish"))
+        fish.qty_delivered = 6
+        line_id = str(fish.id)
+        db.commit()
+    response = client.post(
+        "/api/v1/orders/SYN-DRAFT/issues",
+        headers=auth_header(client, "store_manager"),
+        json={
+            "request_id": str(uuid.uuid4()),
+            "lines": [{"order_line_id": line_id, "problem": "missing", "qty": 2}],
+        },
+    )
+    assert response.status_code == 200, response.text
+    with session_maker() as db:
+        assert db.scalar(select(Receipt)).total_cases == 26
+        assert db.scalar(select(Issue)).store_qty == 26

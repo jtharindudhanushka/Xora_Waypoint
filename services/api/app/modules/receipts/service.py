@@ -255,13 +255,23 @@ def report(db: Session, user: User, clock: Clock, ref: str, body: IssueIn) -> Is
         )
     if receipt is None:
         driver = {line.order_line_id: int(line.driver_qty or 0) for line in view.lines}
+        missing = {
+            entry.order_line_id: entry.qty for entry in body.lines if entry.problem == "missing"
+        }
         # BR-47: confirm good cases; a bad line does not block the whole receipt.
+        # Driver counts already exclude known shortages. Do not subtract them twice.
+        good = {}
+        for draft_line in view.lines:
+            key, qty = draft_line.order_line_id, driver[draft_line.order_line_id]
+            absent = missing.get(key, 0)
+            additional_missing = max(0, absent - max(0, draft_line.ordered_qty - qty))
+            good[key] = max(0, qty - (totals.get(key, 0) - absent) - additional_missing)
         receipt = create_receipt(
             db,
             user,
             clock,
             order,
-            {key: max(0, qty - totals.get(key, 0)) for key, qty in driver.items()},
+            good,
             driver,
         )
     issue = Issue(
