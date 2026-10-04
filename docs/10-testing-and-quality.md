@@ -20,7 +20,7 @@ The minimum before submitting: **engine tests green, API smoke tests green, e2e 
 | TS types | `tsc --noEmit` (strict) |
 | Pre-commit | `pre-commit` hooks: ruff, prettier, end-of-file, no large files, **no CSV/PDF** |
 | Commits | **Conventional commits**: `feat(planning): …`, `fix(sync): …`, `docs: …` |
-| Branches | `feat/<area>-<short>` → PR → `main` (squash merge). No direct pushes once CI exists |
+| Branches | `feat/<area>-<short>` → PR → `main`. **Merge commits, never squash. Branches are never deleted.** The author never merges their own PR. See [CONTRIBUTING](../CONTRIBUTING.md#git-workflow-team-rules) |
 | PRs | Template: what/why, BR ids touched, screenshots, tests. One reviewer (or self-review checklist under time pressure) |
 | Rule traceability | Reference `BR-xx` in code comments and test names |
 
