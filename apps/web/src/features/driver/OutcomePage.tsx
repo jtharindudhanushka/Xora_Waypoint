@@ -53,6 +53,14 @@ export function OutcomePage() {
       {
         outcome,
         receiver_name: receiver || null,
+        // Read by the store receipt draft (BR-46): total cases handed over at this stop.
+        cases_handed_over:
+          outcome === 'failed'
+            ? 0
+            : stop.orders.reduce(
+                (sum, o) => sum + (Number(counts[o.order_id] ?? o.planned_cases) || 0),
+                0,
+              ),
         photo_taken_at: photoAt,
         damaged: Number(damaged) || 0,
         refused: Number(refused) || 0,
