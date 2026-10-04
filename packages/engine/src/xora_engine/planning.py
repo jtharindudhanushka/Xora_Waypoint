@@ -232,13 +232,6 @@ def plan(
         raise ValueError("time_limit_s must be positive")
     if force_order_ref is not None and force_order_ref not in problem.orders:
         raise ValueError("Unknown forced order")
-    # BR-14: database row order must not change model indices or the demo allocation.
-    problem = replace(
-        problem,
-        orders=dict(sorted(problem.orders.items())),
-        vehicles=dict(sorted(problem.vehicles.items())),
-    )
-    locks = tuple(sorted(locks, key=lambda trip: (trip.vehicle, trip.trip_no)))
     assignment = _greedy(problem, policy, locks, forced=force_order_ref)
     status = "GREEDY"
     try:

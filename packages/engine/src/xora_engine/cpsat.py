@@ -98,7 +98,7 @@ def optimise(
     time_limit_s: float,
     forced: str | None = None,
 ) -> tuple[Assignment, str]:
-    """BR-01–11 allocation with repeatable search, hints and hard-validated fallback."""
+    """BR-01–11 linear allocation, 8 workers, greedy hints and hard-validated fallback."""
     if not problem.orders or not problem.vehicles:
         return greedy, "GREEDY"
     model = cp_model.CpModel()
@@ -283,12 +283,7 @@ def optimise(
     model.maximize(sum(values) - sum(costs))
     solver = cp_model.CpSolver()
     solver.parameters.max_time_in_seconds = min(time_limit_s, 10)
-    # BR-14: fixed interleaved batches synchronize workers before sharing incumbents.
     solver.parameters.num_search_workers = 8
-    solver.parameters.random_seed = 0
-    solver.parameters.interleave_search = True
-    solver.parameters.interleave_batch_size = 16
-    solver.parameters.max_deterministic_time = min(time_limit_s, 10) * 0.22
     try:
         # Brief neighbourhood search fixes existing daytime allocations, repacking Fresh
         # inside the same hard constraints. Its incumbent strengthens the greedy hint.
@@ -301,17 +296,7 @@ def optimise(
             warm_solver = cp_model.CpSolver()
             warm_solver.parameters.max_time_in_seconds = min(time_limit_s, 10) * 0.2
             warm_solver.parameters.num_search_workers = 8
-            warm_solver.parameters.random_seed = 0
-            warm_solver.parameters.interleave_search = True
-            warm_solver.parameters.interleave_batch_size = 16
-            warm_solver.parameters.max_deterministic_time = min(time_limit_s, 10) * 0.05
             warm_status = warm_solver.solve(neighbourhood)
-            if warm_status != cp_model.OPTIMAL and (
-                warm_solver.response_proto.deterministic_time
-                < warm_solver.parameters.max_deterministic_time
-            ):
-                # A wall-clock interruption must not introduce a machine-dependent hint.
-                return greedy, "GREEDY"
             if warm_status in {cp_model.OPTIMAL, cp_model.FEASIBLE}:
                 model.clear_hints()  # type: ignore[no-untyped-call]  # OR-Tools lacks this annotation.
                 for index in range(len(model.proto.variables)):
@@ -324,11 +309,6 @@ def optimise(
     except (RuntimeError, ValueError):
         return greedy, "GREEDY"
     if status not in {cp_model.OPTIMAL, cp_model.FEASIBLE}:
-        return greedy, "GREEDY"
-    if status == cp_model.FEASIBLE and (
-        solver.response_proto.deterministic_time < solver.parameters.max_deterministic_time
-    ):
-        # Keep the ten-second safety cap; use the repeatable baseline on slow machines.
         return greedy, "GREEDY"
     decoded_trips: list[Trip] = []
     for vehicle in problem.vehicles.values():

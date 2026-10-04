@@ -28,7 +28,7 @@ The brief requires us to explain which work was AI-assisted, which wasn't, and h
 | 2026-10-04 | Fidelity and integration, task 2.9 | Codex (OpenAI), Figma connector | Reviewed eight frames; corrected planning geometry/type/tokens and refreshed comparisons; regenerated merged sync contracts and froze a flaky repair timer fixture | Authorized completion of in-progress work at freeze; lead reviews #25 and final deployed walkthrough |
 | 2026-10-04 | Second handover | Codex (OpenAI) | Recorded merge order, statuses, measured S1 results, limitations, departures, integration risks and exact verification commands | Requested the report; retains merge, deployment and submission decisions |
 | 2026-10-04 | Cross-track contract integration | Codex (OpenAI) | Merged latest main into remaining PR branches, retained all routers, regenerated contracts and fixed the dispatcher IssueOut type collision using its endpoint response; ran combined API and web checks | Explicitly requested merge commits, regenerated contracts and checked pushes; lead retains PR merge decisions |
-| 2026-10-04 | CP-SAT shortfall demo fixes | Codex (OpenAI) | Reproduced S1 publish, loader shortfall, repair v2, hold acknowledgement and driver prefill; made bounded solver search repeatable and added synthetic Trip 2 regressions | Requested fixes only, retained lead review, merge and deployment authority |
+| 2026-10-04 | Shortfall demo and deferral fixes | Codex (OpenAI) | Verified S1 shortfall/repair/ack flow for greedy and Trip 2 shapes, corrected deferral timezone dates and repicked driver projection, and added synthetic regressions | Kept the deployed solver configuration unchanged as requested; retained lead review, merge and deployment authority |
 
 ## Not AI-assisted
 

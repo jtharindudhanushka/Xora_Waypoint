@@ -62,10 +62,10 @@ _Draft. Each step is ticked when its screens are built and verified by the e2e t
 | 3 | 16:10 | Dispatcher | **Fleet** tab: VEH038 is off ("No driver"); workshop reefers locked off | BR-10 |
 | 4 | 16:12 | Dispatcher | **Deferred** tab: groups, reasons, priorities; confirm (repeat skips need a reason) → **Review & publish** → gate → **Publish v1** | v1 published; stores notified |
 | 5 | 16:25 | Store OUT054 | Log in → notice | S8: what moved, why, when, in si/ta/en |
-| 6 | Tue 04:14 | Loader | Log in → **VEH036 T1** → load in reverse order → **Report a problem**: OUT003 missing 2, short from chiller pick | Van **on hold** (L4) |
-| 7 | 04:19 | Dispatcher | Open the hold → **D6**: options A/B/C, OUT003's split rule; C labelled as breaking it → **Apply A** | v2 published |
-| 8 | 04:27 | Loader | **Review v2** (diff 42 → 40, +2 on T2) → **Acknowledge** | Hold released |
-| 9 | 04:36 | Driver VEH036 | Log in → **Acknowledge v2** → stop 1 OUT001 (store note at top) → **Arrived** → outcome → stop 2 OUT003 (shortfall pre-filled) | Two clocks per stop |
+| 6 | Tue 04:18 | Loader | Find **S1-005 / OUT003 / 42 cases** in the published plan; use its actual vehicle/trip. On the VM's confirmed greedy run this is **VEH036 T1**, stop 2 after OUT001. Load in reverse order → **Report a problem**: missing 2, short from chiller pick | Actual source trip **on hold** (L4) |
+| 7 | 04:19 | Dispatcher | Open that hold → **D6**; inspect OUT003's same-morning split rule. On the greedy T1 run choose **A** (40 now, 2 on later T2); C is flagged. If CP-SAT puts the order on T2 and no later compatible trip exists, A is absent: choose recommended **B**, re-pick all 42 | Human selection publishes v2; no impossible backward top-up |
+| 8 | 04:27 | Loader | **Review v2**. Greedy/A: T1 OUT003 42 → 40; T2 OUT002 38 unchanged plus linked OUT003 +2. CP-SAT/B: source OUT003 stays 42; departure/arrival times shift for re-pick, no top-up. **Acknowledge the new v2 trip ID** | Hold transfers to v2 and releases only on its acknowledgement |
+| 9 | 04:36 | Driver VEH036 | **Acknowledge v2**, follow its actual stop order → **Arrived** → outcome. Greedy/A: T1 stop 1 OUT001 80, stop 2 OUT003 40 with 2 already reported short. CP-SAT/B: OUT003 42, no remaining loading shortage warning | Two clocks per stop; linked top-up has no duplicate shortfall |
 | 10 | 05:40 | Store OUT001 | **Confirm receipt** → change yoghurt and fish → **Report a problem** (2 damaged, 1 missing) | Issue sent to dispatch |
 | 11 | 06:14 | Dispatcher | **Live ops** → exceptions by impact → open the store report → **Redeliver** | D10 decision recorded |
 | 12 | 06:52 | Driver VEH007 | (Browser offline) record OUT074: 205 cases → **Saved on this phone** | R4 |

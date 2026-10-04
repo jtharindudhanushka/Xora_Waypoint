@@ -301,8 +301,9 @@ async def test_br30_repair_publishes_scoped_sse(client, shortfall_data, session_
             assert other.empty()
 
 
+@pytest.mark.parametrize("selected", ["A", "B"])
 def test_br29_br31_br34_trip_two_report_repair_ack_and_driver_prefill(
-    client, session_maker, request
+    client, session_maker, request, selected
 ):
     """Synthetic CP-SAT-shaped plan: the shortfall order rides T2, not T1."""
     request.getfixturevalue("planning_data")
@@ -447,7 +448,7 @@ def test_br29_br31_br34_trip_two_report_repair_ack_and_driver_prefill(
     response = client.post(
         f"/api/v1/shortfalls/{shortfall_id}/apply",
         headers=dispatch,
-        json={"option_id": choices["A"]["id"]},
+        json={"option_id": choices[selected]["id"]},
     )
     assert response.status_code == 200, response.text
     v2 = response.json()
@@ -460,7 +461,7 @@ def test_br29_br31_br34_trip_two_report_repair_ack_and_driver_prefill(
         for o in s["orders"]
         if o["order_ref"] == order_ref
     ]
-    assert sorted(portions) == [2, 40]
+    assert sorted(portions) == ([2, 40] if selected == "A" else [42])
     sync("trip_acknowledged", source_id, plan["id"], {})
     with session_maker() as db:
         hold = db.scalar(select(Hold))
@@ -469,12 +470,16 @@ def test_br29_br31_br34_trip_two_report_repair_ack_and_driver_prefill(
     sync("trip_acknowledged", new_source["id"], v2["id"], {})
     with session_maker() as db:
         assert db.scalar(select(Hold)).status == "released"
+        assert db.scalar(select(Shortfall)).qty == 2  # Original evidence is preserved for B too.
     driver = client.get("/api/v1/vehicles/TESTV/today", headers=auth_header(client, "driver"))
     assert driver.status_code == 200, driver.text
     driver_source = next(t for t in driver.json()["trips"] if t["trip_no"] == 2)
     driver_order = next(
         o for s in driver_source["stops"] for o in s["orders"] if o["order_ref"] == order_ref
     )
-    assert driver_order["planned_cases"] == 40
-    assert driver_order["known_shortfall"]["qty"] == 2
+    assert driver_order["planned_cases"] == (40 if selected == "A" else 42)
+    if selected == "A":
+        assert driver_order["known_shortfall"]["qty"] == 2
+    else:
+        assert driver_order["known_shortfall"] is None
     assert not driver_source["on_hold"]
