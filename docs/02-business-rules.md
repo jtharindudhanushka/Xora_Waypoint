@@ -117,5 +117,6 @@ Keep this list current. It goes into the README.
 | DEP-2 | Fleet counts, deferral set, priority scores, live-ops counts were illustrative | Real values computed by the engine on S1 | Design marked them as placeholders |
 | DEP-3 | D1 Edit trips / Edit this trip are actionable | Visible, disabled pending the post-merge stretch | Core track takes precedence; approved by Dev 2 on 4 Oct |
 | DEP-4 | D1 Orders tab can be opened | Visible, disabled until an Orders frame is supplied | No supplied Orders design; approved by Dev 2 on 4 Oct |
-| DEP-5 | D4 shows a highest-stop late probability (illustrative 62%) | Real likely-late count and windows, without a probability | Current travel-ratio model predicts windows, not calibrated probabilities; approved by Dev 2 on 4 Oct |
+| DEP-5 | D4 and D6 show late probabilities (illustrative 62% and 9% → 31%) | Real likely-late count and arrival-window changes, without a probability | Current travel-ratio model predicts windows, not calibrated probabilities; approved by Dev 2 on 4 Oct |
 | DEP-6 | Store notices sent in Sinhala, Tamil or English | English server template shared by preview and publication | Multilingual notification delivery remains a handover gap; approved by Dev 2 on 4 Oct |
+| DEP-7 | D6 Call the dock connects to the loader | Visible, disabled until a dock phone number is configured | No dock contact number is supplied; approved by Dev 2 on 4 Oct |

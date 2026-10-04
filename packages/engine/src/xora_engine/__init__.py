@@ -3,6 +3,7 @@
 from xora_engine.models import Assignment, District, Order, Problem, Stop, Trip, Vehicle, Violation
 from xora_engine.planning import PlanResult, plan
 from xora_engine.policy import Policy
+from xora_engine.repair import RepairOption, Shortfall, repair, validate_repair
 from xora_engine.timing import trip_minutes
 from xora_engine.validation import validate
 
@@ -13,11 +14,15 @@ __all__ = [
     "PlanResult",
     "Policy",
     "Problem",
+    "RepairOption",
+    "Shortfall",
     "Stop",
     "Trip",
     "Vehicle",
     "Violation",
     "plan",
+    "repair",
     "trip_minutes",
     "validate",
+    "validate_repair",
 ]

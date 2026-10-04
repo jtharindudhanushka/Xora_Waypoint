@@ -14,6 +14,7 @@ from app.modules.fleet.router import router as fleet_router
 from app.modules.health.router import router as health_router
 from app.modules.ops.clock_router import router as clock_router
 from app.modules.planning.router import router as planning_router
+from app.modules.repair.router import router as repair_router
 from app.modules.stream.router import router as stream_router
 
 API_PREFIX = "/api/v1"
@@ -51,6 +52,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         stream_router,
         fleet_router,
         planning_router,
+        repair_router,
     ):
         api.include_router(router)
     app.include_router(api)

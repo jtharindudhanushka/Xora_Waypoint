@@ -33,6 +33,7 @@ class BottleneckOut(BaseModel):
 class StopOrderOut(BaseModel):
     order_ref: str
     cases: int
+    top_up_of_order_ref: str | None = None
 
 
 class StopOut(BaseModel):

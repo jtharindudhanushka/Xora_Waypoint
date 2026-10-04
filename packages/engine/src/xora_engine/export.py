@@ -9,6 +9,8 @@ def _quote(value: str) -> str:
 
 
 def export_task2b(result: PlanResult, problem: Problem, scenario: str) -> str:
+    if not isinstance(result, PlanResult):
+        raise ValueError("BR-30: operational repairs must never enter the Task 2B export")
     assignments = {s.order_ref: (t.vehicle, t.trip_no) for t in result.trips for s in t.stops}
     rows = ["scenario,order_ref,decision,vehicle_id,trip_id"]
     for ref in sorted(problem.orders):

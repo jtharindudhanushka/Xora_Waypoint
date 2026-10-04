@@ -65,6 +65,13 @@
 | GET | `/shortfalls/{id}/options` | up to 3 options with loss, delay, effects, store-rule check (BR-28, BR-29) |
 | POST | `/shortfalls/{id}/apply` | `{option_id}` → publishes v(n+1) (BR-30) |
 
+Repair quotes include the D6 report, standing store rule, windows and A/B/C view models.
+Option ids bind the published version and candidate snapshot; an outdated choice returns
+`409 STALE_REPAIR_OPTION`. Applying creates new trips/stops and publishes `plan.published`
+without changing v1. `StopOrderOut.top_up_of_order_ref` identifies linked portions.
+Active holds move to the new trip ids and stay active until loader acknowledgement (BR-31).
+Option C creates a next-operating-day order and records its link in the repair audit event.
+
 ## Driver
 | Method | Path | Purpose |
 |---|---|---|

@@ -1,0 +1,87 @@
+{
+  "id": "00000000-0000-4000-8000-000000000001",
+  "version_id": "00000000-0000-4000-8000-000000000002",
+  "version_number": 1,
+  "next_version_number": 2,
+  "operating_date": "2026-04-07",
+  "vehicle_code": "TESTV01",
+  "trip_no": 1,
+  "depot": "TestDepot",
+  "dock": "Test Dock",
+  "reported_at": "04:18:00",
+  "reporter": "Test Loader",
+  "kind": "missing",
+  "reason": "Short from chiller pick",
+  "order_ref": "TEST002",
+  "outlet_code": "TESTOUT2",
+  "district": "Colombo",
+  "temp_requirement": "chilled",
+  "planned_cases": 42,
+  "missing_cases": 2,
+  "waiting_seconds": 72,
+  "to_departure_minutes": 21,
+  "planned_depart": "04:40:00",
+  "split_rule": "same_morning_only",
+  "split_rule_text": "split chilled orders only if the rest arrives the same morning",
+  "held": true,
+  "solve_ms": 800,
+  "stops": [
+    {
+      "outlet_code": "TESTOUT1",
+      "order_ref": "TEST001",
+      "cases": 80,
+      "available_cases": 80,
+      "window_open": "05:00:00",
+      "window_close": "07:30:00"
+    },
+    {
+      "outlet_code": "TESTOUT2",
+      "order_ref": "TEST002",
+      "cases": 42,
+      "available_cases": 40,
+      "window_open": "05:00:00",
+      "window_close": "07:30:00"
+    }
+  ],
+  "options": [
+    {
+      "id": "00000000-0000-4000-8000-00000000000a",
+      "label": "A",
+      "rank": 1,
+      "title": "Send 40 now, 2 more on Trip 2 this morning",
+      "gets": "40 now · 2 at ~06:50",
+      "delay": "None",
+      "other_stops": "Unchanged",
+      "loss": 0,
+      "loss_label": "Lowest",
+      "breaks_store_rule": false,
+      "recommended": true
+    },
+    {
+      "id": "00000000-0000-4000-8000-00000000000b",
+      "label": "B",
+      "rank": 2,
+      "title": "Hold van ~25 min for re-pick",
+      "gets": "42 at ~06:10",
+      "delay": "TESTV01 +25 min",
+      "other_stops": "TESTOUT1: likely 05:00–05:30 → 05:25–05:55",
+      "loss": 2,
+      "loss_label": "Medium",
+      "breaks_store_rule": false,
+      "recommended": false
+    },
+    {
+      "id": "00000000-0000-4000-8000-00000000000c",
+      "label": "C",
+      "rank": 3,
+      "title": "Send 40, move 2 to Wed",
+      "gets": "40 now · 2 on Wed",
+      "delay": "None",
+      "other_stops": "Unchanged",
+      "loss": 3,
+      "loss_label": "Medium",
+      "breaks_store_rule": true,
+      "recommended": false
+    }
+  ]
+}

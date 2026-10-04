@@ -12,6 +12,8 @@ const ASSETS = {
   checkWhite: 'a6c6e.svg',
   check: 'eef42.svg',
   alert: 'af399.svg',
+  pause: '102e0.svg',
+  home: '18bd0.svg',
 } as const
 
 export function FigmaIcon({ name }: { name: keyof typeof ASSETS }) {

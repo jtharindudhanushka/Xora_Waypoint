@@ -244,6 +244,40 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  '/api/v1/shortfalls/{shortfall_id}/options': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Options */
+    get: operations['options_api_v1_shortfalls__shortfall_id__options_get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/v1/shortfalls/{shortfall_id}/apply': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Apply */
+    post: operations['apply_api_v1_shortfalls__shortfall_id__apply_post']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
 }
 export type webhooks = Record<string, never>
 export interface components {
@@ -458,6 +492,63 @@ export interface components {
        */
       accept_late_risk: boolean
     }
+    /** RepairApplyIn */
+    RepairApplyIn: {
+      /**
+       * Option Id
+       * Format: uuid
+       */
+      option_id: string
+    }
+    /** RepairOptionOut */
+    RepairOptionOut: {
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string
+      /** Label */
+      label: string
+      /** Rank */
+      rank: number
+      /** Title */
+      title: string
+      /** Gets */
+      gets: string
+      /** Delay */
+      delay: string
+      /** Other Stops */
+      other_stops: string
+      /** Loss */
+      loss: number
+      /** Loss Label */
+      loss_label: string
+      /** Breaks Store Rule */
+      breaks_store_rule: boolean
+      /** Recommended */
+      recommended: boolean
+    }
+    /** RepairStopOut */
+    RepairStopOut: {
+      /** Outlet Code */
+      outlet_code: string
+      /** Order Ref */
+      order_ref: string
+      /** Cases */
+      cases: number
+      /** Available Cases */
+      available_cases: number
+      /**
+       * Window Open
+       * Format: time
+       */
+      window_open: string
+      /**
+       * Window Close
+       * Format: time
+       */
+      window_close: string
+    }
     /** ServeInsteadIn */
     ServeInsteadIn: {
       /**
@@ -474,12 +565,85 @@ export interface components {
       displaces: string[]
       version?: components['schemas']['PlanOut'] | null
     }
+    /** ShortfallOptionsOut */
+    ShortfallOptionsOut: {
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string
+      /**
+       * Version Id
+       * Format: uuid
+       */
+      version_id: string
+      /** Version Number */
+      version_number: number
+      /** Next Version Number */
+      next_version_number: number
+      /**
+       * Operating Date
+       * Format: date
+       */
+      operating_date: string
+      /** Vehicle Code */
+      vehicle_code: string
+      /** Trip No */
+      trip_no: number
+      /** Depot */
+      depot: string
+      /** Dock */
+      dock: string | null
+      /**
+       * Reported At
+       * Format: time
+       */
+      reported_at: string
+      /** Reporter */
+      reporter: string
+      /** Kind */
+      kind: string
+      /** Reason */
+      reason: string
+      /** Order Ref */
+      order_ref: string
+      /** Outlet Code */
+      outlet_code: string
+      /** District */
+      district: string
+      /** Temp Requirement */
+      temp_requirement: string
+      /** Planned Cases */
+      planned_cases: number
+      /** Missing Cases */
+      missing_cases: number
+      /** Waiting Seconds */
+      waiting_seconds: number
+      /** To Departure Minutes */
+      to_departure_minutes: number
+      /** Planned Depart */
+      planned_depart: string | null
+      /** Split Rule */
+      split_rule: string
+      /** Split Rule Text */
+      split_rule_text: string
+      /** Held */
+      held: boolean
+      /** Solve Ms */
+      solve_ms: number
+      /** Stops */
+      stops: components['schemas']['RepairStopOut'][]
+      /** Options */
+      options: components['schemas']['RepairOptionOut'][]
+    }
     /** StopOrderOut */
     StopOrderOut: {
       /** Order Ref */
       order_ref: string
       /** Cases */
       cases: number
+      /** Top Up Of Order Ref */
+      top_up_of_order_ref?: string | null
     }
     /** StopOut */
     StopOut: {
@@ -1072,6 +1236,72 @@ export interface operations {
       cookie?: never
     }
     requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['PlanOut']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  options_api_v1_shortfalls__shortfall_id__options_get: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        shortfall_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ShortfallOptionsOut']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  apply_api_v1_shortfalls__shortfall_id__apply_post: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        shortfall_id: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['RepairApplyIn']
+      }
+    }
     responses: {
       /** @description Successful Response */
       200: {

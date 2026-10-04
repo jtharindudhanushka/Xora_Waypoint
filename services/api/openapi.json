@@ -723,6 +723,112 @@
           }
         }
       }
+    },
+    "/api/v1/shortfalls/{shortfall_id}/options": {
+      "get": {
+        "tags": [
+          "Repair"
+        ],
+        "summary": "Options",
+        "operationId": "options_api_v1_shortfalls__shortfall_id__options_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "shortfall_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Shortfall Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShortfallOptionsOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/shortfalls/{shortfall_id}/apply": {
+      "post": {
+        "tags": [
+          "Repair"
+        ],
+        "summary": "Apply",
+        "operationId": "apply_api_v1_shortfalls__shortfall_id__apply_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "shortfall_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Shortfall Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RepairApplyIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -1284,6 +1390,124 @@
         "type": "object",
         "title": "PublishIn"
       },
+      "RepairApplyIn": {
+        "properties": {
+          "option_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Option Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "option_id"
+        ],
+        "title": "RepairApplyIn"
+      },
+      "RepairOptionOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "rank": {
+            "type": "integer",
+            "title": "Rank"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "gets": {
+            "type": "string",
+            "title": "Gets"
+          },
+          "delay": {
+            "type": "string",
+            "title": "Delay"
+          },
+          "other_stops": {
+            "type": "string",
+            "title": "Other Stops"
+          },
+          "loss": {
+            "type": "number",
+            "title": "Loss"
+          },
+          "loss_label": {
+            "type": "string",
+            "title": "Loss Label"
+          },
+          "breaks_store_rule": {
+            "type": "boolean",
+            "title": "Breaks Store Rule"
+          },
+          "recommended": {
+            "type": "boolean",
+            "title": "Recommended"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "label",
+          "rank",
+          "title",
+          "gets",
+          "delay",
+          "other_stops",
+          "loss",
+          "loss_label",
+          "breaks_store_rule",
+          "recommended"
+        ],
+        "title": "RepairOptionOut"
+      },
+      "RepairStopOut": {
+        "properties": {
+          "outlet_code": {
+            "type": "string",
+            "title": "Outlet Code"
+          },
+          "order_ref": {
+            "type": "string",
+            "title": "Order Ref"
+          },
+          "cases": {
+            "type": "integer",
+            "title": "Cases"
+          },
+          "available_cases": {
+            "type": "integer",
+            "title": "Available Cases"
+          },
+          "window_open": {
+            "type": "string",
+            "format": "time",
+            "title": "Window Open"
+          },
+          "window_close": {
+            "type": "string",
+            "format": "time",
+            "title": "Window Close"
+          }
+        },
+        "type": "object",
+        "required": [
+          "outlet_code",
+          "order_ref",
+          "cases",
+          "available_cases",
+          "window_open",
+          "window_close"
+        ],
+        "title": "RepairStopOut"
+      },
       "ServeInsteadIn": {
         "properties": {
           "confirm": {
@@ -1326,6 +1550,179 @@
         ],
         "title": "ServeInsteadOut"
       },
+      "ShortfallOptionsOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "version_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Version Id"
+          },
+          "version_number": {
+            "type": "integer",
+            "title": "Version Number"
+          },
+          "next_version_number": {
+            "type": "integer",
+            "title": "Next Version Number"
+          },
+          "operating_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Operating Date"
+          },
+          "vehicle_code": {
+            "type": "string",
+            "title": "Vehicle Code"
+          },
+          "trip_no": {
+            "type": "integer",
+            "title": "Trip No"
+          },
+          "depot": {
+            "type": "string",
+            "title": "Depot"
+          },
+          "dock": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dock"
+          },
+          "reported_at": {
+            "type": "string",
+            "format": "time",
+            "title": "Reported At"
+          },
+          "reporter": {
+            "type": "string",
+            "title": "Reporter"
+          },
+          "kind": {
+            "type": "string",
+            "title": "Kind"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason"
+          },
+          "order_ref": {
+            "type": "string",
+            "title": "Order Ref"
+          },
+          "outlet_code": {
+            "type": "string",
+            "title": "Outlet Code"
+          },
+          "district": {
+            "type": "string",
+            "title": "District"
+          },
+          "temp_requirement": {
+            "type": "string",
+            "title": "Temp Requirement"
+          },
+          "planned_cases": {
+            "type": "integer",
+            "title": "Planned Cases"
+          },
+          "missing_cases": {
+            "type": "integer",
+            "title": "Missing Cases"
+          },
+          "waiting_seconds": {
+            "type": "integer",
+            "title": "Waiting Seconds"
+          },
+          "to_departure_minutes": {
+            "type": "integer",
+            "title": "To Departure Minutes"
+          },
+          "planned_depart": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Planned Depart"
+          },
+          "split_rule": {
+            "type": "string",
+            "title": "Split Rule"
+          },
+          "split_rule_text": {
+            "type": "string",
+            "title": "Split Rule Text"
+          },
+          "held": {
+            "type": "boolean",
+            "title": "Held"
+          },
+          "solve_ms": {
+            "type": "integer",
+            "title": "Solve Ms"
+          },
+          "stops": {
+            "items": {
+              "$ref": "#/components/schemas/RepairStopOut"
+            },
+            "type": "array",
+            "title": "Stops"
+          },
+          "options": {
+            "items": {
+              "$ref": "#/components/schemas/RepairOptionOut"
+            },
+            "type": "array",
+            "title": "Options"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "version_id",
+          "version_number",
+          "next_version_number",
+          "operating_date",
+          "vehicle_code",
+          "trip_no",
+          "depot",
+          "dock",
+          "reported_at",
+          "reporter",
+          "kind",
+          "reason",
+          "order_ref",
+          "outlet_code",
+          "district",
+          "temp_requirement",
+          "planned_cases",
+          "missing_cases",
+          "waiting_seconds",
+          "to_departure_minutes",
+          "planned_depart",
+          "split_rule",
+          "split_rule_text",
+          "held",
+          "solve_ms",
+          "stops",
+          "options"
+        ],
+        "title": "ShortfallOptionsOut"
+      },
       "StopOrderOut": {
         "properties": {
           "order_ref": {
@@ -1335,6 +1732,17 @@
           "cases": {
             "type": "integer",
             "title": "Cases"
+          },
+          "top_up_of_order_ref": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Top Up Of Order Ref"
           }
         },
         "type": "object",
