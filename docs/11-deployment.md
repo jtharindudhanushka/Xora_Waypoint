@@ -24,6 +24,14 @@ docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
 ```
 `docker-compose.prod.yml` adds the Caddy service (ports 80/443, `Caddyfile` with `{$PUBLIC_HOST}`), sets `restart: unless-stopped`, and mounts `DATASET_DIR` read-only into `api`.
 
+### Live deployment (4 Oct 2026)
+- **URL:** https://xora-waypoint.southeastasia.cloudapp.azure.com (Southeast Asia, resource group `xora-rg`, VM `xora-vm`).
+- **Size:** **B1ms** (1 vCPU, 2 GB) + 2 GB swap + 30 GB Standard SSD, about $21/month on the student credit. Postgres, API, nginx and Caddy fit; images are built on the VM.
+- **SSH** is allowed only from listed team IPs (NSG rule `default-allow-ssh`). Some mobile carriers send SSH from a different address than web traffic: find it with `echo $SSH_CLIENT` on the VM and add that `/32`. Without SSH, use `az vm run-command invoke -g xora-rg -n xora-vm --command-id RunShellScript --scripts '...'`.
+- **Redeploy:** `ssh azureuser@<ip> 'cd Xora_Waypoint && git checkout main && git pull && docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build'`.
+- **Fixed on first real `compose up`:** `CORS_ORIGINS` as a plain string crashed settings (now `NoDecode` + split); the web healthcheck used `localhost` (IPv6) while nginx listens on IPv4.
+- **Stop all charges after the finale:** `az group delete -n xora-rg`.
+
 ### Operations
 - **Health:** `https://<host>/api/v1/health`.
 - **Backups:** nightly `pg_dump` to the VM disk (not to git).

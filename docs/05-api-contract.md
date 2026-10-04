@@ -81,7 +81,7 @@ Option C creates a next-operating-day order and records its link in the repair a
 ## Sync (driver, loader); details in [07](07-offline-sync.md)
 | Method | Path | Purpose |
 |---|---|---|
-| POST | `/sync` | `{device_id, events:[…]}` → `{results:[{event_id, status: accepted, duplicate or conflict, conflict_id?}], server_time}` |
+| POST | `/sync` | `{device_id, events:[…]}` → `{results:[{event_id, status: accepted, duplicate, conflict or rejected, conflict_id?, code?, rule_id?}], server_time}`. `rejected` = a rule check failed (e.g. BR-32 no ack, BR-27 on hold); nothing is stored and the device shows "needs review" |
 | GET | `/sync/bootstrap` | everything the device needs to work offline today (plan, stops, outlets, notes) |
 
 ## Receipts & issues
