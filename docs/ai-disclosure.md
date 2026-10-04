@@ -31,6 +31,16 @@ The brief requires us to explain which work was AI-assisted, which wasn't, and h
 | 2026-10-04 | Shortfall demo and deferral fixes | Codex (OpenAI) | Verified S1 shortfall/repair/ack flow for greedy and Trip 2 shapes, corrected deferral timezone dates and repicked driver projection, and added synthetic regressions | Kept the deployed solver configuration unchanged as requested; retained lead review, merge and deployment authority |
 | 2026-10-04 | Merged architecture and video segment | Codex (OpenAI) | Checked registered routers, ORM keys, integrity triggers, outbox, scoped SSE and Compose deployment; corrected architecture/data diagrams and drafted the code segment script | Requested documentation to match merged code, retained lead review and narration |
 
+## Lead implementation log (4 Oct 2026)
+
+| Date | Area | Tool | What the AI did | What we did |
+|---|---|---|---|---|
+| 2026-10-04 | Azure deployment, task 1.1 | Claude Code (Anthropic) | Created the Azure for Students VM (B1ms + swap), firewall rules and Docker; ran the first real `docker compose up` (prod overlay + Caddy); fixed the `CORS_ORIGINS` env parsing crash and the web healthcheck; verified a fresh-clone `cp .env.example .env && docker compose up` with seed data | Chose the VM size and cost limits, signed in to Azure, copied the dataset to the VM with scp, approved every firewall change |
+| 2026-10-04 | Sync API, task 1.2 | Claude Code (Anthropic) | Implemented `POST /sync` (idempotent by event id, commit per event, stale-plan and count conflicts that open `issues` rows), shortfall → hold, loader acknowledgement → hold release, `GET /sync/bootstrap` and `GET /vehicles/{code}/today`; wrote synthetic tests | Specified the protocol (docs/07) and the business rules; reviewed the PR and the API contract change (`rejected` status) |
+| 2026-10-04 | Driver UI, task 1.3 | Claude Code (Anthropic), Figma connector | Read the R1–R7 frames and rationales; built the Dexie outbox, ordered sync loop, sync bar and the R1, R2, R3, R4/R5 and R7 screens with existing tokens and exported Figma icons | Set scope and cut order; reviewed the screens against Figma |
+| 2026-10-04 | Integration, smoke and fixes | Claude Code (Anthropic) | Merged teammates' PRs on request; ran the walkthrough on a local seeded stack and on the live URL; fixed the walkthrough blockers it found (later trips unreachable, per-user outbox, receipt pre-fill field) | Signed in to every live account by hand (the agent never entered live credentials); decided what to cut and what counts as a blocker |
+| 2026-10-04 | Submission docs | Claude Code (Anthropic) | Drafted the README (setup, accounts, walkthrough from the QA results, departures, known gaps) and this log | Reviewed and approved the final text |
+
 ## Not AI-assisted
 
 - _To be completed by the team (e.g. the original wireframes and flows from the Designathon, decisions made in review)._
