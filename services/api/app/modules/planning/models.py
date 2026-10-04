@@ -136,7 +136,9 @@ class Deferral(Base):
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
     version_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("plan_versions.id"), index=True)
     order_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("orders.id"))
-    reason_code: Mapped[str] = mapped_column(Enum(*REASON_CODES, name="reason_code", native_enum=False))
+    reason_code: Mapped[str] = mapped_column(
+        Enum(*REASON_CODES, name="reason_code", native_enum=False)
+    )
     group: Mapped[str] = mapped_column(
         Enum("unavoidable", "choice", name="deferral_group", native_enum=False)
     )  # BR-16
