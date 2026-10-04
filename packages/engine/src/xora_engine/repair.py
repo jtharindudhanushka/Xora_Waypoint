@@ -197,11 +197,16 @@ def repair(
         raise ValueError("Unknown shortfall order")
     order = problem.orders[shortfall.order_ref]
     now_cases = target.cases - shortfall.qty_missing
-    reduced = replace(
-        affected,
-        stops=tuple(
-            replace(s, cases=now_cases) if s.order_ref == order.ref else s for s in affected.stops
+    reduced = _schedule(
+        replace(
+            affected,
+            planned_depart=max(affected.planned_depart, shortfall.now_minutes),
+            stops=tuple(
+                replace(s, cases=now_cases) if s.order_ref == order.ref else s
+                for s in affected.stops
+            ),
         ),
+        problem,
     )
     base = [reduced if t == affected else t for t in published.trips]
     original_windows = {
@@ -272,7 +277,6 @@ def repair(
             later == affected
             or later.locked
             or later.planned_depart <= affected.planned_depart
-            or later.planned_depart < shortfall.now_minutes + shortfall.repick_minutes
             or (later.vehicle, later.trip_no) in shortfall.unavailable_trips
             or problem.vehicles[later.vehicle].temp != "reefer"
             or problem.orders[later.stops[0].order_ref].brand != "Fresh"
@@ -285,7 +289,18 @@ def repair(
         )
         if not existing:
             stops = (*stops, Stop(order.ref, shortfall.qty_missing))
-        replacement = _schedule(replace(later, stops=stops), problem)
+        # A may wait for the re-pick on the later trip while the held source leaves now.
+        # Propagate that small delay and use the shared budget/fuel/window predicates.
+        replacement = _schedule(
+            replace(
+                later,
+                stops=stops,
+                planned_depart=max(
+                    later.planned_depart, shortfall.now_minutes + shortfall.repick_minutes
+                ),
+            ),
+            problem,
+        )
         candidate = _reschedule(
             [replacement if t == later else t for t in base], replacement, shortfall, problem
         )
@@ -314,7 +329,7 @@ def repair(
     add(
         "C",
         f"Send {now_cases}, move {shortfall.qty_missing} to the next run",
-        Assignment(tuple(base)),
+        _reschedule(base, reduced, shortfall, problem),
         next_cases=shortfall.qty_missing,
     )
     if options:

@@ -102,6 +102,16 @@ def test_br30_quantity_conservation_cannot_be_bypassed(problem):
     assert violations[0].rule_id == "BR-30"
 
 
+def test_br28_topup_waits_for_repick_and_rechecks_later_trip_budget(problem):
+    original = published(problem)
+    value = Shortfall("O1", 2, "V1", 1, 350)
+    option = next(o for o in repair(original, value, problem) if o.label == "A")
+    later = next(t for t in option.assignment.trips if t.trip_no == 2)
+    assert later.planned_depart >= 375
+    assert option.assignment.trips[0].planned_depart == 350
+    assert not validate_repair(option.assignment, original, value, problem)
+
+
 @given(st.integers(min_value=1, max_value=10))
 def test_br30_every_repair_preserves_quantity_and_passes_shared_rules(missing):
     order = Order(
