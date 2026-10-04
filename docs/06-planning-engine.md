@@ -67,6 +67,22 @@ The weights are **assumptions**, kept in `policy.py` defaults, shown in the UI (
 
 **Scale check:** S1 is 85 orders × (27 switched-on vehicles × 2 trips), after pruning. It solves in seconds.
 
+Implementation: `cpsat.py` uses OR-Tools 9.15, eight workers and a maximum ten-second
+solver budget. A brief Fresh neighbourhood search strengthens the initial greedy
+hint; the full model uses the remaining budget. kg, m³ and litres are conservatively
+scaled by 1,000,000, with the same 1e-6 capacity epsilon. Objective value/trip/fuel
+coefficients use scale 1,000. Symmetry ordering applies only to unlocked slots.
+The selected candidate must improve the exact objective without reducing served
+order count, chilled count or priority value below the greedy baseline.
+
+Both backends use the same sequencing, validation, explanation and KPI functions.
+Impossible singleton mall windows are pruned; an unschedulable grouped trip tries
+its greedy slot, then the entire candidate is validated again. Failure, timeout
+without a solution, a worse candidate or broken locks returns GREEDY. OPTIMAL is
+reported only for an unchanged, validated globally solved integer model; repaired
+or time-limited incumbents report FEASIBLE. API elapsed time also includes model
+construction, validation and explanations, so it can exceed ten seconds.
+
 ## Explanations (BR-15 to BR-17)
 - **Reason code per deferral:** try to insert the order into every vehicle and trip and keep the *first* blocking rule. If it fits somewhere but wasn't chosen, the code is `LOWER_PRIORITY`.
 - **Group:** re-solve with `served[o] = 1` forced. If infeasible → `unavoidable`. Otherwise `choice`, and `displaces` = orders dropped in that solution (used for "Serve instead").
