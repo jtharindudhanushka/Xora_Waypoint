@@ -2541,6 +2541,14 @@
             "type": "integer",
             "title": "Planned Cases"
           },
+          "weight_kg": {
+            "type": "number",
+            "title": "Weight Kg"
+          },
+          "volume_m3": {
+            "type": "number",
+            "title": "Volume M3"
+          },
           "top_up_of_order_ref": {
             "anyOf": [
               {
@@ -2576,6 +2584,8 @@
           "order_ref",
           "temp_requirement",
           "planned_cases",
+          "weight_kg",
+          "volume_m3",
           "lines"
         ],
         "title": "StopOrderView"
@@ -2799,6 +2809,18 @@
             ],
             "title": "Store Note"
           },
+          "store_note_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Store Note At"
+          },
           "arrived_at": {
             "anyOf": [
               {
@@ -2850,6 +2872,7 @@
           "access_note",
           "contact_name",
           "store_note",
+          "store_note_at",
           "arrived_at",
           "outcome",
           "orders"
@@ -3029,6 +3052,40 @@
               }
             ],
             "title": "Detail"
+          },
+          "driver_qty": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Driver Qty"
+          },
+          "store_qty": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Store Qty"
+          },
+          "store_time": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Store Time"
           }
         },
         "type": "object",
