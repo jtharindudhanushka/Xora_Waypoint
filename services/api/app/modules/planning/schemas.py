@@ -61,6 +61,8 @@ class TripOut(BaseModel):
     volume_m3: float
     locked: bool
     stops: list[StopOut]
+    rule_messages: list[ViolationOut] = Field(default_factory=list)
+    protected_outlets: list[str] = Field(default_factory=list)
 
 
 class DeferralOut(BaseModel):
@@ -76,6 +78,12 @@ class DeferralOut(BaseModel):
     repeat_skip: bool
     confirmed: bool
     confirm_reason: str | None
+    district: str
+    temp_requirement: str
+    volume_m3: float
+    weight_kg: float
+    notice_body: str = ""
+    notice_language: str = "en"
 
 
 class PlanOut(BaseModel):
@@ -91,6 +99,8 @@ class PlanOut(BaseModel):
     bottleneck: BottleneckOut
     trips: list[TripOut]
     deferrals: list[DeferralOut]
+    orders_total: int
+    chilled_total: int
 
 
 class ConfirmItem(BaseModel):
@@ -130,3 +140,13 @@ class FleetOut(BaseModel):
     volume_cap_m3: float
     fuel_used_l: float
     fuel_remaining_l: float
+
+
+class ServeInsteadIn(BaseModel):
+    confirm: bool = False
+
+
+class ServeInsteadOut(BaseModel):
+    order_ref: str
+    displaces: list[str]
+    version: PlanOut | None = None

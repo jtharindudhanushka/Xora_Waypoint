@@ -52,7 +52,7 @@ class Repository:
             )
         return version
 
-    def orders(self, operating_date: date) -> list[Order]:
+    def orders(self, operating_date: date, *, include_completed: bool = False) -> list[Order]:
         return list(
             self.db.scalars(
                 select(Order)
@@ -60,7 +60,11 @@ class Repository:
                 .where(
                     Outlet.depot == self.depot,
                     Order.delivery_date == operating_date,
-                    Order.status.in_(("placed", "planned", "deferred")),
+                    Order.status.in_(
+                        ("placed", "planned", "deferred", "loaded", "in_transit", "delivered")
+                        if include_completed
+                        else ("placed", "planned", "deferred")
+                    ),
                 )
             )
         )

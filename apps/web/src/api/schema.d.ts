@@ -209,6 +209,41 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  '/api/v1/deferrals/{deferral_id}/serve-instead': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Serve Instead */
+    post: operations['serve_instead_api_v1_deferrals__deferral_id__serve_instead_post']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/v1/trips/{trip_id}/lock': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Lock Trip */
+    post: operations['lock_trip_api_v1_trips__trip_id__lock_post']
+    /** Unlock Trip */
+    delete: operations['unlock_trip_api_v1_trips__trip_id__lock_delete']
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
 }
 export type webhooks = Record<string, never>
 export interface components {
@@ -283,6 +318,24 @@ export interface components {
       confirmed: boolean
       /** Confirm Reason */
       confirm_reason: string | null
+      /** District */
+      district: string
+      /** Temp Requirement */
+      temp_requirement: string
+      /** Volume M3 */
+      volume_m3: number
+      /** Weight Kg */
+      weight_kg: number
+      /**
+       * Notice Body
+       * @default
+       */
+      notice_body: string
+      /**
+       * Notice Language
+       * @default en
+       */
+      notice_language: string
     }
     /** FleetOut */
     FleetOut: {
@@ -381,6 +434,10 @@ export interface components {
       trips: components['schemas']['TripOut'][]
       /** Deferrals */
       deferrals: components['schemas']['DeferralOut'][]
+      /** Orders Total */
+      orders_total: number
+      /** Chilled Total */
+      chilled_total: number
     }
     /** PublishCheckOut */
     PublishCheckOut: {
@@ -400,6 +457,22 @@ export interface components {
        * @default false
        */
       accept_late_risk: boolean
+    }
+    /** ServeInsteadIn */
+    ServeInsteadIn: {
+      /**
+       * Confirm
+       * @default false
+       */
+      confirm: boolean
+    }
+    /** ServeInsteadOut */
+    ServeInsteadOut: {
+      /** Order Ref */
+      order_ref: string
+      /** Displaces */
+      displaces: string[]
+      version?: components['schemas']['PlanOut'] | null
     }
     /** StopOrderOut */
     StopOrderOut: {
@@ -480,6 +553,10 @@ export interface components {
       locked: boolean
       /** Stops */
       stops: components['schemas']['StopOut'][]
+      /** Rule Messages */
+      rule_messages?: components['schemas']['ViolationOut'][]
+      /** Protected Outlets */
+      protected_outlets?: string[]
     }
     /** UserOut */
     UserOut: {
@@ -898,6 +975,103 @@ export interface operations {
         'application/json': components['schemas']['PublishIn'] | null
       }
     }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['PlanOut']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  serve_instead_api_v1_deferrals__deferral_id__serve_instead_post: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        deferral_id: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['ServeInsteadIn']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ServeInsteadOut']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  lock_trip_api_v1_trips__trip_id__lock_post: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        trip_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['PlanOut']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  unlock_trip_api_v1_trips__trip_id__lock_delete: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        trip_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       /** @description Successful Response */
       200: {

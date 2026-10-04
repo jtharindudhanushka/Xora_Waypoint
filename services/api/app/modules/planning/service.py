@@ -8,8 +8,8 @@ from typing import Any
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
+from xora_engine import Assignment, Problem, validate
 from xora_engine import plan as engine_plan
-from xora_engine import validate
 from xora_engine.fuel import trip_litres
 
 from app.core.clock import COLOMBO, Clock
@@ -27,6 +27,7 @@ from app.modules.planning.schemas import (
     FleetOut,
     PlanOut,
     PublishCheckOut,
+    ServeInsteadOut,
     StopOrderOut,
     StopOut,
     TripOut,
@@ -74,7 +75,13 @@ def audit(
     )
 
 
-def generate(repo: Repository, user: User, clock: Clock, operating_date: date) -> PlanVersion:
+def generate(
+    repo: Repository,
+    user: User,
+    clock: Clock,
+    operating_date: date,
+    force_order_ref: str | None = None,
+) -> PlanVersion:
     cutoff = datetime.combine(operating_date - timedelta(days=1), time(16), tzinfo=COLOMBO)
     if clock.now() < cutoff:
         raise DomainError(
@@ -111,7 +118,10 @@ def generate(repo: Repository, user: User, clock: Clock, operating_date: date) -
         else ()
     )
     started = perf_counter()
-    result = engine_plan(problem, locks=locks)
+    try:
+        result = engine_plan(problem, locks=locks, force_order_ref=force_order_ref)
+    except ValueError as exc:
+        raise DomainError("PLAN_INFEASIBLE", str(exc)) from exc
     elapsed = round((perf_counter() - started) * 1000)
     version = PlanVersion(
         plan_id=plan.id,
@@ -179,13 +189,23 @@ def generate(repo: Repository, user: User, clock: Clock, operating_date: date) -
                 else None,
             )
         )
-    audit(repo, user, clock, "plan.generated", version, {"solver": "GREEDY"})
+    audit(
+        repo,
+        user,
+        clock,
+        "plan.generated",
+        version,
+        {"solver": "GREEDY", "forced_order": force_order_ref},
+    )
     repo.db.commit()
     return repo.version(version.id)
 
 
 def plan_out(repo: Repository, version: PlanVersion) -> PlanOut:
-    by_id = {o.id: o for o in repo.db.scalars(select(Order))}
+    by_id = {o.id: o for o in repo.orders(version.plan.operating_date, include_completed=True)}
+    outlets = {o.code: o for o in repo.outlets()}
+    problem = adapter.load_problem(repo, version, include_completed=True)
+    assignment = adapter.load_assignment(version, repo)
     return PlanOut(
         id=version.id,
         plan_id=version.plan_id,
@@ -197,6 +217,14 @@ def plan_out(repo: Repository, version: PlanVersion) -> PlanOut:
         solve_ms=version.solve_ms,
         kpis=version.kpis,
         bottleneck=version.bottleneck,
+        orders_total=version.kpis.get("orders_served", 0) + len(version.deferrals),
+        chilled_total=sum(
+            by_id[so.order_id].temp_requirement == "chilled"
+            for t in version.trips
+            for s in t.stops
+            for so in s.orders
+        )
+        + sum(by_id[d.order_id].temp_requirement == "chilled" for d in version.deferrals),
         trips=[
             TripOut(
                 id=t.id,
@@ -228,6 +256,16 @@ def plan_out(repo: Repository, version: PlanVersion) -> PlanOut:
                     )
                     for s in t.stops
                 ],
+                rule_messages=trip_rule_messages(problem, assignment, t),
+                protected_outlets=sorted(
+                    {
+                        s.outlet_code
+                        for s in t.stops
+                        for so in s.orders
+                        if by_id[so.order_id].deferred_yesterday
+                        or by_id[so.order_id].days_since_last_served >= 3
+                    }
+                ),
             )
             for t in version.trips
         ],
@@ -246,9 +284,93 @@ def plan_out(repo: Repository, version: PlanVersion) -> PlanOut:
                 or by_id[d.order_id].days_since_last_served >= 3,
                 confirmed=d.confirmed_by is not None,
                 confirm_reason=d.confirm_reason,
+                district=outlets[by_id[d.order_id].outlet_code].district,
+                temp_requirement=by_id[d.order_id].temp_requirement,
+                volume_m3=float(by_id[d.order_id].volume_m3),
+                weight_kg=float(by_id[d.order_id].weight_kg),
+                notice_body=deferral_notice(d, by_id[d.order_id]),
+                notice_language="en",
             )
             for d in version.deferrals
         ],
+    )
+
+
+def deferral_notice(deferred: Deferral, order: Order) -> str:
+    """BR-21: preview and delivered notification use the identical server template."""
+    next_label = deferred.next_run.isoformat() if deferred.next_run else "to be confirmed"
+    return (
+        f"{order.ref}: {deferred.explanation or deferred.reason_code}. "
+        f"Next run: {next_label}. Written from the plan."
+    )
+
+
+def trip_rule_messages(problem: Problem, assignment: Assignment, trip: Trip) -> list[ViolationOut]:
+    """Explain why an order on the next trip cannot join this trip (BR-06)."""
+    from dataclasses import replace
+
+    from xora_engine import Assignment
+    from xora_engine import Stop as EngineStop
+    from xora_engine.rules import capacity_violations
+
+    target = next(
+        t for t in assignment.trips if t.vehicle == trip.vehicle_code and t.trip_no == trip.trip_no
+    )
+    messages: list[ViolationOut] = []
+    for other in assignment.trips:
+        if other.vehicle != target.vehicle or other.trip_no == target.trip_no:
+            continue
+        for stop in other.stops:
+            order = problem.orders[stop.order_ref]
+            if order.brand != trip.brand or order.district != trip.district:
+                continue
+            candidate = replace(target, stops=(*target.stops, EngineStop(order.ref, order.units)))
+            for violation in capacity_violations(Assignment((candidate,)), problem):
+                messages.append(
+                    ViolationOut(
+                        rule_id=violation.rule_id,
+                        code=violation.code,
+                        message=f"{order.outlet} won’t fit: " + violation.message.split(": ", 1)[1],
+                        context=dict(violation.context),
+                    )
+                )
+    return messages
+
+
+def serve_instead(
+    repo: Repository, user: User, clock: Clock, deferral_id: uuid.UUID, apply: bool
+) -> ServeInsteadOut:
+    deferred = repo.db.get(Deferral, deferral_id)
+    if deferred is None:
+        raise NotFoundError("DEFERRAL_NOT_FOUND", "Deferral not found")
+    version = repo.version(deferred.version_id, lock=True)
+    require_draft(version)
+    latest = repo.latest(version.plan_id)
+    if latest is None or latest.id != version.id:
+        raise ConflictError(
+            "STALE_DRAFT", "Reopen the latest draft before replacing an order", rule_id="BR-23"
+        )
+    order = repo.db.get(Order, deferred.order_id)
+    assert order is not None
+    problem = adapter.load_problem(repo, version)
+    assignment = adapter.load_assignment(version, repo)
+    locks = tuple(t for t in assignment.trips if t.locked)
+    try:
+        result = engine_plan(problem, locks=locks, force_order_ref=order.ref)
+    except ValueError as exc:
+        raise DomainError("CANNOT_SERVE_INSTEAD", str(exc), rule_id="BR-16") from exc
+    served_before = {s.order_ref for t in assignment.trips for s in t.stops}
+    served_after = {s.order_ref for t in result.trips for s in t.stops}
+    displaced = sorted(served_before - served_after)
+    replacement = (
+        generate(repo, user, clock, version.plan.operating_date, force_order_ref=order.ref)
+        if apply
+        else None
+    )
+    return ServeInsteadOut(
+        order_ref=order.ref,
+        displaces=displaced,
+        version=plan_out(repo, replacement) if replacement else None,
     )
 
 
@@ -375,7 +497,6 @@ async def publish(
     for deferred in version.deferrals:
         order = by_id[deferred.order_id]
         order.status = "deferred"
-        next_label = deferred.next_run.isoformat() if deferred.next_run else "to be confirmed"
         repo.db.add(
             Notification(
                 outlet_code=order.outlet_code,
@@ -384,9 +505,7 @@ async def publish(
                 reason_code=deferred.reason_code,
                 lang="en",
                 title="Delivery deferred",
-                body=f"{order.ref}: {deferred.explanation or deferred.reason_code}. "
-                f"Next run: {next_label}. "
-                "First in line (moved once). Written from the plan.",
+                body=deferral_notice(deferred, order),
                 data={"version_id": str(version.id), "next_run": str(deferred.next_run)},
                 created_at=now,
             )
@@ -445,3 +564,24 @@ def fleet_out(repo: Repository, operating_date: date) -> list[FleetOut]:
         )
         for v, day, used in repo.fleet(operating_date)
     ]
+
+
+def lock_trip(
+    repo: Repository, user: User, clock: Clock, trip_id: uuid.UUID, locked: bool
+) -> PlanOut:
+    trip = repo.db.get(Trip, trip_id)
+    if trip is None:
+        raise NotFoundError("TRIP_NOT_FOUND", "Trip not found")
+    version = repo.version(trip.version_id, lock=True)
+    require_draft(version)
+    trip.locked = locked
+    audit(
+        repo,
+        user,
+        clock,
+        "trip.locked" if locked else "trip.unlocked",
+        version,
+        {"trip_id": str(trip_id)},
+    )
+    repo.db.commit()
+    return plan_out(repo, version)

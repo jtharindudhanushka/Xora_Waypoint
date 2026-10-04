@@ -9,6 +9,9 @@ export type Status =
   | 'deferred'
   | 'pending_sync'
   | 'on_hold'
+  | 'available'
+  | 'workshop'
+  | 'switched_off'
 
 const STYLES: Record<Status, { label: string; className: string }> = {
   planned: { label: 'Planned', className: 'bg-neutral-bg text-neutral-fg' },
@@ -20,6 +23,9 @@ const STYLES: Record<Status, { label: string; className: string }> = {
   deferred: { label: 'Deferred', className: 'bg-inverse text-on-inverse' },
   pending_sync: { label: 'Pending sync', className: 'bg-neutral-bg text-neutral-fg' },
   on_hold: { label: 'On hold', className: 'bg-danger-bg text-danger-fg' },
+  available: { label: 'Available', className: 'bg-success-bg text-success-fg' },
+  workshop: { label: 'Workshop', className: 'bg-warning-bg text-warning-fg' },
+  switched_off: { label: 'Switched off', className: 'bg-neutral-bg text-neutral-fg' },
 }
 
 export function StatusBadge({ status, label }: { status: Status; label?: string }) {

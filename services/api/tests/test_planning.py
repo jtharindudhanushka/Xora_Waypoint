@@ -129,6 +129,76 @@ def generate(client: TestClient):
     return response.json()
 
 
+def test_br20_lock_survives_rerun(client, planning_data):
+    body = generate(client)
+    headers = auth_header(client, "dispatcher")
+    trip = body["trips"][0]
+    locked = client.post(f"/api/v1/trips/{trip['id']}/lock", headers=headers)
+    assert locked.status_code == 200
+    assert locked.json()["trips"][0]["locked"]
+    rerun = generate(client)
+    assert rerun["trips"][0]["locked"]
+    assert rerun["trips"][0]["planned_depart"] == trip["planned_depart"]
+    assert rerun["trips"][0]["stops"][0]["outlet_code"] == trip["stops"][0]["outlet_code"]
+
+
+def test_br16_infeasible_serve_instead_rejects_without_creating_version(
+    client, planning_data, session_maker
+):
+    body = generate(client)
+    response = client.post(
+        f"/api/v1/deferrals/{body['deferrals'][0]['id']}/serve-instead",
+        headers=auth_header(client, "dispatcher"),
+        json={"confirm": True},
+    )
+    assert response.status_code == 422
+    assert response.json()["rule_id"] == "BR-16"
+    with session_maker() as db:
+        assert len(list(db.scalars(select(PlanVersion)))) == 1
+
+
+def test_br16_preview_is_read_only_and_apply_creates_replacement_draft(
+    client, planning_data, session_maker
+):
+    with session_maker() as db:
+        for row in db.scalars(select(Order)):
+            row.weight_kg = 1000
+        db.add(
+            Order(
+                ref="TEST-THIRD",
+                outlet_code="TEST1",
+                brand="Fresh",
+                temp_requirement="chilled",
+                delivery_date=DAY,
+                units=10,
+                weight_kg=1000,
+                volume_m3=1,
+                status="placed",
+                days_since_last_served=0,
+            )
+        )
+        db.commit()
+    body = generate(client)
+    deferred = body["deferrals"][0]
+    headers = auth_header(client, "dispatcher")
+    url = f"/api/v1/deferrals/{deferred['id']}/serve-instead"
+    preview = client.post(url, headers=headers, json={"confirm": False})
+    assert preview.status_code == 200, preview.text
+    assert preview.json()["displaces"]
+    assert preview.json()["version"] is None
+    applied = client.post(url, headers=headers, json={"confirm": True})
+    assert applied.status_code == 200, applied.text
+    assert applied.json()["version"]["number"] == 2
+    served = {
+        o["order_ref"]
+        for t in applied.json()["version"]["trips"]
+        for s in t["stops"]
+        for o in s["orders"]
+    }
+    assert deferred["order_ref"] in served
+    assert client.post(url, headers=headers, json={"confirm": True}).status_code == 409
+
+
 def test_br21_br22_br23_generate_confirm_publish(client, planning_data, session_maker):
     body = generate(client)
     assert body["kpis"]["orders_served"] == 1

@@ -225,12 +225,17 @@ def plan(
     policy: Policy = DEFAULT_POLICY,
     locks: tuple[Trip, ...] = (),
     time_limit_s: float = 10,
+    force_order_ref: str | None = None,
 ) -> PlanResult:
     """Greedy is deterministic; callers measure elapsed time outside this pure library."""
     if time_limit_s <= 0:
         raise ValueError("time_limit_s must be positive")
-    assignment = _greedy(problem, policy, locks)
+    if force_order_ref is not None and force_order_ref not in problem.orders:
+        raise ValueError("Unknown forced order")
+    assignment = _greedy(problem, policy, locks, forced=force_order_ref)
     served = {s.order_ref for t in assignment.trips for s in t.stops}
+    if force_order_ref is not None and force_order_ref not in served:
+        raise ValueError("This order cannot be served without breaking a hard rule or a trip lock")
     max_priority = (
         max(
             (priority(o, problem.festival_ramp, policy) for o in problem.orders.values()), default=1

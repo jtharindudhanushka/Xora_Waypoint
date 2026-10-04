@@ -1,4 +1,5 @@
 import { NavLink, Outlet } from 'react-router-dom'
+import { FigmaIcon } from '../ui/FigmaIcon'
 
 import { useSession } from '../auth/useSession'
 import { formatClock, useClock, useSetClock } from './useClock'
@@ -15,6 +16,7 @@ const DEMO_JUMPS = [
 const NAV = [
   { to: '/dispatch/plan', label: 'Plan' },
   { to: '/dispatch/ops', label: 'Live ops' },
+  { to: '/dispatch/outlook', label: 'Outlook' },
 ]
 
 /** Dispatcher desktop frame: nav, depot, demo clock and user (Figma: Hi-fi · Dispatcher). */
@@ -24,28 +26,37 @@ export function DesktopShell() {
   const setClock = useSetClock()
 
   return (
-    <div className="flex min-h-full flex-col">
-      <header className="flex h-14 items-center gap-6 border-b border-line bg-surface px-6">
-        <span className="text-base font-semibold">Waypoint</span>
-        <nav className="flex gap-1">
+    <div className="flex h-full min-h-[900px] flex-col">
+      <header className="flex h-14 shrink-0 items-center gap-8 border-b border-line bg-surface px-6">
+        <div className="flex items-center gap-2">
+          <span className="flex size-5 items-center justify-center">
+            <span className="size-3.5 rotate-45 bg-brand" />
+          </span>
+          <span className="text-base font-semibold">Waypoint</span>
+        </div>
+        <nav className="flex h-full gap-6">
           {NAV.map((item) => (
             <NavLink
               key={item.to}
               to={item.to}
               className={({ isActive }) =>
-                `rounded-md px-3 py-1.5 text-sm font-semibold ${isActive ? 'bg-sunken text-primary' : 'text-secondary hover:text-primary'}`
+                `flex items-center border-b-2 px-1 text-sm font-semibold ${isActive ? 'border-brand text-primary' : 'border-transparent text-secondary'}`
               }
             >
               {item.label}
             </NavLink>
           ))}
         </nav>
-        <span className="ml-auto text-sm text-secondary">{user?.depot} DC</span>
-        <label className="flex items-center gap-2 text-sm">
-          <span className="font-mono text-base">{formatClock(clock.data?.now)}</span>
+        <span className="ml-auto flex items-center gap-2 rounded-sm border border-line bg-surface px-3 py-1.5 text-xs font-semibold">
+          {user?.depot} DC
+          <FigmaIcon name="chevron" />
+        </span>
+        <label className="relative flex items-center gap-2 text-sm">
+          <FigmaIcon name="clock" />
+          <span className="font-mono text-[13px]">{formatClock(clock.data?.now)}</span>
           <select
             aria-label="Jump demo clock"
-            className="rounded-md border border-line bg-surface px-2 py-1 text-xs"
+            className="absolute inset-0 cursor-pointer opacity-0"
             value=""
             onChange={(e) => e.target.value && void setClock(e.target.value)}
           >
@@ -60,12 +71,19 @@ export function DesktopShell() {
         <button
           type="button"
           onClick={signOut}
-          className="text-sm text-secondary hover:text-primary"
+          className="flex items-center gap-2 text-xs font-semibold text-primary"
         >
-          {user?.name} · Sign out
+          <span className="flex size-7 items-center justify-center rounded-full bg-inverse font-semibold text-on-inverse">
+            {user?.name
+              .split(' ')
+              .map((s) => s[0])
+              .slice(0, 2)
+              .join('')}
+          </span>
+          {user?.name} · Dispatcher
         </button>
       </header>
-      <main className="flex-1 p-6">
+      <main className="flex min-h-0 flex-1 flex-col">
         <Outlet />
       </main>
     </div>

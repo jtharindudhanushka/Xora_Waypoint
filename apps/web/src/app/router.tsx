@@ -2,6 +2,7 @@ import { Navigate, createBrowserRouter } from 'react-router-dom'
 
 import { LoginPage } from '../features/auth/LoginPage'
 import { RoleHome } from '../features/placeholder/RoleHome'
+import { PlanWorkspace } from '../features/dispatch/planning/PlanWorkspace'
 import { DesktopShell } from './DesktopShell'
 import { HomeRedirect, RequireRole } from './guards'
 import { PhoneShell } from './PhoneShell'
@@ -20,16 +21,7 @@ export const router = createBrowserRouter([
       { index: true, element: <Navigate to="plan" replace /> },
       {
         path: 'plan',
-        element: (
-          <RoleHome
-            title="Plan workspace"
-            screens={[
-              'D1 Timeline · Deferred · Fleet · Edit',
-              'D4 Publish dialog',
-              'D6 Resolve shortfall',
-            ]}
-          />
-        ),
+        element: <PlanWorkspace />,
       },
       {
         path: 'ops',
