@@ -19,7 +19,7 @@ from app.models import (
     Vehicle,
     VehicleDay,
 )
-from app.modules.planning.models import PlanVersion
+from app.modules.planning.models import Deferral, PlanVersion
 from app.modules.stream.broker import broker
 from app.modules.sync.models import Event
 from tests.conftest import auth_header
@@ -127,6 +127,46 @@ def generate(client: TestClient):
     )
     assert response.status_code == 200, response.text
     return response.json()
+
+
+def test_br15_br21_next_run_uses_colombo_date_after_utc_database_roundtrip(
+    client, planning_data, session_maker
+):
+    body = generate(client)
+    assert body["deferrals"][0]["next_run"] == "2026-04-08"
+    with session_maker() as db:
+        row = db.get(Deferral, uuid.UUID(body["deferrals"][0]["id"]))
+        # PostgreSQL returns the instant in UTC: date() alone would show Tue 7 Apr.
+        row.next_run = datetime(2026, 4, 7, 22, tzinfo=UTC)
+        db.commit()
+    response = client.get(f"/api/v1/plans/{DAY}", headers=auth_header(client, "dispatcher"))
+    assert response.status_code == 200
+    deferred = response.json()["deferrals"][0]
+    assert deferred["next_run"] == "2026-04-08"
+    assert "2026-04-08T03:30:00+05:30" in deferred["notice_body"]
+
+
+def test_br15_br21_next_run_skips_non_operating_calendar_days(client, planning_data, session_maker):
+    with session_maker() as db:
+        db.get(CalendarDay, date(2026, 4, 8)).is_operating = False
+        following = date(2026, 4, 9)
+        year, week, _ = following.isocalendar()
+        db.add(
+            CalendarDay(
+                date=following,
+                dow=following.weekday(),
+                iso_year=year,
+                iso_week=week,
+                is_payday=False,
+                festival_ramp=0,
+                is_holiday=False,
+                monsoon=False,
+                is_operating=True,
+            )
+        )
+        db.commit()
+    body = generate(client)
+    assert body["deferrals"][0]["next_run"] == "2026-04-09"
 
 
 def test_br20_lock_survives_rerun(client, planning_data):

@@ -12,6 +12,8 @@ export type OutboxStatus = 'queued' | 'sending' | SyncResult['status']
 /** One field action, stored on the phone first (BR-35, docs/07 › Client side). */
 export type OutboxEvent = SyncEventIn & {
   seq: number
+  /** Who recorded it: events upload only under that user's session (BR-55). */
+  actor_id?: string
   attempts: number
   status: OutboxStatus
   uploaded_at?: string
@@ -79,6 +81,12 @@ export function deviceId(): string {
   }
 }
 
+const currentUserId = () => getSession()?.user?.id
+
+/** A shared phone keeps each user's records apart; another user's queue waits for them. */
+const mine = (e: OutboxEvent, userId: string | undefined) =>
+  Boolean(userId) && e.actor_id === userId
+
 // ── outbox ───────────────────────────────────────────────────────────────────
 export async function enqueue(
   type: SyncEventIn['type'],
@@ -97,6 +105,7 @@ export async function enqueue(
     payload,
     attempts: 0,
     status: 'queued',
+    actor_id: currentUserId(),
   }
   await db.outbox.put(event)
   void flush()
@@ -111,8 +120,9 @@ export async function flush(): Promise<void> {
   flushing = true
   try {
     for (;;) {
+      const me = currentUserId()
       const batch = (await db.outbox.orderBy('seq').toArray())
-        .filter((e) => e.status === 'queued' || e.status === 'sending')
+        .filter((e) => mine(e, me) && (e.status === 'queued' || e.status === 'sending'))
         .slice(0, 50)
       if (batch.length === 0) return
       await db.outbox.bulkPut(batch.map((e) => ({ ...e, status: 'sending' as const })))
@@ -173,7 +183,7 @@ export function useOutbox(): OutboxEvent[] {
   const [events, setEvents] = useState<OutboxEvent[]>([])
   useEffect(() => {
     const sub = liveQuery(() => db.outbox.orderBy('seq').toArray()).subscribe({
-      next: setEvents,
+      next: (rows) => setEvents(rows.filter((e) => mine(e, currentUserId()))),
       error: () => setEvents([]),
     })
     return () => sub.unsubscribe()

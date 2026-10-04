@@ -15,7 +15,7 @@ from app.core.clock import Clock, ensure_utc
 from app.core.errors import NotFoundError
 from app.modules.auth.models import User
 from app.modules.catalog.models import Outlet, OutletProfile, Product, Vehicle
-from app.modules.loading.models import Hold, Shortfall
+from app.modules.loading.models import Hold, RepairOption, Shortfall
 from app.modules.orders.models import DriverNote, Order
 from app.modules.planning.models import Plan, PlanAck, PlanVersion, Stop, StopOrder, Trip
 from app.modules.sync.models import Event
@@ -121,6 +121,14 @@ def _trip_view(db: Session, version: PlanVersion, trip: Trip, day: date) -> Trip
             select(Shortfall)
             .join(Hold, Hold.shortfall_id == Shortfall.id)
             .where(Hold.trip_id.in_(trip_ids))
+            # BR-34: B re-picks the full quantity; its historical shortage is not outstanding.
+            .where(
+                Shortfall.id.not_in(
+                    select(RepairOption.shortfall_id).where(
+                        RepairOption.label == "B", RepairOption.applied_at.is_not(None)
+                    )
+                )
+            )
             .order_by(Shortfall.event_time)
         )
     }

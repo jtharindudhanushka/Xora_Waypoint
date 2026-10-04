@@ -363,3 +363,86 @@ def test_bootstrap_caches_the_day_for_driver_and_loader(client, field):
     assert driver["user"]["role"] == "driver"
     loader = client.get("/api/v1/sync/bootstrap", headers=auth_header(client, "loader")).json()
     assert [v["vehicle_code"] for v in loader["vehicles"]] == ["TESTV"]
+
+
+def _store_at_test1(session_maker):
+    with session_maker() as db:
+        db.scalar(select(User).where(User.role == "store_manager")).outlet_code = "TEST1"
+        db.commit()
+
+
+def _store_confirms(client, cases):
+    headers = auth_header(client, "store_manager")
+    draft = client.get("/api/v1/orders/TEST-001/receipt-draft", headers=headers)
+    assert draft.status_code == 200, draft.text
+    lines = [
+        {"order_line_id": line["order_line_id"], "store_qty": cases}
+        for line in draft.json()["lines"]
+    ]
+    response = client.post(
+        "/api/v1/orders/TEST-001/receipt", headers=headers, json={"lines": lines}
+    )
+    assert response.status_code == 200, response.text
+    return draft.json()
+
+
+def test_br52_store_confirms_first_then_late_driver_sync_conflicts(client, field, session_maker):
+    """Walkthrough 13: van offline, store confirms 200, the driver's 205 uploads later → R7."""
+    _store_at_test1(session_maker)
+    draft = _store_confirms(client, 200)
+    assert draft["lines"][0]["driver_qty"] is None
+    assert draft["lines"][0]["store_qty"] == 205  # starts from the ordered cases
+    results = sync(client, "driver", ack(field), outcome(field, 205))
+    assert results[1]["status"] == "conflict"
+    assert (results[1]["driver_qty"], results[1]["store_qty"]) == (205, 200)
+    with session_maker() as db:
+        issue = db.get(Issue, uuid.UUID(results[1]["conflict_id"]))
+        assert issue.kind == "count_conflict"
+        assert db.scalar(select(Receipt)).total_cases == 200  # both records kept
+
+
+def test_br52_driver_first_then_store_count_opens_conflict(client, field, session_maker):
+    _store_at_test1(session_maker)
+    assert [r["status"] for r in sync(client, "driver", ack(field), outcome(field, 205))] == [
+        "accepted",
+        "accepted",
+    ]
+    _store_confirms(client, 200)
+    with session_maker() as db:
+        issue = db.scalar(select(Issue).where(Issue.kind == "count_conflict"))
+        assert (issue.driver_qty, issue.store_qty) == (205, 200)
+        outcomes = db.scalars(select(Event).where(Event.type == "outcome_recorded")).all()
+        assert [e.payload["orders"][0]["cases"] for e in outcomes] == [205]  # never rewritten
+
+
+def test_br55_store_cannot_confirm_an_order_off_the_published_plan(client, field, session_maker):
+    _store_at_test1(session_maker)
+    with session_maker() as db:
+        order = Order(
+            ref="TEST-OFFPLAN",
+            outlet_code="TEST1",
+            brand="Fresh",
+            temp_requirement="chilled",
+            delivery_date=DAY,
+            units=10,
+            weight_kg=10,
+            volume_m3=0.1,
+            status="deferred",
+        )
+        db.add(order)
+        db.flush()
+        db.add(OrderLine(order_id=order.id, product_id="test-milk", qty_ordered=10))
+        db.commit()
+        line_id = str(order.lines[0].id) if order.lines else None
+    headers = auth_header(client, "store_manager")
+    if line_id is None:
+        line_id = client.get("/api/v1/orders/TEST-OFFPLAN/receipt-draft", headers=headers).json()[
+            "lines"
+        ][0]["order_line_id"]
+    response = client.post(
+        "/api/v1/orders/TEST-OFFPLAN/receipt",
+        headers=headers,
+        json={"lines": [{"order_line_id": line_id, "store_qty": 10}]},
+    )
+    assert response.status_code == 422
+    assert response.json()["code"] == "NOT_ON_PUBLISHED_TRIP"

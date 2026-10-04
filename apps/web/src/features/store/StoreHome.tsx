@@ -43,7 +43,7 @@ function Delivery({ order }: { order: Order }) {
         <StoreIcon name="info" />
         Based on past runs{track?.received_at ? ` · updated ${hm(track.received_at)}` : ''}
       </p>
-      {order.status === 'delivered' && !order.receipt_confirmed && (
+      {(order.status === 'delivered' || track) && !order.receipt_confirmed && (
         <Link
           className="mt-3 inline-block font-semibold text-brand-text"
           to={`/store/orders/${order.ref}/receipt`}
