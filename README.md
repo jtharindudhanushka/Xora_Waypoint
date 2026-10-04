@@ -66,7 +66,7 @@ Scenario S1: orders for **Tue 7 Apr 2026**, Peliyagoda DC. Use a phone-sized win
 | 5 | 16:25 | Store OUT054 | Open the notice | S8: what moved, why, and when it comes (BR-44) |
 | 6 | → Tue 04:14 | Loader Dock 2 | **L1** trips in departure order → open VEH036's trip carrying **S1-005** (T1 on the greedy plan) → **Load** (L2, reverse stop order) → **Report a problem** → OUT003 · S1-005 → Missing → **2** → Short from chiller pick → **Send to dispatcher** | **L4**: van on hold (BR-24 to BR-27) |
 | 7 | 04:19 | Dispatcher | Live ops → the hold (or `/dispatch/shortfalls/<id>`) → **D6**: A is recommended ("Send 40 now, 2 more on Trip 2 this morning"); B re-picks all 42 (+25 min); C (40 now, 2 Wednesday) is flagged against OUT003's same-morning rule → **Apply A** | v2 published; v1 unchanged (BR-28 to BR-30) |
-| 8 | 04:27 | Loader | Reopen the same trip (it resolves to the latest version) → **L5 Review v2**: T1 OUT003 42 → 40, T2 gains a linked OUT003 +2 stop → **Acknowledge v2 · release van** → check every order → **Mark loaded** | Hold released; acknowledging v1 can't release it (BR-31) |
+| 8 | 04:27 | Loader | Reopen the same trip (it resolves to the latest version) → **L5 Review v2**: T1 OUT003 42 → 40, T2 gains a linked OUT003 +2 stop → **Acknowledge v2 · release van** → check every order → **Mark loaded** | Hold released → van **Loaded**; acknowledging v1 can't release it (BR-31) |
 | 9 | 04:36 | Driver VEH036 | **Acknowledge v2 and start** → stop 1 OUT001 (store note "Front shutter shut till 07:00" at the top) → **Arrived** → **Save delivery** (80) → stop 2 OUT003: "2 cases short at loading · already reported", locked, 40 loaded / 42 ordered | Two clocks per stop (plan + likely window); every action saved on the phone first (BR-32 to BR-35, BR-39) |
 | 10 | Tue 05:40 | Store OUT001 | **Confirm what arrived** → change yoghurt and fish counts → **Report a problem** (2 damaged, 1 missing) | Separate receipt; per-line issue sent to dispatch (BR-46, BR-47) |
 | 11 | 06:14 | Dispatcher | **Live ops** → exceptions ranked by impact → the store report (D10) → decide | Decision recorded and the store is told (BR-48, BR-51) |
@@ -84,14 +84,14 @@ Full list with reasons: [`docs/02-business-rules.md` → Departures](docs/02-bus
 - **Late risk as windows, not probabilities.** D4 and D6 show real likely-late counts and arrival-window changes; there's no calibrated probability model (DEP-5).
 - **Disabled controls with no design or data behind them:** D1 Edit trips and Orders tab (DEP-3, DEP-4); D6 "Call the dock" and S8 "Call dispatch" (no phone numbers supplied) (DEP-7).
 - **Notices in English only.** Store notices use the English template; Sinhala/Tamil delivery isn't built (DEP-6).
-- **S6 photo evidence** is recorded as a reference; binary photo upload isn't built. The driver's R3 photo is captured on the phone and only its time is recorded.
+- **Photo evidence is optional and not uploaded.** The loader's L3 shortfall photo and the store's S6 photo are optional and recorded as references; binary photo upload isn't built. The driver's R3 photo is captured on the phone and only its time is recorded.
 - **Loader screens are phone-first.** The dock tablet layouts (Figma 203:106 and others) aren't built.
 - **Store receipt before the driver syncs.** S1 offers "Confirm what arrived" once the order is on a published trip, so step 13 works while the van is offline. The receipt starts from the ordered cases and the store's counts stay separate.
 
 ## Known gaps (stated honestly)
 - **Plans vary between runs.** CP-SAT runs on a wall-clock budget with parallel workers, so trip assignments can differ between generations (see the walkthrough note).
 - **Offline is shown with browser offline mode.** The service worker precaches the app, but the walkthrough uses DevTools/flight mode on a live session rather than a cold offline start.
-- **Driver photo.** R3 records "Photo taken HH:MM" on the phone; the image isn't uploaded.
+- **Photos.** L3, R3 and S6 photos are optional; only a reference or the time taken is recorded and no image is uploaded.
 - **D1 editing and the Orders tab** are disabled, as above.
 - **SSE broker is in-process** (single API instance); multi-instance would need Postgres LISTEN/NOTIFY.
 - **Verification.** Steps 1–4 and 9 (online) were clicked on the live URL, and steps 12–13 were clicked on a local seeded stack. Results from the full four-role QA run are in [`docs/qa/walkthrough-results.md`](docs/qa/walkthrough-results.md) when present.
