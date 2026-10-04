@@ -18,12 +18,14 @@ users:                                # password for every demo account: demo123
   - {email: store.out001@waypoint.demo, name: N. Perera, role: store_manager, outlet: OUT001}
   - {email: store.out074@waypoint.demo, name: S. Jayasinghe, role: store_manager, outlet: OUT074}
   - {email: store.out054@waypoint.demo, name: M. Fernando, role: store_manager, outlet: OUT054}
+  - {email: store.out002@waypoint.demo, name: R. Silva, role: store_manager, outlet: OUT002}   # deferred on the live S1 plan (S8)
 
 outlet_profiles:                      # store rules and preferences (BR-29, BR-44)
   OUT001: {split_rule: any, language: en, contact_name: N. Perera, access_note: Front shutter opens 07:00; side lane before that}
   OUT003: {split_rule: same_morning_only, language: si, contact_name: A. Silva}
   OUT054: {split_rule: never, language: si, contact_name: M. Fernando}
   OUT074: {split_rule: any, language: ta, contact_name: S. Jayasinghe}
+  OUT002: {split_rule: any, language: si, contact_name: R. Silva}
 
 products:
   - {id: milk-1l, name: Fresh milk 1 L, brand: Fresh, is_chilled: true}
