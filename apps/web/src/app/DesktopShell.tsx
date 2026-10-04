@@ -41,7 +41,7 @@ export function DesktopShell() {
               key={item.to}
               to={item.to}
               className={({ isActive }) =>
-                `flex items-center border-b-2 px-3 text-sm font-semibold ${isActive || (item.to === '/dispatch/ops' && location.pathname.startsWith('/dispatch/shortfalls/')) ? 'border-brand text-primary' : 'border-transparent text-secondary'}`
+                `flex items-center border-b-2 px-3 text-sm font-semibold ${isActive || (item.to === '/dispatch/ops' && (location.pathname.startsWith('/dispatch/shortfalls/') || location.pathname.startsWith('/dispatch/issues/'))) ? 'border-brand text-primary' : 'border-transparent text-secondary'}`
               }
             >
               {item.label}

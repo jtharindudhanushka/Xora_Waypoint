@@ -5,6 +5,7 @@ import { RoleHome } from '../features/placeholder/RoleHome'
 import { PlanWorkspace } from '../features/dispatch/planning/PlanWorkspace'
 import { ShortfallWorkspace } from '../features/dispatch/repair/ShortfallWorkspace'
 import { LiveOpsWorkspace } from '../features/dispatch/ops/LiveOpsWorkspace'
+import { IssueWorkspace } from '../features/dispatch/issues/IssueWorkspace'
 import { DesktopShell } from './DesktopShell'
 import { HomeRedirect, RequireRole } from './guards'
 import { PhoneShell } from './PhoneShell'
@@ -22,6 +23,7 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <Navigate to="plan" replace /> },
       { path: 'shortfalls/:id', element: <ShortfallWorkspace /> },
+      { path: 'issues/:id', element: <IssueWorkspace /> },
       {
         path: 'plan',
         element: <PlanWorkspace />,

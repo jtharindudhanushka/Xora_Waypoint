@@ -124,6 +124,57 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  '/api/v1/issues': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** List Issues */
+    get: operations['list_issues_api_v1_issues_get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/v1/issues/{identifier}': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Get Issue */
+    get: operations['get_issue_api_v1_issues__identifier__get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/api/v1/issues/{identifier}/resolve': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    /** Resolve */
+    post: operations['resolve_api_v1_issues__identifier__resolve_post']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   '/api/v1/stream': {
     parameters: {
       query?: never
@@ -505,6 +556,95 @@ export interface components {
       /** Detail */
       detail?: components['schemas']['ValidationError'][]
     }
+    /** IssueItemOut */
+    IssueItemOut: {
+      /** Product Id */
+      product_id: string | null
+      /** Name */
+      name: string
+      /** Driver Qty */
+      driver_qty: number | null
+      /** Problem */
+      problem: string | null
+      /** Problem Qty */
+      problem_qty: number
+      /** Photo Url */
+      photo_url?: string | null
+    }
+    /** IssueOut */
+    IssueOut: {
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string
+      /** Kind */
+      kind: string
+      /** Status */
+      status: string
+      /** Order Ref */
+      order_ref: string
+      /** Outlet Code */
+      outlet_code: string
+      /** District */
+      district: string
+      /** Temp Requirement */
+      temp_requirement: string
+      /** Vehicle Code */
+      vehicle_code: string | null
+      /** Driver Record Id */
+      driver_record_id: string | null
+      /** Driver Recorded At */
+      driver_recorded_at: string | null
+      /** Driver Uploaded At */
+      driver_uploaded_at: string | null
+      /** Driver Name */
+      driver_name: string | null
+      /** Driver Photo Url */
+      driver_photo_url: string | null
+      /** Store Recorded At */
+      store_recorded_at: string | null
+      /** Store Name */
+      store_name: string | null
+      /** Store Photo Url */
+      store_photo_url: string | null
+      /**
+       * Opened At
+       * Format: date-time
+       */
+      opened_at: string
+      /** Driver Qty */
+      driver_qty: number | null
+      /** Store Qty */
+      store_qty: number | null
+      /** Items */
+      items: components['schemas']['IssueItemOut'][]
+      /** Affected Cases */
+      affected_cases: number
+      /** Next Run */
+      next_run: string | null
+      /**
+       * Window Open
+       * Format: time
+       */
+      window_open: string
+      /**
+       * Window Close
+       * Format: time
+       */
+      window_close: string
+      /**
+       * Recount Due
+       * Format: date-time
+       */
+      recount_due: string
+      /** Resolution */
+      resolution: string | null
+      /** Note */
+      note: string | null
+      /** Resolved At */
+      resolved_at: string | null
+    }
     /** KpisOut */
     KpisOut: {
       /** Orders Served */
@@ -711,6 +851,16 @@ export interface components {
        * Format: time
        */
       window_close: string
+    }
+    /** ResolveIn */
+    ResolveIn: {
+      /**
+       * Resolution
+       * @enum {string}
+       */
+      resolution: 'redeliver' | 'credit' | 'reject' | 'driver_stands' | 'store_stands' | 'recount'
+      /** Note */
+      note?: string | null
     }
     /** ServeInsteadIn */
     ServeInsteadIn: {
@@ -1153,6 +1303,103 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['FixOut']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  list_issues_api_v1_issues_get: {
+    parameters: {
+      query?: {
+        status?: 'open' | 'resolved'
+      }
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['IssueOut'][]
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  get_issue_api_v1_issues__identifier__get: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        identifier: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['IssueOut']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  resolve_api_v1_issues__identifier__resolve_post: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        identifier: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['ResolveIn']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['IssueOut']
         }
       }
       /** @description Validation Error */
