@@ -1,140 +1,181 @@
 # 03 · Architecture
 
-**Style:** a modular monolith. One FastAPI service with strict internal modules, one React PWA and one PostgreSQL database. The planning engine is a **pure Python package** with no web or database dependencies.
-Decisions: [ADR-0001](adr/0001-modular-monolith.md) · [ADR-0002](adr/0002-stack.md) · [ADR-0003](adr/0003-event-log-and-plan-versions.md) · [ADR-0004](adr/0004-offline-first-pwa.md) · [ADR-0005](adr/0005-engine-as-library.md) · [ADR-0006](adr/0006-demo-clock.md) · [ADR-0007](adr/0007-data-confidentiality.md)
+Xora is a modular monolith: a React PWA, one FastAPI service and PostgreSQL 16.
+The engine is an imported Python library using OR-Tools CP-SAT; it has no web,
+database or filesystem dependencies. This describes the merged implementation,
+not the original target module map.
 
-## C4 · Level 1 — System context
-```mermaid
-flowchart LR
-  SM([Store manager<br/>phone / desktop]) -->|orders, receipts, issues| X
-  DI([Dispatcher<br/>desktop]) -->|plan, publish, resolve| X
-  LO([Loader<br/>dock tablet / phone]) -->|load, report shortfall, ack| X
-  DR([Driver<br/>phone, often offline]) -->|ack, record outcome, sync| X
-  X[[Xora — Waypoint delivery planning]]
-  X -->|reads at seed time| DS[(Organisers' dataset pack<br/>local only, never committed)]
-```
+Decisions: [ADR-0001](adr/0001-modular-monolith.md),
+[ADR-0002](adr/0002-stack.md), [ADR-0003](adr/0003-event-log-and-plan-versions.md),
+[ADR-0004](adr/0004-offline-first-pwa.md), [ADR-0005](adr/0005-engine-as-library.md),
+[ADR-0006](adr/0006-demo-clock.md), [ADR-0007](adr/0007-data-confidentiality.md).
 
-## C4 · Level 2 — Containers
+## System and deployment diagram
+
 ```mermaid
 flowchart TB
-  subgraph Browser["Browser / installed PWA"]
-    WEB["apps/web<br/>React + TS + Vite<br/>TanStack Query · Dexie outbox · Workbox SW"]
+  subgraph Client["Browser / installed PWA"]
+    ROLES["Dispatcher · Loader · Driver · Store"]
+    WEB["React + TypeScript + Vite<br/>TanStack Query · generated OpenAPI types"]
+    OUTBOX[("Dexie / IndexedDB<br/>device-first event outbox")]
+    SW["Workbox service worker<br/>cached application shell"]
+    ROLES --> WEB
+    WEB --> OUTBOX
+    SW --> WEB
   end
-  subgraph Server["Docker Compose (local = production)"]
-    PROXY["web (nginx)<br/>serves static build · proxies /api"]
-    API["api (FastAPI · Python 3.12)<br/>modules: auth · catalog · orders · fleet · planning · loading · delivery · sync · receipts · exceptions · notifications · clock"]
-    ENG["packages/engine<br/>(imported library)<br/>rules · trip time · solver · repair · explain"]
-    DB[("PostgreSQL 16<br/>reference · state · append-only events")]
-    SEED["seed (one-shot)<br/>alembic upgrade + load datasets/ + demo_extras"]
+  subgraph VM["Azure VM · Docker Compose"]
+    TLS["Caddy<br/>public HTTPS · automatic certificates"]
+    NGINX["web: nginx<br/>static PWA · /api proxy · SSE buffering off"]
+    API["api: FastAPI / Python 3.12<br/>JWT roles + scopes · Clock · domain modules"]
+    ENGINE["packages/engine<br/>greedy hint → CP-SAT → shared validate<br/>greedy fallback · repair · explanations"]
+    BROKER["In-process SSE broker<br/>scoped subscribers · after-commit messages"]
+    DB[("PostgreSQL 16<br/>reference data · projections<br/>append-only events · plan versions")]
+    START["API startup<br/>Alembic → idempotent seed → Uvicorn"]
+    TLS --> NGINX --> API
+    API --> ENGINE
+    API -->|SQLAlchemy| DB
+    START --> DB
+    API --> BROKER
   end
-  WEB -- "HTTPS JSON (JWT)" --> PROXY --> API
-  API -- "SSE /api/v1/stream" --> PROXY -- SSE --> WEB
-  API --> ENG
-  API -- "SQLAlchemy 2" --> DB
-  SEED --> DB
-  DB -- "LISTEN/NOTIFY" --> API
+  DATA[("datasets/ · private local mount<br/>never committed")]
+  DATA -->|read-only seed input| START
+  WEB -->|HTTPS JSON + JWT| TLS
+  OUTBOX -->|ordered POST /api/v1/sync| TLS
+  BROKER -->|GET /api/v1/stream via nginx + Caddy| WEB
 ```
 
-## Backend modules (`services/api/app/modules/<name>/`)
-Each module has `router.py` (HTTP) → `service.py` (use cases, transactions) → `repository.py` (SQL) → `models.py` (ORM) + `schemas.py` (Pydantic). **Modules call each other only through `service.py`**, never through another module's repository.
+Local Compose exposes nginx on port 8080. The production override adds Caddy on
+80/443 and removes the public nginx port. The API image installs the engine,
+including OR-Tools. Dataset files are mounted read-only; the PostgreSQL volume
+persists state. Restarting the API does not reset the demo. See
+[deployment commands and public URL](11-deployment.md).
 
-| Module | Owns | Key use cases |
-|---|---|---|
-| `auth` | users, roles, scopes | login, `me`, JWT issue/verify, role guards |
-| `catalog` | depots, districts, outlets, outlet profiles, vehicles, calendar, service allowance (reference data) | read-only lookups |
-| `orders` | orders, order lines | place order (cutoff BR-40, sanity BR-42), list, next delivery |
-| `fleet` | daily vehicle status, switch-off reasons, fuel ledger | list fleet for a date, switch on/off (BR-10) |
-| `planning` | plans, versions, trips, stops, deferrals, locks, acks | generate (engine), validate edit, lock, confirm deferrals, publish gate, publish |
-| `loading` | holds, shortfall reports, load checks | dock trips, load list (reverse order), report shortfall → hold, ack → release |
-| `repair` | repair options | compute options (engine), apply → new version |
-| `delivery` | stop and order projections | trip view, arrive, outcome (via sync) |
-| `sync` | events (append-only), conflicts | `POST /sync` batch, idempotent apply, conflict detection |
-| `receipts` | receipts, issues, resolutions | confirm receipt, report issue, resolve (D10), reconcile counts (D13) |
-| `exceptions` | exception inbox | rank by impact, suggested fixes |
-| `notifications` | notifications | deferral and ETA notices (si/ta/en templates) |
-| `clock` | demo clock | get/set the operating time (dispatcher only) |
-| `stream` | SSE | fan out domain events to subscribed clients |
+The SSE broker uses process-local queues, not PostgreSQL LISTEN/NOTIFY. The
+current API runs one Uvicorn worker. Horizontal replicas would need a shared
+broker; durable truth already lives in PostgreSQL and clients refetch it.
 
-## Key flows
-### 1. Generate → publish a plan
+## Backend modules
+
+HTTP routers live under `/api/v1`. Dispatcher planning, repair, operations and
+issues use router → service → repository. Planning's adapter converts DB rows
+into engine dataclasses; related dispatcher services reuse this adapter and
+repository. Some field modules query SQLAlchemy directly in their services/read
+views, rather than having a separate repository file.
+
+| Module | Actual responsibility |
+|---|---|
+| `auth` | Login, JWT, scoped user identity and role guards |
+| `catalog` | Reference ORM tables, products and store profiles |
+| `orders` | Store orders, next delivery, draft submission/cutoff and driver notes |
+| `fleet` | Daily switched-on availability, workshop restrictions and fuel ledger |
+| `planning` | Generate, locks, deferrals, publish checks, published versions and acks |
+| `loading` | Shortfall, hold and repair-option ORM tables; field actions arrive through sync |
+| `repair` | Engine options, human selection, linked top-ups and publication of v2 |
+| `sync` | Append-only events, idempotent field actions, vehicle/day read views and conflict creation |
+| `receipts` | Store receipts and per-line reports; issue ORM tables |
+| `issues` | Dispatcher store-report decisions and offline-count reconciliation |
+| `ops` | Ranked exceptions, safe stop swaps, notification tables and clock router |
+| `stream` | Authenticated, scope-filtered SSE fan-out |
+| `health` | API liveness endpoint; Compose separately checks PostgreSQL health |
+
+There are no separate delivery, exceptions, notifications or clock modules.
+Both sync/field and dispatcher routers are registered in `app/main.py`.
+
+## Planning and publication
+
 ```mermaid
 sequenceDiagram
   actor D as Dispatcher
-  participant API
-  participant ENG as engine
-  participant DB
+  participant API as Planning API
+  participant E as Engine
+  participant DB as PostgreSQL
+  participant B as SSE broker
   D->>API: POST /plans/{date}/generate
-  API->>DB: load orders (after cutoff), switched-on fleet, locks, refs
-  API->>ENG: plan(problem, locks, time_limit=10s)
-  ENG-->>API: trips + deferrals(reason, group) + kpis + bottleneck
-  API->>DB: save draft version
-  D->>API: confirm deferrals (reasons for repeat skips)
-  D->>API: POST /plans/{id}/publish
-  API->>ENG: validate(draft) → 0 hard breaks?
-  API->>DB: version.status = published (immutable) · notifications · events
-  API-->>D: v1 published
-  API--)Loader/Driver: SSE plan.published
+  API->>DB: Orders, available fleet, fuel, locks, reference data
+  API->>E: plan(problem, locks, time_limit_s=10)
+  E->>E: Shared compatibility predicates → greedy hint
+  E->>E: CP-SAT allocation → sequence → validate
+  Note over E: Failure, no improvement or invalid output → greedy
+  E-->>API: Trips, windows, deferrals, bottleneck, KPIs, honest status
+  API->>DB: Save draft plan version
+  D->>API: POST /plan-versions/{id}/deferrals/confirm
+  D->>API: GET /plan-versions/{id}/publish-check
+  D->>API: POST /plan-versions/{id}/publish
+  API->>DB: Publish immutable allocation, append event, save notifications
+  API->>B: After commit: plan.published
+  B-->>D: Scoped notification; clients refetch current version
 ```
 
-### 2. Shortfall → repair → v2 → acknowledge
+The engine models compatible order/vehicle/trip variables, one brand/district per
+trip, integer-scaled capacity, integer minutes, fuel and locked trips. Sequenced
+output passes the same hard-rule validation and explanation path as greedy.
+Solver status is OPTIMAL, FEASIBLE or GREEDY; API elapsed time includes work
+outside the capped solver. See [the engine model](06-planning-engine.md).
+
+## Shortfall, repair and acknowledgement
+
 ```mermaid
 sequenceDiagram
   actor L as Loader
   actor D as Dispatcher
   participant API
-  participant ENG as engine
-  L->>API: shortfall(order, missing 2, reason) [queued if offline]
-  API->>API: hold(vehicle trip) · exception
-  API--)D: SSE hold.created
-  D->>API: GET /repairs?shortfall=…
-  API->>ENG: repair(v1, shortfall, store split rule)
-  ENG-->>API: options A/B/C (loss, delay, effects, rule check)
-  D->>API: apply option A
-  API->>API: publish v2 (diff)
-  API--)L: SSE plan.published v2
-  L->>API: ack v2 → hold released
+  participant E as Engine
+  participant DB as PostgreSQL
+  L->>API: POST /sync: shortfall_reported on actual trip/version
+  API->>DB: Append report event; create shortfall, active hold and exception
+  API-->>D: SSE hold.created / exception.created
+  D->>API: GET /shortfalls/{id}/options
+  API->>E: repair(published, shortfall, split rule)
+  E-->>API: Feasible A/B/C, recommendation and rule conflicts
+  D->>API: POST /shortfalls/{id}/apply with selected option ID
+  API->>DB: Create and publish v2; preserve v1; move active holds to v2 trips
+  API-->>L: SSE plan.published; refetch v2 and review diff
+  L->>API: POST /sync: trip_acknowledged on v2/current trip
+  API->>DB: Append acknowledgement; release the hold
+  Note over API,DB: An acknowledgement of v1 must not release the v2 hold
 ```
 
-### 3. Offline delivery → sync → conflict
+A top-up can use a later compatible trip on another vehicle; it cannot go back
+onto an earlier trip. Same-morning-only store rules flag next-day option C.
+Known loading shortfalls are projected into driver views, excluding linked
+top-up portions. Never assume the affected order occupies T1: use the published
+allocation and [the walkthrough](09-seed-and-demo.md).
+
+## Offline delivery and conflict resolution
+
 ```mermaid
 sequenceDiagram
   actor R as Driver phone
-  participant OB as Outbox (IndexedDB)
+  participant O as IndexedDB outbox
   participant API
-  R->>OB: outcome event {event_id, event_time 06:52, plan_version}
-  Note over R,OB: no signal: UI shows "Saved on this phone"
-  OB->>API: POST /sync [events] (07:48, back online)
-  API->>API: dedupe by event_id · apply · compare with store receipt
-  API-->>OB: accepted | duplicate | conflict
-  API--)Dispatcher: SSE conflict.created → D13
+  participant DB as PostgreSQL
+  actor D as Dispatcher
+  R->>O: Save event_id, device event_time, plan_version_id and outcome
+  Note over R,O: Saved on this phone while offline
+  O->>API: POST /sync when connection returns
+  API->>DB: Dedupe event_id; append event; update projections
+  API->>DB: Compare driver count with independent store receipt
+  API-->>O: accepted / duplicate / conflict / rejected
+  API-->>D: SSE conflict.created / sync.applied
+  D->>API: POST /issues/{id}/resolve
+  API->>DB: Preserve both evidence records; append decision; notifications
+  API-->>R: Scoped SSE issue.resolved; refetch
 ```
 
-## Cross-cutting
-| Concern | Approach |
-|---|---|
-| **Auth** | Email + password (bcrypt) → JWT access token (HS256, 12 h, carries role + scope ids). Role guards per route; scope checks in services (BR-55) |
-| **Validation** | Pydantic v2 at the edges; domain rules in the engine; DB constraints (FKs, CHECKs, unique `event_id`) as the last line |
-| **Errors** | RFC 7807 problem+json: `{type, title, status, detail, code, rule_id?}` |
-| **Time** | `Clock` dependency: `now()` returns demo time when set (BR-56). All timestamps are `timestamptz`, displayed in Asia/Colombo |
-| **Realtime** | SSE `GET /api/v1/stream` (per-user filtered); fed by Postgres `LISTEN/NOTIFY` |
-| **Idempotency** | Client `event_id` UUID unique in `events`; `Idempotency-Key` header supported on POSTs |
-| **Config** | 12-factor: everything from env (`.env.example`); no secrets in the repo |
-| **Logging** | Structured JSON logs (structlog) with `request_id`, user, role; solver time and status logged per plan |
-| **Health** | `/health` (liveness) and `/ready` (DB reachable, migrations at head) |
-| **Security** | CORS locked to the web origin; rate limit on login; passwords hashed; least-privilege DB user; no PII beyond demo names |
-| **Accessibility** | 48 px+ targets (56 px primary on field screens); text labels on every status; contrast AA |
+## Cross-cutting implementation and limits
 
-## Quality attributes → tactics
-| Attribute | Tactic |
-|---|---|
-| **Correctness** | One engine for all rule checks; property-based tests; the organisers' `check_allocation.py` run in CI on engine output (when the dataset is available) |
-| **Reliability (offline)** | Outbox + retry + idempotent sync; event time vs received time; conflicts never overwrite |
-| **Auditability** | Append-only `events`; immutable plan versions; who/when/why on every decision |
-| **Maintainability** | Module boundaries; typed contract (OpenAPI → TS client); ADRs; rule IDs in code |
-| **Performance** | Plan solve ≤ 10 s (CP-SAT time limit, greedy warm start); API p95 < 200 ms at our scale |
-| **Deployability** | Identical `docker compose` locally and in production; seed is idempotent |
-
-## Scale and growth
-- **Today:** ~140 orders/day, ~200 users, 1–2k events/day. A single small VM is ample, and Postgres is nowhere near its limits.
-- **10× growth** (1,200 outlets, ~1,400 orders/day): the same design holds. Per-depot solves are already independent; split further by brand × district, which BR-01 makes natural. Move solves to a worker queue (the interface is already async-ready).
-- **Not needed at this scale (deliberately avoided):** microservices, Kafka, Kubernetes, Redis. Each adds failure modes without solving a real problem here.
+- JWT role and depot/vehicle/outlet scopes protect routes. Passwords use bcrypt;
+  tokens default to twelve hours. Pydantic validates HTTP inputs and DomainError
+  becomes a structured problem response with business-rule identifiers.
+- Clock provides server domain time and demo-time overrides. Events retain both
+  device event time and server received time. Database triggers prohibit event
+  UPDATE/DELETE and guard published plan allocation changes.
+- Idempotency is event-ID based on `POST /sync`. Other commands have their own
+  state/duplicate checks; there is no general Idempotency-Key middleware.
+- SSE is a refresh signal, not a durable message queue. Outbox retries and API
+  refetch are the recovery mechanisms after disconnection.
+- CI runs engine/API lint, types and synthetic tests; web lint, types, tests and
+  build; contract freshness; and Docker image builds. Dataset verification is a
+  local-only check because CI does not have the organisers' pack.
+- Planning remains synchronous within a request. A job queue and shared SSE
+  broker are future scaling work, not deployed components.

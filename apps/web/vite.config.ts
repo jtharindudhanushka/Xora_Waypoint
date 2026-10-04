@@ -33,7 +33,7 @@ export default defineConfig({
   ],
   server: {
     port: 5173,
-    proxy: { '/api': { target: 'http://localhost:8000', changeOrigin: true } },
+    proxy: { '/api': { target: process.env.DOCK_API_URL ?? 'http://localhost:8000', changeOrigin: true } },
   },
   test: {
     environment: 'jsdom',
@@ -41,3 +41,4 @@ export default defineConfig({
     css: false,
   },
 })
+
