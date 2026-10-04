@@ -185,12 +185,21 @@ function NeedsReview({ event }: { event: OutboxEvent }) {
       : [['Reason', r?.detail ?? '', r?.rule_id ?? '']]
   return (
     <>
-      <Hero
-        eyebrow="Nothing is lost"
-        eyebrowTone="text-warning-fg"
-        title="Your record is kept"
-        body="Your count and the store’s differ. Nothing is overwritten; dispatch decides."
-      />
+      {event.status === 'conflict' ? (
+        <Hero
+          eyebrow="Nothing is lost"
+          eyebrowTone="text-warning-fg"
+          title="Your record is kept"
+          body="Your count and the store’s differ. Nothing is overwritten; dispatch decides."
+        />
+      ) : (
+        <Hero
+          eyebrow="Not uploaded"
+          eyebrowTone="text-warning-fg"
+          title="This record needs attention"
+          body={r?.detail ?? 'The server could not accept this record.'}
+        />
+      )}
       <Caption>What doesn’t match</Caption>
       <div className="flex w-full flex-col border-y border-line bg-surface">
         <div className="flex w-full items-start border-b border-line px-4 py-[10px]">
