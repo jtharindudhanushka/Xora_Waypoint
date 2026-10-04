@@ -1,46 +1,58 @@
-# 12 · Work breakdown — Hackathon day (Sun 4 Oct 2026)
+# 12 · Work breakdown — Hackathon day (Sun 4 Oct 2026), two developers
 
-**Hard deadline 23:59 · internal submit 21:00 · feature freeze 19:00.** All times are Sri Lanka time.
+**Hard deadline 23:59 · internal submit 21:00 · feature freeze 19:00.** All times are Sri Lanka time. Both developers work with AI agents (see [14-ai-handoff.md](14-ai-handoff.md)).
 
 ## Team
-| Person | Where | Owns |
+| Person | Owns | Why this split |
 |---|---|---|
-| **Lead** (Tharindu) | In office | **Foundation** (WP-0) → integration → deployment → README/video |
-| **Dev 2** | In office | **Engine** (WP-1) → dispatcher planning UI (WP-2) |
-| **Dev 3** | WFH | **Loader + Driver** PWA with offline sync (WP-3) |
-| **Dev 4** | WFH | **Store** UI (WP-4) → dispatcher ops/issues (WP-5) → e2e (WP-6) |
+| **Lead** (Tharindu) | ✅ WP-0 Foundation (done) → **Field apps**: driver + loader with offline sync → **Store** screens → deployment → README walkthrough, video, submission | The lead built the backend foundation and seed, so they know the models, clock and broker that the field apps need |
+| **Dev 2** | **Engine** (WP-1) → **Dispatcher planning API + UI** (WP-2) → **Shortfall repair, D6** (stretch) | The planning engine is the critical path (20% of the score) and the hero screen (D1). It's self-contained, so it can start immediately |
 
-## Work packages
-> **WP-0 status (13:30–16:00): built** on branches `chore/repo-tooling`, `feat/api-skeleton`, `feat/db-schema`, `feat/seed`, `feat/auth-clock-stream`, `feat/web-shell`, `chore/compose-ci`. Merge order is in the PR list.
+## Integration contract between the two tracks
+The **published plan version** is the hand-off point:
+- **Dev 2 writes** `plans` → `plan_versions` (status `published`) → `trips` → `stops` → `stop_orders` + `deferrals` (tables already exist; see [04](04-data-model.md)).
+- **Lead reads** published versions for the loader, driver and store screens, and writes `events`, `holds` and `shortfalls`.
+- **Milestone M1 (target 16:45): Dev 2 merges "generate + publish" with the greedy planner.** Before M1, the lead builds the screens against a published version created by a small dev helper (`python -m app.dev.fake_plan`, built by the lead and clearly marked dev-only), then switches to the real planner at M1.
 
-| WP | Scope | Depends on | Done when |
-|---|---|---|---|
-| **WP-0 Foundation** | Monorepo skeleton; `docker-compose.yml` (db, api, web) + `.env.example`; FastAPI app factory, config, logging, `/health`; SQLAlchemy + Alembic + **all tables from [04](04-data-model.md)**; seed (dataset validation + reference + S1 + demo extras); auth (login, JWT, role guards); Clock service + `/clock`; SSE endpoint; Vite React app shell with router, auth, header, tokens; generated API client; CI workflow | — | `docker compose up` → log in as all 4 roles → empty role homes |
-| **WP-1 Engine** | `packages/engine`: models, rules (BR-01 to BR-12), trip time, greedy, CP-SAT, sequencing, likely window, explanations, repair, 2B export; tests | — (pure Python) | S1 plan passes `validate()` + `check_allocation.py`; repair returns A/B/C |
-| **WP-2 Dispatcher planning** | API: generate, get plan, validate-move, edits, lock, deferrals confirm, publish-check, publish, fleet; UI: **D1** timeline + trip panel, Deferred tab, Fleet tab, Edit mode, Publish dialog; **D6** + repair API | WP-0, WP-1 | Walkthrough steps 2–4, 7 |
-| **WP-3 Loader + Driver** | API: dock trips, load list, `/sync` + bootstrap, holds, acks, vehicle today; UI: **L1–L5** (phone + tablet), **R1–R5, R7**; Dexie outbox, sync banner, service worker | WP-0 (sync contract) | Steps 6, 8, 9, 12, 13 |
-| **WP-4 Store** | API: usual items, order check, place order, next deliveries, driver note, receipt draft/confirm, issues, notifications; UI: **S1, S2, S5, S6, S8** | WP-0 | Steps 1, 5, 10 |
-| **WP-5 Dispatcher ops** | API: ops, exceptions (ranked), apply fix, issues + resolve; UI: **D5, D10, D13** | WP-0, WP-3 events | Steps 11, 14 |
-| **WP-6 E2E + polish** | Playwright walkthrough; empty/error states; fidelity pass against Figma | All | e2e green |
-| **WP-7 Ship** | Deploy (Azure), README walkthrough + departures, AI disclosure, architecture/data-model diagrams, **5–8 min video**, submit the form | All | Form submitted |
+## Task list — Dev 2 (in order)
+| # | Task | Branch | Done when | Target |
+|---|---|---|---|---|
+| 2.1 | **Engine core:** `packages/engine` (pyproject, `src/xora_engine`), dataclass models, **rules BR-01 to BR-12** as pure predicates, `trip_minutes()` (BR-08), `validate()`; unit tests incl. the worked examples (101 / 112 / 64 min) | `feat/engine-rules` | Tests green; `mypy --strict` clean | 15:45 |
+| 2.2 | **Greedy planner + explanations:** `plan()` = prune → priority (BR-13) → greedy first-fit by (brand, district) → sequence stops → plan times → likely window (travel ratios) → deferral reason codes (BR-15), unavoidable vs choice (BR-16), bottleneck + KPIs (BR-17). Export to Task 2B CSV, then run `datasets/check_allocation.py` → **PASSED** on S1 | `feat/engine-greedy` | S1 passes validate + the organisers' checker; VEH036 splits (1,096 > 1,040 kg); OUT074 served | 16:30 |
+| 2.3 | **Planning API:** adapter (DB rows ↔ engine), `POST /plans/{date}/generate`, `GET /plans/{date}`, `GET /fleet`, `PATCH /fleet/...`, `POST .../deferrals/confirm` (BR-21), `GET .../publish-check`, `POST .../publish` (BR-22, BR-23; SSE `plan.published`); export OpenAPI + regenerate the client | `feat/planning-api` | **M1:** generate + publish works on the seeded S1 | 16:45 |
+| 2.4 | **D1 Plan workspace UI** (Figma `196:383`): KPI header, "Limit today" strip + Why?, pre-dawn and daytime timelines, trip panel (D2) · **Deferred tab** (`197:440`) · **Fleet tab** (`198:274`) · **Publish dialog** (`197:682`) | `feat/dispatch-plan-ui` | Matches Figma; walkthrough steps 2–4 | 18:15 |
+| 2.5 | **Shortfall repair + D6** (`156:283`): `repair()` options A/B/C with the store split rule (BR-28, BR-29), `GET /shortfalls/{id}/options`, `POST /apply` → v2 | `feat/dispatch-shortfall` | Walkthrough step 7 | 19:00 |
+| stretch | CP-SAT optimiser behind `plan()` · Edit trips with drag and drop (`205:342`, BR-19/20) | `feat/engine-cpsat`, `feat/dispatch-edit` | | after 2.5 |
 
-## Timeline (today)
-| Time | Milestone |
-|---|---|
-| 13:30–14:00 | Docs read by everyone; claim WPs; branches created |
-| **14:00–16:00** | **WP-0 foundation** (Lead) ∥ **WP-1 engine** (Dev 2) ∥ Dev 3 and Dev 4 build UI against **mocked API types** from [05](05-api-contract.md) |
-| **16:00** | **Foundation merged**: schema, seed, auth, client generated. Everyone rebases |
-| 16:00–19:00 | WP-2 ∥ WP-3 ∥ WP-4 → WP-5 |
-| **19:00** | **Feature freeze.** Only fixes after this |
-| 19:00–20:00 | WP-6 e2e + fidelity fixes · Lead deploys (WP-7) |
-| 20:00–20:45 | Record the video (all 4 roles + architecture), README final |
-| **21:00** | **Submit** (buffer until 23:59) |
+## Task list — Lead (in order)
+| # | Task | Branch | Done when | Target |
+|---|---|---|---|---|
+| 1.1 | **Run `docker compose up`** on a Docker machine, fix anything; **deploy early** to Azure (docs/11) so the URL exists | `fix/compose-*`, `chore/deploy` | Signed in on the public URL | 15:45 |
+| 1.2 | Dev helper `fake_plan` (dev-only) + **sync API** (`/sync`, `/sync/bootstrap`, idempotent, conflicts) + `GET /vehicles/{code}/today` | `feat/sync-api` | Duplicate batch → `duplicate`; tests | 16:30 |
+| 1.3 | **Driver UI** R1, R2, R3, R4, R5, R7 with the Dexie outbox and sync banner | `feat/driver-ui` | Walkthrough 9, 12, 13 (offline) | 17:30 |
+| 1.4 | **Loader UI + API** L1, L2, L3 (→ hold), L4, L5 (ack releases the hold) | `feat/dock-ui` | Walkthrough 6, 8 | 18:15 |
+| 1.5 | **Store** S1, S2 (cutoff + 3× check), S8 notice, S5 + S6 receipt and issues | `feat/store-ui` | Walkthrough 1, 5, 10 | 19:00 |
+| 1.6 | Redeploy · README walkthrough + departures · AI disclosure · **video 5–8 min** · submit the form | `docs/submission` | Form submitted | 21:00 |
+
+**Unassigned (pick up only if ahead):** D5 Live ops, D10 store-report decision, D13 reconcile (WP-5), and the Playwright e2e (WP-6).
+
+## Timeline
+| Time | Lead | Dev 2 |
+|---|---|---|
+| 15:00 | Docker check + deploy | Engine core (2.1) |
+| 16:00 | Sync API + fake plan | Greedy + explanations (2.2) |
+| **16:45** | ← switch to the real planner | **M1: generate + publish merged** |
+| 17:00–19:00 | Driver → Loader → Store | D1 workspace → D6 repair |
+| **19:00** | **Feature freeze**: fixes only | **Feature freeze** |
+| 19:00–20:00 | Redeploy, README, final checks | Fidelity pass on dispatcher screens; help with fixes |
+| 20:00–20:45 | Record the video (both) | Record the video (both) |
+| **21:00** | **Submit** | |
 
 ## Cut list if behind (in this order)
-1. D10 store-report decision → read-only view.
-2. Tablet split layouts (keep phone layouts, which are what's judged).
-3. Repair option B (keep A and C).
-4. si/ta translations → English + one language.
-5. CP-SAT → greedy only (still rule-valid; it's labelled "Greedy" honestly).
+1. D5 / D10 / D13 (unassigned already).
+2. Tablet layouts for the loader (phone is what's judged).
+3. Repair option B (keep A and C), then D6 entirely (shortfall shows "on hold" only).
+4. si/ta translations (keep English plus the language switch).
+5. CP-SAT (greedy is rule-valid and labelled honestly).
 
-**Never cut:** rule validity, deferral reasons, the publish gate, offline outbox + idempotent sync, `docker compose up` + seed, README walkthrough.
+**Never cut:** rule validity, deferral reasons, the publish gate, offline outbox + idempotent sync, `docker compose up` + seed, the README walkthrough.
