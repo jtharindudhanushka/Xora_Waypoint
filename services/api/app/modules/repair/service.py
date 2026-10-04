@@ -42,8 +42,11 @@ def _aware(value: datetime) -> datetime:
 def _compute(
     repo: Repository, clock: Clock, shortfall_id: uuid.UUID
 ) -> tuple[Shortfall, Trip, Problem, Assignment, EngineShortfall, tuple[EngineOption, ...], int]:
-    shortfall, trip = repo.shortfall(shortfall_id, lock=True)
+    # Acquire the shared plan first, then the report/holds/version. Otherwise two
+    # concurrent repairs can each hold a different hold while waiting for the other.
+    _, trip = repo.shortfall(shortfall_id)
     repo.plan(trip.version.plan.operating_date, lock=True)
+    shortfall, trip = repo.shortfall(shortfall_id, lock=True)
     latest = repo.latest(trip.version.plan_id)
     if latest is None or latest.id != trip.version_id or latest.status != "published":
         raise ConflictError(

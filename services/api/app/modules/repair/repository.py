@@ -14,10 +14,10 @@ class Repository(PlanningRepository):
     def shortfall(self, shortfall_id: uuid.UUID, *, lock: bool = False) -> tuple[Shortfall, Trip]:
         stmt = select(Shortfall).where(Shortfall.id == shortfall_id)
         if lock:
-            stmt = stmt.with_for_update()
+            stmt = stmt.with_for_update().execution_options(populate_existing=True)
         row = self.db.scalar(stmt)
         # Other unresolved holds survive a revision; their reports retain v1 provenance.
-        active_hold = self.hold(row.id) if row else None
+        active_hold = self.hold(row.id, lock=lock) if row else None
         trip = (
             self.db.get(Trip, active_hold.trip_id if active_hold else row.trip_id) if row else None
         )
@@ -28,11 +28,10 @@ class Repository(PlanningRepository):
         )  # BR-55: enforce depot scope before revealing data.
         return row, trip
 
-    def hold(self, shortfall_id: uuid.UUID) -> Hold | None:
+    def hold(self, shortfall_id: uuid.UUID, *, lock: bool = True) -> Hold | None:
+        stmt = select(Hold).where(Hold.shortfall_id == shortfall_id, Hold.status == "active")
         return self.db.scalar(
-            select(Hold)
-            .where(Hold.shortfall_id == shortfall_id, Hold.status == "active")
-            .with_for_update()
+            stmt.with_for_update().execution_options(populate_existing=True) if lock else stmt
         )
 
     def applied(self, shortfall_id: uuid.UUID) -> RepairOption | None:
