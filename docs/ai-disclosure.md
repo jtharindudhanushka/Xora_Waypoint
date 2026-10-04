@@ -24,3 +24,9 @@ The brief requires us to explain which work was AI-assisted, which wasn't, and h
 ## Rules we keep
 - No competition data was published. The AI read the dataset locally for analysis only.
 - Numbers shown in the product are computed by our engine from the data, not invented.
+
+## Dev 3 implementation log (4 Oct 2026)
+
+| Date | Area | Tool | What the AI did | What we did |
+|---|---|---|---|---|
+| 2026-10-04 | Store API, task 3.1 | Codex (OpenAI), Figma connector | Read Store frames/rationales and repository contracts; implemented scoped draft submission, cutoff/calendar checks, quantity confirmation, read-only tracking, notice acknowledgement, separate receipts and per-line reports; added synthetic regression tests | Assigned Dev 3 the Store track; retains specification decisions, PR review and merge authority |
