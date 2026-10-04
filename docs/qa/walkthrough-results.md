@@ -45,14 +45,14 @@ run step by step with sessions a human captured via [`e2e/capture-sessions.cjs`]
 ## Pass 2 · full four-role walkthrough (recorded)
 
 2026-10-04 23:11–23:14 SLST, after the 23:04 deploy (loader UI #33, D6 fix #29, R7 store-first
-fix #31) and ; all 7 sessions re-captured by a human. Run with loader UI steps on
-(), so the API stand-ins were skipped. **10 passed · 1 failed · 2 skipped (stand-ins).**
+fix #31) and `--reset-demo`; all 7 sessions re-captured by a human. Run with loader UI steps on
+(`WALKTHROUGH_LOADER_UI=1`), so the API stand-ins were skipped. **10 passed · 1 failed · 2 skipped (stand-ins).**
 This run is the demo footage.
 
 | # | Who | Result | Real values |
 |---|---|---|---|
-| 1 | Store OUT001 | ✅ | S1-001 , 80 units, 2026-04-07 |
-| 2 | Dispatcher | ✅ | Solver  in 12.8 s · **72 / 85 served · 14 / 26 chilled** · 20 at risk · 13 deferrals · value 955.2 · reefer 102.5 / 172.4 m³ · **27 trips on 15 vehicles** · limit: reefer trip slots 7 / 8. VEH036: **2 trips** (T1 766.7 kg, T2 713.9 kg). S1-001 → VEH036 T1 · **S1-005/OUT003 → VEH036 T1** · S1-083/OUT074 → **VEH007 T2** |
+| 1 | Store OUT001 | ✅ | S1-001 `placed`, 80 units, 2026-04-07 |
+| 2 | Dispatcher | ✅ | Solver `FEASIBLE` in 12.8 s · **72 / 85 served · 14 / 26 chilled** · 20 at risk · 13 deferrals · value 955.2 · reefer 102.5 / 172.4 m³ · **27 trips on 15 vehicles** · limit: reefer trip slots 7 / 8. VEH036: **2 trips** (T1 766.7 kg, T2 713.9 kg). S1-001 → VEH036 T1 · **S1-005/OUT003 → VEH036 T1** · S1-083/OUT074 → **VEH007 T2** |
 | 3 | Dispatcher | ✅ | VEH038 "Switched off · No driver" |
 | 4 | Dispatcher | ✅ | 13 deferrals confirmed, **v1 published** |
 | 5 | Store OUT054 | ❌ | **No deferral notice**: OUT054 is served (VEH006 T1) in this plan. Deferred outlets: OUT002, 009, 013, 030, 043, 044, 046, 060, 062, 065, 066, 067, 070 — none has a demo account (bug B6) |
@@ -60,11 +60,11 @@ This run is the demo footage.
 | 7 | Dispatcher | ✅ | D6 offered **A (recommended) "Send 40 now, 2 more on Trip 2 this morning"**, B "Hold van ~25 min for re-pick", C "Send 40, move 2 to Wed" (**Breaks OUT003's rule**). Applied A → **v2 published** |
 | 8 | Loader (UI) | ✅ | Reviewed v2 → "Acknowledge v2 · release van" → hold released |
 | 9 | Driver VEH036 | ✅ | "Plan changed to v2" → acknowledged · OUT001 = T1 stop 1 (store note first, plan + likely clocks) · OUT003 = T1 stop 2 with the loading shortfall pre-filled and locked · both uploaded |
-| 10 | Store OUT001 | ✅ | Driver evidence 80 cases; store report (yoghurt, fish) →  |
+| 10 | Store OUT001 | ✅ | Driver evidence 80 cases; store report (yoghurt, fish) → `store_report` |
 | 11 | Dispatcher | ✅ | Store report from Live ops → **Redeliver** → "Decision recorded · redeliver" |
 | 12 | Driver VEH007 | ✅ | VEH007 T2 stop 1 OUT074, offline: 205 cases → "Saved on this phone · Waiting for signal" |
 | 13 | Store OUT074 → driver | ✅ | Store confirmed **200** while the driver was offline; driver back online → sync → **R7 "Your record is kept"** (205 vs 200) |
-| 14 | Dispatcher | ✅ | **D13** "Two counts for OUT074" → Store count stands →  resolved; both records kept (driver 205, store 200) |
+| 14 | Dispatcher | ✅ | **D13** "Two counts for OUT074" → Store count stands → `count_conflict` resolved; both records kept (driver 205, store 200) |
 
 ### New / still open after pass 2
 
