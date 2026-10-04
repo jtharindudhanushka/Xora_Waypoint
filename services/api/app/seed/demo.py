@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import date, datetime
+from datetime import UTC, date, datetime
 from pathlib import Path
 from typing import Any
 
@@ -104,7 +104,7 @@ def seed_demo(session: Session, ds: Dataset, demo_start: datetime) -> dict[str, 
             days_since_last_served=int(r.days_since_last_served),
             status="draft" if is_draft else "placed",
             source="dataset",
-            placed_at=None if is_draft else demo_start,
+            placed_at=None if is_draft else demo_start.astimezone(UTC),
         )
         session.add(order)
         by_ref[r.order_ref] = order
@@ -142,7 +142,10 @@ def seed_demo(session: Session, ds: Dataset, demo_start: datetime) -> dict[str, 
             )
         )
 
-    session.merge(ClockSetting(id=1, demo_now=demo_start, set_at=demo_start))
+    # The demo clock runs forward from demo_start, anchored at the real time of seeding.
+    session.merge(
+        ClockSetting(id=1, demo_now=demo_start.astimezone(UTC), set_at=datetime.now(UTC))
+    )
     session.flush()
     return {
         "users": len(extras["users"]),
