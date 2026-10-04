@@ -1,0 +1,10 @@
+# Automatic HTTPS (Let's Encrypt) in front of the web container. HTTPS is required for the PWA.
+{$PUBLIC_HOST} {
+  encode gzip zstd
+  reverse_proxy web:8080
+  header {
+    Strict-Transport-Security "max-age=31536000"
+    X-Content-Type-Options "nosniff"
+    Referrer-Policy "strict-origin-when-cross-origin"
+  }
+}
