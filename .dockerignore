@@ -1,0 +1,16 @@
+.git
+.venv
+**/node_modules
+**/__pycache__
+**/.pytest_cache
+**/.mypy_cache
+**/.ruff_cache
+**/.hypothesis
+datasets
+data
+*.csv
+*.pdf
+.env
+.env.*
+!.env.example
+apps/web/dist

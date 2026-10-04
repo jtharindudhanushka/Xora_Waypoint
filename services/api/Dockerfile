@@ -4,13 +4,15 @@ ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 PIP_NO_CACHE_DIR=1 PIP_DISABLE_
 WORKDIR /app
 
 FROM base AS deps
-COPY pyproject.toml ./
+COPY services/api/pyproject.toml ./
+COPY packages/engine /engine
+RUN pip install --prefix=/install /engine
 RUN mkdir app && touch app/__init__.py && pip install --prefix=/install .
 
 FROM base AS runtime
 RUN useradd --create-home --uid 10001 xora
 COPY --from=deps /install /usr/local
-COPY . .
+COPY services/api .
 RUN pip install --no-deps . && chown -R xora:xora /app
 USER xora
 EXPOSE 8000
