@@ -133,7 +133,9 @@ function tripOf(plan, orderRef) {
   return null;
 }
 
-test.describe.configure({ mode: "serial" });
+test.describe.configure({
+  mode: process.env.WALKTHROUGH_CONTINUE === "1" ? "default" : "serial",
+});
 
 test("step 1: S1-001 correction and submission (BR-40/42)", async ({
   browser,
