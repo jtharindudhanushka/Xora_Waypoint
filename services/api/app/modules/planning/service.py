@@ -217,14 +217,15 @@ def plan_out(repo: Repository, version: PlanVersion) -> PlanOut:
         solve_ms=version.solve_ms,
         kpis=version.kpis,
         bottleneck=version.bottleneck,
-        orders_total=version.kpis.get("orders_served", 0) + len(version.deferrals),
+        orders_total=len(
+            {so.order_id for t in version.trips for s in t.stops for so in s.orders}
+            | {d.order_id for d in version.deferrals}
+        ),
         chilled_total=sum(
-            by_id[so.order_id].temp_requirement == "chilled"
-            for t in version.trips
-            for s in t.stops
-            for so in s.orders
-        )
-        + sum(by_id[d.order_id].temp_requirement == "chilled" for d in version.deferrals),
+            by_id[order_id].temp_requirement == "chilled"
+            for order_id in {so.order_id for t in version.trips for s in t.stops for so in s.orders}
+            | {d.order_id for d in version.deferrals}
+        ),
         trips=[
             TripOut(
                 id=t.id,
@@ -250,13 +251,21 @@ def plan_out(repo: Repository, version: PlanVersion) -> PlanOut:
                         at_risk=s.at_risk,
                         status=s.status,
                         orders=[
-                            StopOrderOut(order_ref=by_id[so.order_id].ref, cases=so.planned_cases)
+                            StopOrderOut(
+                                order_ref=by_id[so.order_id].ref,
+                                cases=so.planned_cases,
+                                top_up_of_order_ref=by_id[so.top_up_of_order_id].ref
+                                if so.top_up_of_order_id
+                                else None,
+                            )
                             for so in s.orders
                         ],
                     )
                     for s in t.stops
                 ],
-                rule_messages=trip_rule_messages(problem, assignment, t),
+                rule_messages=[]
+                if version.solver_status == "REPAIR"
+                else trip_rule_messages(problem, assignment, t),
                 protected_outlets=sorted(
                     {
                         s.outlet_code
