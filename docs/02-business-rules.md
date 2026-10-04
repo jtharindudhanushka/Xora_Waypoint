@@ -120,3 +120,12 @@ Keep this list current. It goes into the README.
 | DEP-5 | D4 and D6 show late probabilities (illustrative 62% and 9% → 31%) | Real likely-late count and arrival-window changes, without a probability | Current travel-ratio model predicts windows, not calibrated probabilities; approved by Dev 2 on 4 Oct |
 | DEP-6 | Store notices sent in Sinhala, Tamil or English | English server template shared by preview and publication | Multilingual notification delivery remains a handover gap; approved by Dev 2 on 4 Oct |
 | DEP-7 | D6 Call the dock connects to the loader | Visible, disabled until a dock phone number is configured | No dock contact number is supplied; approved by Dev 2 on 4 Oct |
+
+### Pending Store fidelity decisions (Dev 3)
+
+- S8's **Call dispatch** has no configured phone number. A number or explicit approval
+  for a disabled demo action was requested on 4 October; the UI PR must not claim
+  this interaction is verified while the answer is pending.
+- S6 supports photo references through the existing `photo_url` contract. Binary
+  photo upload/storage has not been specified. Approval for a photo-link demo flow,
+  or a request to implement Store upload, was requested before final UI sign-off.
