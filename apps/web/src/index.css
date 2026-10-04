@@ -1,0 +1,68 @@
+@import 'tailwindcss';
+@import './styles/tokens.css';
+@import '@fontsource/ibm-plex-sans/400.css';
+@import '@fontsource/ibm-plex-sans/600.css';
+@import '@fontsource/ibm-plex-mono/500.css';
+
+/* Map Figma tokens into Tailwind utilities: bg-canvas, text-secondary, border-default, … */
+@theme inline {
+  --font-sans: 'IBM Plex Sans', system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+
+  --color-canvas: var(--bg-canvas);
+  --color-surface: var(--bg-surface);
+  --color-sunken: var(--bg-surface-sunken);
+  --color-inverse: var(--bg-inverse);
+  --color-brand: var(--bg-brand);
+  --color-brand-hover: var(--bg-brand-hover);
+  --color-brand-subtle: var(--bg-brand-subtle);
+  --color-disabled: var(--bg-disabled);
+
+  --color-primary: var(--text-primary);
+  --color-secondary: var(--text-secondary);
+  --color-tertiary: var(--text-tertiary);
+  --color-on-inverse: var(--text-inverse);
+  --color-on-brand: var(--text-on-brand);
+  --color-brand-text: var(--text-brand);
+
+  --color-line: var(--border-default);
+  --color-line-strong: var(--border-strong);
+  --color-focus: var(--border-focus);
+
+  --color-success-bg: var(--success-bg);
+  --color-success-fg: var(--success-fg);
+  --color-warning-bg: var(--warning-bg);
+  --color-warning-fg: var(--warning-fg);
+  --color-danger-bg: var(--danger-bg);
+  --color-danger-fg: var(--danger-fg);
+  --color-info-bg: var(--info-bg);
+  --color-info-fg: var(--info-fg);
+  --color-neutral-bg: var(--neutral-bg);
+  --color-neutral-fg: var(--neutral-fg);
+
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg-canvas);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 20px;
+  -webkit-font-smoothing: antialiased;
+}
+
+:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
+}
