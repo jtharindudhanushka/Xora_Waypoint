@@ -98,6 +98,7 @@ Full list with reasons: [`docs/02-business-rules.md` → Departures](docs/02-bus
 - **Offline is shown with browser offline mode.** The service worker precaches the app, but the walkthrough uses DevTools/flight mode on a live session rather than a cold offline start.
 - **Photos.** L3, R3 and S6 photos are optional; only a reference or the time taken is recorded and no image is uploaded.
 - **D1 editing and the Orders tab** are disabled, as above.
+- **Open QA items** ([results](docs/qa/walkthrough-results.md)): B4 (late-risk / pending-sync exceptions may be listed twice in Live ops; not re-checked after the fix pass) and F1 (the deferral explanation says "greedy plan" even when `solver_status` is FEASIBLE). B1/B2/B5 are fixed and B3/B6 resolved.
 - **SSE broker is in-process** (single API instance); multi-instance would need Postgres LISTEN/NOTIFY.
 - **Verification.** Steps 1–4 and 9 (online) were clicked on the live URL, and steps 12–13 were clicked on a local seeded stack. Results from the full four-role QA run are in [`docs/qa/walkthrough-results.md`](docs/qa/walkthrough-results.md) when present.
 
