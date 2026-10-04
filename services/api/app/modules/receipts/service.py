@@ -192,27 +192,14 @@ def confirm(db: Session, user: User, clock: Clock, ref: str, body: ReceiptIn) ->
     return receipt_out(db, order, receipt)
 
 
-def report(db: Session, user: User, clock: Clock, ref: str, body: IssueIn) -> IssueOut:
-    order = orders.order_for(db, user, ref, lock=True)
-    fingerprint = body.model_dump(mode="json")
-    prior = db.get(Event, body.request_id)
-    if prior:
-        if (
-            prior.actor_id != user.id
-            or prior.type != "store_report.created"
-            or prior.entity_id != str(order.id)
-            or prior.payload.get("request") != fingerprint
-        ):
-            raise ConflictError(
-                "IDEMPOTENCY_CONFLICT", "This request id was used for another report"
-            )
-        issue = db.get(Issue, uuid.UUID(prior.payload["issue_id"]))
-        assert issue is not None
-        return IssueOut(
-            id=issue.id,
-            order_ref=ref,
-            status=issue.status,
-            receipt_id=uuid.UUID(prior.payload["receipt_id"]),
+def report_counts(
+    db: Session, order: Order, body: IssueIn, view: ReceiptDraftOut
+) -> tuple[dict[uuid.UUID, int], dict[uuid.UUID, int], dict[uuid.UUID, int]]:
+    if not view.can_confirm and not view.confirmed:
+        raise DomainError(
+            "DRIVER_COUNTS_PENDING",
+            "Wait for the driver item counts before reporting",
+            rule_id="BR-46",
         )
     by_id = {line.id: line for line in order.lines}
     totals: dict[uuid.UUID, int] = {}
@@ -245,6 +232,42 @@ def report(db: Session, user: User, clock: Clock, ref: str, body: IssueIn) -> Is
             raise DomainError(
                 "ISSUE_QUANTITY", "Problem count exceeds the ordered item count", rule_id="BR-47"
             )
+    driver = {line.order_line_id: int(line.driver_qty or 0) for line in view.lines}
+    missing = {entry.order_line_id: entry.qty for entry in body.lines if entry.problem == "missing"}
+    # BR-47: confirm good cases; a bad line does not block the whole receipt.
+    # Driver counts already exclude known shortages. Do not subtract them twice.
+    good = {}
+    for draft_line in view.lines:
+        key, qty = draft_line.order_line_id, driver[draft_line.order_line_id]
+        absent = missing.get(key, 0)
+        additional_missing = max(0, absent - max(0, draft_line.ordered_qty - qty))
+        good[key] = max(0, qty - (totals.get(key, 0) - absent) - additional_missing)
+    return totals, driver, good
+
+
+def report(db: Session, user: User, clock: Clock, ref: str, body: IssueIn) -> IssueOut:
+    order = orders.order_for(db, user, ref, lock=True)
+    fingerprint = body.model_dump(mode="json")
+    prior = db.get(Event, body.request_id)
+    if prior:
+        if (
+            prior.actor_id != user.id
+            or prior.type != "store_report.created"
+            or prior.entity_id != str(order.id)
+            or prior.payload.get("request") != fingerprint
+        ):
+            raise ConflictError(
+                "IDEMPOTENCY_CONFLICT", "This request id was used for another report"
+            )
+        issue = db.get(Issue, uuid.UUID(prior.payload["issue_id"]))
+        assert issue is not None
+        return IssueOut(
+            id=issue.id,
+            order_ref=ref,
+            status=issue.status,
+            receipt_id=uuid.UUID(prior.payload["receipt_id"]),
+        )
+    by_id = {line.id: line for line in order.lines}
     view = draft(db, user, clock, order)
     receipt = db.scalar(select(Receipt).where(Receipt.order_id == order.id))
     if not receipt and not view.can_confirm:
@@ -253,19 +276,8 @@ def report(db: Session, user: User, clock: Clock, ref: str, body: IssueIn) -> Is
             "Wait for the driver item counts before reporting",
             rule_id="BR-46",
         )
+    totals, driver, good = report_counts(db, order, body, view)
     if receipt is None:
-        driver = {line.order_line_id: int(line.driver_qty or 0) for line in view.lines}
-        missing = {
-            entry.order_line_id: entry.qty for entry in body.lines if entry.problem == "missing"
-        }
-        # BR-47: confirm good cases; a bad line does not block the whole receipt.
-        # Driver counts already exclude known shortages. Do not subtract them twice.
-        good = {}
-        for draft_line in view.lines:
-            key, qty = draft_line.order_line_id, driver[draft_line.order_line_id]
-            absent = missing.get(key, 0)
-            additional_missing = max(0, absent - max(0, draft_line.ordered_qty - qty))
-            good[key] = max(0, qty - (totals.get(key, 0) - absent) - additional_missing)
         receipt = create_receipt(
             db,
             user,

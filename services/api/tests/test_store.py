@@ -240,6 +240,11 @@ def test_br47_report_confirms_good_cases_and_retries_once(client, store_data, se
     }
     headers = auth_header(client, "store_manager")
     url = "/api/v1/orders/SYN-DRAFT/issues"
+    preview = client.post(url + "/check", headers=headers, json=request)
+    assert preview.json() == {"good_cases": 25}
+    with session_maker() as db:
+        assert db.scalar(select(Receipt)) is None
+        assert db.scalar(select(Issue)) is None
     response = client.post(url, headers=headers, json=request)
     assert response.status_code == 200, response.text
     assert client.post(url, headers=headers, json=request).json() == response.json()

@@ -147,3 +147,8 @@ and a `store_report` plus item rows/exception are created for D10. Driver eviden
 is linked by `driver_event_id`. Optional photo references are accepted; binary
 photo upload is outside this contract. Invalid lines create nothing. Request replay
 is idempotent; all audit events are append-only.
+
+Store report preview: `POST /orders/{ref}/issues/check` accepts `IssueIn` and returns
+`{good_cases}` without creating receipts, issues or events. The same BR-47 validation
+and counting function runs when sending the report. `OrderOut.receipt_confirmed_at`
+provides the receipt timestamp displayed in S1's recent deliveries.

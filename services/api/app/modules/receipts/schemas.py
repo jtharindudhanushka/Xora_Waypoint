@@ -73,3 +73,7 @@ class IssueOut(BaseModel):
     kind: str = "store_report"
     status: str
     receipt_id: UUID
+
+
+class IssuePreviewOut(BaseModel):
+    good_cases: int

@@ -411,6 +411,15 @@ def order_out(db: Session, order: Order, clock: Clock) -> OrderOut:
         placed_at=ensure_utc(order.placed_at).astimezone(COLOMBO) if order.placed_at else None,
         receipt_confirmed=db.scalar(select(Receipt.id).where(Receipt.order_id == order.id))
         is not None,
+        receipt_confirmed_at=(
+            ensure_utc(confirmed_at).astimezone(COLOMBO)
+            if (
+                confirmed_at := db.scalar(
+                    select(Receipt.confirmed_at).where(Receipt.order_id == order.id)
+                )
+            )
+            else None
+        ),
         lines=[
             OrderLineOut(
                 id=line.id,

@@ -95,6 +95,7 @@ class OrderOut(BaseModel):
     submission_status: str
     placed_at: datetime | None
     receipt_confirmed: bool
+    receipt_confirmed_at: datetime | None
     lines: list[OrderLineOut]
     tracking: list[TrackingOut]
 

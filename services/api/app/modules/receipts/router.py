@@ -6,7 +6,14 @@ from app.core.deps import ClockDep, DbDep
 from app.modules.orders import service as orders
 from app.modules.orders.router import StoreUser
 from app.modules.receipts import service
-from app.modules.receipts.schemas import IssueIn, IssueOut, ReceiptDraftOut, ReceiptIn, ReceiptOut
+from app.modules.receipts.schemas import (
+    IssueIn,
+    IssueOut,
+    IssuePreviewOut,
+    ReceiptDraftOut,
+    ReceiptIn,
+    ReceiptOut,
+)
 from app.modules.stream.broker import broker
 
 router = APIRouter(tags=["receipts"])
@@ -40,3 +47,13 @@ async def report(ref: str, body: IssueIn, db: DbDep, user: StoreUser, clock: Clo
         audience=lambda s: s.get("outlet") == outlet.code or s.get("depot") == outlet.depot,
     )
     return out
+
+
+@router.post("/orders/{ref}/issues/check", response_model=IssuePreviewOut)
+def check_report(
+    ref: str, body: IssueIn, db: DbDep, user: StoreUser, clock: ClockDep
+) -> IssuePreviewOut:
+    order = orders.order_for(db, user, ref)
+    view = service.draft(db, user, clock, order)
+    _, _, good = service.report_counts(db, order, body, view)
+    return IssuePreviewOut(good_cases=sum(good.values()))
