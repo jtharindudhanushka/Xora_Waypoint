@@ -27,7 +27,7 @@ class Settings(BaseSettings):
 
     dataset_dir: Path = Path("./datasets")
     demo_start: datetime = datetime.fromisoformat("2026-04-06T14:50:00+05:30")
-    seed_reset_demo: bool = True
+    seed_reset_demo: bool = False
     timezone: str = Field(default="Asia/Colombo", alias="TZ")
 
     @field_validator("cors_origins", mode="before")

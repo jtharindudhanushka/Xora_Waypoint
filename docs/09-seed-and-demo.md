@@ -32,7 +32,7 @@ If a required file is missing, the seed exits with code 2 and prints the exact m
 6. **S1-001 (OUT001 chilled, 80 cases) is seeded as a `draft`.** The judge submits it in S2 (walkthrough step 1). Before planning, if the clock passes 16:00 and it is still a draft, the cutoff job places it, so the plan is always complete.
 7. Set the demo clock to **2026-04-06 14:50 +05:30**.
 
-Re-running the seed is safe: it upserts reference data and resets only the demo day (`SEED_RESET_DEMO=true`).
+Re-running the seed is safe. Reference data is merged on every start. **The demo day is inserted only on the first run, so a container restart never wipes a judge's progress.** To start the demo over: `docker compose exec api python -m app.seed --reset-demo` (or set `SEED_RESET_DEMO=true` for one start).
 
 ## Demo clock (BR-56)
 - `clock_settings.demo_now` overrides `now()` everywhere on the server. When it's null, the real time is used.

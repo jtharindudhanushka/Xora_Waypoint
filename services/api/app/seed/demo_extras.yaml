@@ -1,0 +1,47 @@
+# Demo fixtures — ORIGINAL content written by the team, not derived from the competition data.
+# The dataset gives cases, kg and m³ per order; it has no items, people or store preferences.
+# Item cases per order sum exactly to the dataset's order_units (checked by the seed).
+
+scenario:
+  id: S1
+  depot: Peliyagoda
+  operating_date: 2026-04-07          # Tue, one week before Sinhala & Tamil New Year
+  draft_order_refs: [S1-001]          # placed by the judge in S2 (walkthrough step 1)
+  switched_off:                       # operational override, not a dataset change (BR-10)
+    VEH038: No driver
+
+users:                                # password for every demo account: demo1234
+  - {email: dispatch.peliyagoda@waypoint.demo, name: Kasun F., role: dispatcher, depot: Peliyagoda}
+  - {email: loader.dock2@waypoint.demo, name: Nimal P., role: loader, depot: Peliyagoda, dock: Dock 2}
+  - {email: driver.veh036@waypoint.demo, name: Ruwan D., role: driver, depot: Peliyagoda, vehicle: VEH036}
+  - {email: driver.veh007@waypoint.demo, name: Saman K., role: driver, depot: Peliyagoda, vehicle: VEH007}
+  - {email: store.out001@waypoint.demo, name: N. Perera, role: store_manager, outlet: OUT001}
+  - {email: store.out074@waypoint.demo, name: S. Jayasinghe, role: store_manager, outlet: OUT074}
+  - {email: store.out054@waypoint.demo, name: M. Fernando, role: store_manager, outlet: OUT054}
+
+outlet_profiles:                      # store rules and preferences (BR-29, BR-44)
+  OUT001: {split_rule: any, language: en, contact_name: N. Perera, access_note: Front shutter opens 07:00; side lane before that}
+  OUT003: {split_rule: same_morning_only, language: si, contact_name: A. Silva}
+  OUT054: {split_rule: never, language: si, contact_name: M. Fernando}
+  OUT074: {split_rule: any, language: ta, contact_name: S. Jayasinghe}
+
+products:
+  - {id: milk-1l, name: Fresh milk 1 L, brand: Fresh, is_chilled: true}
+  - {id: yoghurt-1kg, name: Set yoghurt 1 kg, brand: Fresh, is_chilled: true}
+  - {id: butter-200g, name: Butter 200 g, brand: Fresh, is_chilled: true}
+  - {id: chicken-whole, name: "Chicken, whole", brand: Fresh, is_chilled: true}
+  - {id: fish-fillet, name: "Fish, fillet", brand: Fresh, is_chilled: true}
+  - {id: rice-5kg, name: Samba rice 5 kg, brand: Fresh, is_chilled: false}
+  - {id: tea-400g, name: Ceylon tea 400 g, brand: Fresh, is_chilled: false}
+
+usual_quantities:                     # for the 3× sanity check (BR-42)
+  OUT001: {milk-1l: 24, yoghurt-1kg: 20, butter-200g: 12, chicken-whole: 16, fish-fillet: 8}
+
+order_lines:                          # cases per item; sums must equal order_units
+  S1-000: {rice-5kg: 6, tea-400g: 6}                                                         # 12
+  S1-001: {milk-1l: 24, yoghurt-1kg: 60, butter-200g: 12, chicken-whole: 16, fish-fillet: 8}  # draft: 120, judge fixes yoghurt → 80
+  S1-005: {milk-1l: 14, yoghurt-1kg: 10, butter-200g: 8, chicken-whole: 10}                   # 42
+  S1-083: {milk-1l: 70, yoghurt-1kg: 50, butter-200g: 25, chicken-whole: 40, fish-fillet: 20} # 205
+
+driver_notes:
+  - {outlet: OUT001, for_date: 2026-04-07, text: Front shutter shut till 07:00 · unload at the side lane}
