@@ -1513,6 +1513,63 @@
           }
         }
       }
+    },
+    "/api/v1/orders/{ref}/issues/check": {
+      "post": {
+        "tags": [
+          "receipts"
+        ],
+        "summary": "Check Report",
+        "operationId": "check_report_api_v1_orders__ref__issues_check_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "ref",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Ref"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IssueIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IssuePreviewOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -1954,6 +2011,19 @@
         ],
         "title": "IssueOut"
       },
+      "IssuePreviewOut": {
+        "properties": {
+          "good_cases": {
+            "type": "integer",
+            "title": "Good Cases"
+          }
+        },
+        "type": "object",
+        "required": [
+          "good_cases"
+        ],
+        "title": "IssuePreviewOut"
+      },
       "ItemIn": {
         "properties": {
           "product_id": {
@@ -2313,6 +2383,18 @@
             "type": "boolean",
             "title": "Receipt Confirmed"
           },
+          "receipt_confirmed_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Receipt Confirmed At"
+          },
           "lines": {
             "items": {
               "$ref": "#/components/schemas/OrderLineOut"
@@ -2341,6 +2423,7 @@
           "submission_status",
           "placed_at",
           "receipt_confirmed",
+          "receipt_confirmed_at",
           "lines",
           "tracking"
         ],
