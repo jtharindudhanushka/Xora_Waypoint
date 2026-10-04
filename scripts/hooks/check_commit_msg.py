@@ -1,4 +1,4 @@
-"""commit-msg hook: enforce conventional commits and forbid AI attribution trailers (CONTRIBUTING)."""
+"""commit-msg hook: enforce conventional commits, forbid AI attribution trailers (CONTRIBUTING)."""
 
 from __future__ import annotations
 
@@ -22,7 +22,9 @@ def main(argv: list[str]) -> int:
     subject = lines[0] if lines else ""
     errors = []
     if not subject.startswith(("Merge ", "Revert ")) and not CONVENTIONAL.match(subject):
-        errors.append("Subject must follow conventional commits, e.g. 'feat(planning): add publish gate'.")
+        errors.append(
+            "Subject must follow conventional commits, e.g. 'feat(planning): add publish gate'."
+        )
     if FORBIDDEN.search(text):
         errors.append("AI attribution trailers are not allowed (see CONTRIBUTING: git workflow).")
     for e in errors:

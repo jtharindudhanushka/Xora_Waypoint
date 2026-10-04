@@ -136,3 +136,51 @@ def test_br23_br48_swap_publishes_new_version_and_keeps_original(client, session
         client.post(f"/api/v1/exceptions/{identifier}/apply-fix", headers=headers).status_code
         == 409
     )
+
+
+def test_superseded_version_stop_exceptions_are_closed(client, session_maker):
+    """QA B4: /exceptions must not keep listing stops a newer version replaced."""
+    with session_maker() as db:
+        db.add(
+            Order(
+                ref="TEST-SECOND",
+                outlet_code="TEST1",
+                brand="Fresh",
+                temp_requirement="chilled",
+                delivery_date=DAY,
+                units=10,
+                weight_kg=100,
+                volume_m3=1,
+                status="placed",
+                days_since_last_served=1,
+            )
+        )
+        db.commit()
+    plan, headers = published(client)
+    trip = plan["trips"][0]
+    swap, stale = uuid.uuid4(), uuid.uuid4()
+    with session_maker() as db:
+        for identifier, stop, fix in (
+            (swap, trip["stops"][1], {"action": "swap_stops", "left": 1, "right": 2}),
+            (stale, trip["stops"][0], {}),
+        ):
+            db.add(
+                ExceptionItem(
+                    id=identifier,
+                    kind="late_risk",
+                    impact=10,
+                    title="Superseded",
+                    entity_type="stop",
+                    entity_id=stop["id"],
+                    suggested_fix=fix,
+                    status="open",
+                    created_at=datetime(2026, 4, 7, tzinfo=UTC),
+                )
+            )
+        db.commit()
+    assert client.post(f"/api/v1/exceptions/{swap}/apply-fix", headers=headers).status_code == 200
+    assert client.get(f"/api/v1/ops/{DAY}", headers=headers).status_code == 200
+    listed = {e["id"] for e in client.get("/api/v1/exceptions", headers=headers).json()}
+    assert str(stale) not in listed
+    with session_maker() as db:
+        assert db.get(ExceptionItem, stale).status == "resolved"
