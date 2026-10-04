@@ -157,6 +157,7 @@ def _trip_view(db: Session, version: PlanVersion, trip: Trip, day: date) -> Trip
                 access_note=profile.access_note if profile else None,
                 contact_name=profile.contact_name if profile else None,
                 store_note=note.text if note else None,
+                store_note_at=ensure_utc(note.sent_at) if note else None,
                 arrived_at=_event_time(arrived),
                 outcome=str(outcome.payload.get("outcome")) if outcome else None,
                 orders=[_order_view(db, so, shortfalls) for so in stop.orders],
@@ -204,6 +205,8 @@ def _order_view(
         order_ref=order.ref,
         temp_requirement=order.temp_requirement,
         planned_cases=stop_order.planned_cases,
+        weight_kg=float(order.weight_kg),
+        volume_m3=float(order.volume_m3),
         top_up_of_order_ref=top_up.ref if top_up else None,
         lines=lines,
         known_shortfall=KnownShortfallOut(
