@@ -66,3 +66,11 @@ body {
   outline: 2px solid var(--border-focus);
   outline-offset: 2px;
 }
+
+.planning-dialog::backdrop {
+  background: var(--overlay-scrim);
+}
+
+.planning-dialog {
+  box-shadow: var(--shadow-dialog);
+}

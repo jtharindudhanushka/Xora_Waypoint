@@ -37,6 +37,8 @@
   --info-fg: #1d47ae;
   --neutral-bg: #efefed;
   --neutral-fg: #3d3d3b;
+  --overlay-scrim: rgba(18, 15, 13, 0.45);
+  --shadow-dialog: 0 2px 4px rgba(26, 20, 15, 0.06), 0 16px 40px rgba(26, 20, 15, 0.12);
 }
 
 /* Dark mode: drivers on pre-dawn Fresh runs (03:30–08:00). */

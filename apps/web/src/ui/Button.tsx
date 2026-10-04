@@ -1,7 +1,7 @@
 import type { ButtonHTMLAttributes } from 'react'
 
-type Variant = 'primary' | 'secondary' | 'outline' | 'danger'
-type Size = 'md' | 'lg'
+type Variant = 'primary' | 'secondary' | 'outline' | 'danger' | 'ghost'
+type Size = 'sm' | 'md' | 'lg'
 
 const VARIANTS: Record<Variant, string> = {
   // Orange only when something needs attention (design direction); dark text on orange (AA).
@@ -9,10 +9,15 @@ const VARIANTS: Record<Variant, string> = {
   secondary: 'bg-inverse text-on-inverse hover:opacity-90',
   outline: 'border border-line-strong bg-surface text-primary hover:bg-sunken',
   danger: 'bg-[var(--danger-solid)] text-[var(--text-on-danger)] hover:opacity-90',
+  ghost: 'text-primary hover:bg-sunken',
 }
 
 // 44 px on desktop; 56 px for primary field actions on phones and tablets.
-const SIZES: Record<Size, string> = { md: 'h-11 px-5 text-sm', lg: 'h-14 px-6 text-base' }
+const SIZES: Record<Size, string> = {
+  sm: 'h-10 px-4 text-sm !rounded-md leading-[18px]',
+  md: 'h-11 px-5 text-sm',
+  lg: 'h-14 px-6 text-base',
+}
 
 export function Button({
   variant = 'primary',

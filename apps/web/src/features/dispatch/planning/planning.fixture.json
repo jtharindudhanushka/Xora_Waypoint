@@ -1,0 +1,608 @@
+{
+  "plan": {
+    "id": "test-plan-v1",
+    "plan_id": "test-plan",
+    "number": 1,
+    "operating_date": "2026-04-07",
+    "depot": "Peliyagoda",
+    "status": "draft",
+    "solver_status": "GREEDY",
+    "solve_ms": 35,
+    "kpis": {
+      "orders_served": 81,
+      "chilled_served": 22,
+      "stops_at_risk": 6,
+      "deferrals": 4,
+      "value_served": 1200,
+      "reefer_m3_used": 172,
+      "reefer_m3_total": 172
+    },
+    "bottleneck": {
+      "resource": "reefer_space",
+      "used": 172,
+      "capacity": 172,
+      "explanation": "Reefer capacity limits this synthetic plan."
+    },
+    "trips": [
+      {
+        "id": "trip-1-1",
+        "vehicle_code": "TESTV01",
+        "trip_no": 1,
+        "brand": "Fresh",
+        "district": "Colombo",
+        "lane": "predawn",
+        "planned_depart": "04:40:00",
+        "plan_minutes": 64,
+        "litres": 3,
+        "weight_kg": 767,
+        "volume_m3": 4.2,
+        "locked": false,
+        "stops": [
+          {
+            "id": "stop-1-1-1",
+            "seq": 1,
+            "outlet_code": "TEST111",
+            "plan_arrival": "05:04:00",
+            "likely_from": "05:15:00",
+            "likely_to": "05:35:00",
+            "at_risk": false,
+            "status": "planned",
+            "orders": [
+              {
+                "order_ref": "TESTORDER111",
+                "cases": 10
+              }
+            ]
+          },
+          {
+            "id": "stop-1-1-2",
+            "seq": 2,
+            "outlet_code": "TEST112",
+            "plan_arrival": "05:28:00",
+            "likely_from": "05:45:00",
+            "likely_to": "06:10:00",
+            "at_risk": false,
+            "status": "planned",
+            "orders": [
+              {
+                "order_ref": "TESTORDER112",
+                "cases": 10
+              }
+            ]
+          }
+        ],
+        "rule_messages": [
+          {
+            "rule_id": "BR-06",
+            "code": "WEIGHT_CAP",
+            "message": "TESTORDER122 won\u2019t fit: weight 1,096 / 1,040 kg",
+            "context": {
+              "weight_kg": 1096,
+              "weight_cap_kg": 1040
+            }
+          }
+        ],
+        "protected_outlets": []
+      },
+      {
+        "id": "trip-1-2",
+        "vehicle_code": "TESTV01",
+        "trip_no": 2,
+        "brand": "Fresh",
+        "district": "Colombo",
+        "lane": "predawn",
+        "planned_depart": "06:00:00",
+        "plan_minutes": 64,
+        "litres": 3,
+        "weight_kg": 767,
+        "volume_m3": 4.2,
+        "locked": false,
+        "stops": [
+          {
+            "id": "stop-1-2-1",
+            "seq": 1,
+            "outlet_code": "TEST121",
+            "plan_arrival": "05:04:00",
+            "likely_from": "05:15:00",
+            "likely_to": "05:35:00",
+            "at_risk": false,
+            "status": "planned",
+            "orders": [
+              {
+                "order_ref": "TESTORDER121",
+                "cases": 10
+              }
+            ]
+          },
+          {
+            "id": "stop-1-2-2",
+            "seq": 2,
+            "outlet_code": "TEST122",
+            "plan_arrival": "05:28:00",
+            "likely_from": "05:45:00",
+            "likely_to": "06:10:00",
+            "at_risk": false,
+            "status": "planned",
+            "orders": [
+              {
+                "order_ref": "TESTORDER122",
+                "cases": 10
+              }
+            ]
+          }
+        ],
+        "rule_messages": [],
+        "protected_outlets": []
+      },
+      {
+        "id": "trip-2-1",
+        "vehicle_code": "TESTV02",
+        "trip_no": 1,
+        "brand": "Fresh",
+        "district": "Puttalam",
+        "lane": "predawn",
+        "planned_depart": "04:40:00",
+        "plan_minutes": 64,
+        "litres": 3,
+        "weight_kg": 767,
+        "volume_m3": 4.2,
+        "locked": false,
+        "stops": [
+          {
+            "id": "stop-2-1-1",
+            "seq": 1,
+            "outlet_code": "TEST211",
+            "plan_arrival": "05:04:00",
+            "likely_from": "05:15:00",
+            "likely_to": "05:35:00",
+            "at_risk": false,
+            "status": "planned",
+            "orders": [
+              {
+                "order_ref": "TESTORDER211",
+                "cases": 10
+              }
+            ]
+          },
+          {
+            "id": "stop-2-1-2",
+            "seq": 2,
+            "outlet_code": "TEST212",
+            "plan_arrival": "05:28:00",
+            "likely_from": "05:45:00",
+            "likely_to": "06:10:00",
+            "at_risk": false,
+            "status": "planned",
+            "orders": [
+              {
+                "order_ref": "TESTORDER212",
+                "cases": 10
+              }
+            ]
+          }
+        ],
+        "rule_messages": [],
+        "protected_outlets": ["TEST211"]
+      },
+      {
+        "id": "trip-3-1",
+        "vehicle_code": "TESTV03",
+        "trip_no": 1,
+        "brand": "Fresh",
+        "district": "Gampaha",
+        "lane": "predawn",
+        "planned_depart": "04:40:00",
+        "plan_minutes": 64,
+        "litres": 3,
+        "weight_kg": 767,
+        "volume_m3": 4.2,
+        "locked": false,
+        "stops": [
+          {
+            "id": "stop-3-1-1",
+            "seq": 1,
+            "outlet_code": "TEST311",
+            "plan_arrival": "05:04:00",
+            "likely_from": "05:15:00",
+            "likely_to": "05:35:00",
+            "at_risk": true,
+            "status": "planned",
+            "orders": [
+              {
+                "order_ref": "TESTORDER311",
+                "cases": 10
+              }
+            ]
+          },
+          {
+            "id": "stop-3-1-2",
+            "seq": 2,
+            "outlet_code": "TEST312",
+            "plan_arrival": "05:28:00",
+            "likely_from": "05:45:00",
+            "likely_to": "06:10:00",
+            "at_risk": true,
+            "status": "planned",
+            "orders": [
+              {
+                "order_ref": "TESTORDER312",
+                "cases": 10
+              }
+            ]
+          }
+        ],
+        "rule_messages": [],
+        "protected_outlets": []
+      },
+      {
+        "id": "trip-4-1",
+        "vehicle_code": "TESTV04",
+        "trip_no": 1,
+        "brand": "Fresh",
+        "district": "Colombo",
+        "lane": "predawn",
+        "planned_depart": "04:40:00",
+        "plan_minutes": 64,
+        "litres": 3,
+        "weight_kg": 767,
+        "volume_m3": 4.2,
+        "locked": false,
+        "stops": [
+          {
+            "id": "stop-4-1-1",
+            "seq": 1,
+            "outlet_code": "TEST411",
+            "plan_arrival": "05:04:00",
+            "likely_from": "05:15:00",
+            "likely_to": "05:35:00",
+            "at_risk": false,
+            "status": "planned",
+            "orders": [
+              {
+                "order_ref": "TESTORDER411",
+                "cases": 10
+              }
+            ]
+          },
+          {
+            "id": "stop-4-1-2",
+            "seq": 2,
+            "outlet_code": "TEST412",
+            "plan_arrival": "05:28:00",
+            "likely_from": "05:45:00",
+            "likely_to": "06:10:00",
+            "at_risk": false,
+            "status": "planned",
+            "orders": [
+              {
+                "order_ref": "TESTORDER412",
+                "cases": 10
+              }
+            ]
+          }
+        ],
+        "rule_messages": [],
+        "protected_outlets": []
+      },
+      {
+        "id": "trip-5-1",
+        "vehicle_code": "TESTV05",
+        "trip_no": 1,
+        "brand": "Fresh",
+        "district": "Colombo",
+        "lane": "predawn",
+        "planned_depart": "04:40:00",
+        "plan_minutes": 64,
+        "litres": 3,
+        "weight_kg": 767,
+        "volume_m3": 4.2,
+        "locked": false,
+        "stops": [
+          {
+            "id": "stop-5-1-1",
+            "seq": 1,
+            "outlet_code": "TEST511",
+            "plan_arrival": "05:04:00",
+            "likely_from": "05:15:00",
+            "likely_to": "05:35:00",
+            "at_risk": false,
+            "status": "planned",
+            "orders": [
+              {
+                "order_ref": "TESTORDER511",
+                "cases": 10
+              }
+            ]
+          },
+          {
+            "id": "stop-5-1-2",
+            "seq": 2,
+            "outlet_code": "TEST512",
+            "plan_arrival": "05:28:00",
+            "likely_from": "05:45:00",
+            "likely_to": "06:10:00",
+            "at_risk": false,
+            "status": "planned",
+            "orders": [
+              {
+                "order_ref": "TESTORDER512",
+                "cases": 10
+              }
+            ]
+          }
+        ],
+        "rule_messages": [],
+        "protected_outlets": []
+      },
+      {
+        "id": "trip-6-1",
+        "vehicle_code": "TESTV06",
+        "trip_no": 1,
+        "brand": "Fresh",
+        "district": "Kurunegala",
+        "lane": "predawn",
+        "planned_depart": "04:40:00",
+        "plan_minutes": 64,
+        "litres": 3,
+        "weight_kg": 767,
+        "volume_m3": 4.2,
+        "locked": false,
+        "stops": [
+          {
+            "id": "stop-6-1-1",
+            "seq": 1,
+            "outlet_code": "TEST611",
+            "plan_arrival": "05:04:00",
+            "likely_from": "05:15:00",
+            "likely_to": "05:35:00",
+            "at_risk": false,
+            "status": "planned",
+            "orders": [
+              {
+                "order_ref": "TESTORDER611",
+                "cases": 10
+              }
+            ]
+          },
+          {
+            "id": "stop-6-1-2",
+            "seq": 2,
+            "outlet_code": "TEST612",
+            "plan_arrival": "05:28:00",
+            "likely_from": "05:45:00",
+            "likely_to": "06:10:00",
+            "at_risk": false,
+            "status": "planned",
+            "orders": [
+              {
+                "order_ref": "TESTORDER612",
+                "cases": 10
+              }
+            ]
+          }
+        ],
+        "rule_messages": [],
+        "protected_outlets": []
+      },
+      {
+        "id": "trip-7-1",
+        "vehicle_code": "TESTV07",
+        "trip_no": 1,
+        "brand": "Fresh",
+        "district": "Galle",
+        "lane": "predawn",
+        "planned_depart": "04:40:00",
+        "plan_minutes": 64,
+        "litres": 3,
+        "weight_kg": 767,
+        "volume_m3": 4.2,
+        "locked": false,
+        "stops": [
+          {
+            "id": "stop-7-1-1",
+            "seq": 1,
+            "outlet_code": "TEST711",
+            "plan_arrival": "05:04:00",
+            "likely_from": "05:15:00",
+            "likely_to": "05:35:00",
+            "at_risk": false,
+            "status": "planned",
+            "orders": [
+              {
+                "order_ref": "TESTORDER711",
+                "cases": 10
+              }
+            ]
+          },
+          {
+            "id": "stop-7-1-2",
+            "seq": 2,
+            "outlet_code": "TEST712",
+            "plan_arrival": "05:28:00",
+            "likely_from": "05:45:00",
+            "likely_to": "06:10:00",
+            "at_risk": false,
+            "status": "planned",
+            "orders": [
+              {
+                "order_ref": "TESTORDER712",
+                "cases": 10
+              }
+            ]
+          }
+        ],
+        "rule_messages": [],
+        "protected_outlets": []
+      }
+    ],
+    "deferrals": [
+      {
+        "id": "defer-1",
+        "order_ref": "TESTDEFER1",
+        "outlet_code": "TESTD1",
+        "reason_code": "NO_REEFER_CAPACITY",
+        "group": "unavoidable",
+        "priority": 73,
+        "explanation": "Too big for any reefer trip left",
+        "displaces": [],
+        "next_run": "2026-04-08",
+        "repeat_skip": false,
+        "confirmed": false,
+        "confirm_reason": null,
+        "district": "Galle",
+        "temp_requirement": "chilled",
+        "volume_m3": 10.1,
+        "weight_kg": 500
+      },
+      {
+        "id": "defer-2",
+        "order_ref": "TESTDEFER2",
+        "outlet_code": "TESTD2",
+        "reason_code": "HIGHER_PRIORITY",
+        "group": "choice",
+        "priority": 68,
+        "explanation": "Serving it pushes out TEST112 + TEST212",
+        "displaces": ["TESTORDER112", "TESTORDER212"],
+        "next_run": "2026-04-08",
+        "repeat_skip": false,
+        "confirmed": false,
+        "confirm_reason": null,
+        "district": "Galle",
+        "temp_requirement": "chilled",
+        "volume_m3": 10.1,
+        "weight_kg": 500
+      },
+      {
+        "id": "defer-3",
+        "order_ref": "TESTDEFER3",
+        "outlet_code": "TESTD3",
+        "reason_code": "HIGHER_PRIORITY",
+        "group": "choice",
+        "priority": 63,
+        "explanation": "Serving it pushes out TEST112 + TEST212",
+        "displaces": ["TESTORDER112", "TESTORDER212"],
+        "next_run": "2026-04-08",
+        "repeat_skip": false,
+        "confirmed": false,
+        "confirm_reason": null,
+        "district": "Galle",
+        "temp_requirement": "chilled",
+        "volume_m3": 10.1,
+        "weight_kg": 500
+      },
+      {
+        "id": "defer-4",
+        "order_ref": "TESTDEFER4",
+        "outlet_code": "TESTD4",
+        "reason_code": "HIGHER_PRIORITY",
+        "group": "choice",
+        "priority": 58,
+        "explanation": "Serving it pushes out TEST112 + TEST212",
+        "displaces": ["TESTORDER112", "TESTORDER212"],
+        "next_run": "2026-04-08",
+        "repeat_skip": false,
+        "confirmed": false,
+        "confirm_reason": null,
+        "district": "Galle",
+        "temp_requirement": "chilled",
+        "volume_m3": 10.1,
+        "weight_kg": 500
+      }
+    ],
+    "orders_total": 85,
+    "chilled_total": 26
+  },
+  "fleet": [
+    {
+      "vehicle_code": "TESTV01",
+      "date": "2026-04-07",
+      "type": "van",
+      "temp": "reefer",
+      "status": "available",
+      "switched_on": true,
+      "off_reason": null,
+      "weight_cap_kg": 1040,
+      "volume_cap_m3": 7,
+      "fuel_used_l": 210,
+      "fuel_remaining_l": 270
+    },
+    {
+      "vehicle_code": "TESTV02",
+      "date": "2026-04-07",
+      "type": "truck",
+      "temp": "reefer",
+      "status": "available",
+      "switched_on": true,
+      "off_reason": null,
+      "weight_cap_kg": 5500,
+      "volume_cap_m3": 26.4,
+      "fuel_used_l": 210,
+      "fuel_remaining_l": 270
+    },
+    {
+      "vehicle_code": "TESTV03",
+      "date": "2026-04-07",
+      "type": "truck",
+      "temp": "reefer",
+      "status": "available",
+      "switched_on": true,
+      "off_reason": null,
+      "weight_cap_kg": 5500,
+      "volume_cap_m3": 26.4,
+      "fuel_used_l": 210,
+      "fuel_remaining_l": 270
+    },
+    {
+      "vehicle_code": "TESTV04",
+      "date": "2026-04-07",
+      "type": "truck",
+      "temp": "reefer",
+      "status": "available",
+      "switched_on": true,
+      "off_reason": null,
+      "weight_cap_kg": 5500,
+      "volume_cap_m3": 26.4,
+      "fuel_used_l": 210,
+      "fuel_remaining_l": 270
+    },
+    {
+      "vehicle_code": "TESTV05",
+      "date": "2026-04-07",
+      "type": "van",
+      "temp": "dry",
+      "status": "available",
+      "switched_on": true,
+      "off_reason": null,
+      "weight_cap_kg": 5500,
+      "volume_cap_m3": 26.4,
+      "fuel_used_l": 210,
+      "fuel_remaining_l": 270
+    },
+    {
+      "vehicle_code": "TESTV06",
+      "date": "2026-04-07",
+      "type": "truck",
+      "temp": "dry",
+      "status": "available",
+      "switched_on": true,
+      "off_reason": null,
+      "weight_cap_kg": 5500,
+      "volume_cap_m3": 26.4,
+      "fuel_used_l": 210,
+      "fuel_remaining_l": 270
+    },
+    {
+      "vehicle_code": "TESTV07",
+      "date": "2026-04-07",
+      "type": "truck",
+      "temp": "dry",
+      "status": "available",
+      "switched_on": true,
+      "off_reason": null,
+      "weight_cap_kg": 5500,
+      "volume_cap_m3": 26.4,
+      "fuel_used_l": 210,
+      "fuel_remaining_l": 270
+    }
+  ]
+}

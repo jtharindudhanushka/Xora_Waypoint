@@ -6,6 +6,8 @@ export type Session = { accessToken: string; expiresAt: number; user: User }
 
 const KEY = 'xora.session'
 const listeners = new Set<() => void>()
+let cachedRaw: string | null | undefined
+let cachedSession: Session | null = null
 
 /**
  * The session survives reloads and loss of signal, so drivers and loaders can reopen their last
@@ -15,7 +17,12 @@ const listeners = new Set<() => void>()
 export function getSession(): Session | null {
   try {
     const raw = localStorage.getItem(KEY)
-    return raw ? (JSON.parse(raw) as Session) : null
+    // useSyncExternalStore needs a stable snapshot between storage changes.
+    if (raw !== cachedRaw) {
+      cachedRaw = raw
+      cachedSession = raw ? (JSON.parse(raw) as Session) : null
+    }
+    return cachedSession
   } catch {
     return null
   }
