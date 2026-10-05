@@ -8,7 +8,7 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Annotated
 
-from pydantic import Field, field_validator
+from pydantic import Field, field_validator, model_validator
 from pydantic_settings import BaseSettings, NoDecode, SettingsConfigDict
 
 
@@ -44,6 +44,15 @@ class Settings(BaseSettings):
                 return json.loads(value)
             return [origin.strip() for origin in value.split(",") if origin.strip()]
         return value
+
+    @model_validator(mode="after")
+    def _real_secret_in_production(self) -> Settings:
+        """Fail fast: a placeholder or short JWT secret would let anyone mint tokens."""
+        if self.is_production and ("change-me" in self.jwt_secret or len(self.jwt_secret) < 32):
+            raise ValueError(
+                "JWT_SECRET must be set to a random value of 32+ characters in production"
+            )
+        return self
 
     @property
     def is_production(self) -> bool:

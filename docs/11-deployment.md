@@ -44,3 +44,5 @@ docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
 
 ## Environment variables (`.env.example`)
 See the root [`.env.example`](../.env.example). The key ones are `DATABASE_URL`, `JWT_SECRET`, `DATASET_DIR`, `DEMO_START`, `PUBLIC_HOST`, `CORS_ORIGINS`.
+
+**`JWT_SECRET` is enforced in production.** With `ENVIRONMENT=production` the API refuses to start if the secret still contains `change-me` or is shorter than 32 characters (otherwise anyone could mint tokens for any role). Generate one with `openssl rand -hex 32`.

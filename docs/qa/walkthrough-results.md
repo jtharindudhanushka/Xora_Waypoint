@@ -99,6 +99,8 @@ Static and unit checks on `main` @ d7e374d, then read-only probes of the live de
 | Q1 | dock | Unknown trip while online showed "Connect to download this trip" and polled every 5 s forever | **Fixed** (server message shown, polling stops on server errors; offline path unchanged — verified in a browser against the live API) |
 | Q2 | docs | README "limit: reefer space" and docs/09 "1,096 kg > 1,040 kg" contradicted both live runs (reefer trip slots; ~767 / 714 kg) | **Fixed** |
 | Q3 | dispatcher | "Outlook" nav item has no route and silently lands on Plan | Open — Figma shell item; needs a product decision (hide, disable or build) |
+| Q5 | sync | Malformed driver payloads (non-list `orders`, non-object lines) returned **500**, so the phone kept the batch queued and retried forever; boolean / 10¹² case counts and a non-integer `cases_handed_over` were **accepted** and the latter would later break the store receipt draft (`int()`). Boolean shortfall `qty` passed as 1 | **Fixed** + 11 regression tests (fail without the fix) |
+| Q6 | auth/config | Default `jwt_secret` placeholder was accepted with `ENVIRONMENT=production` | **Fixed**: API refuses to start in production with a placeholder or < 32-char secret (**check the VM `.env` before deploying**) + tests |
 | Q4 | deploy | No Content-Security-Policy / X-Frame-Options headers | Open — low risk, deploy config |
 
 Not re-run: the full write walkthrough (needs a `--reset-demo`); fixes above are not deployed.
