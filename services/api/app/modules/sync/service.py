@@ -29,6 +29,7 @@ from app.modules.sync.models import Event
 from app.modules.sync.schemas import SyncEventIn, SyncIn, SyncOut, SyncResultOut
 
 OUTCOMES = ("delivered", "partial", "failed")
+MAX_CASES = 100_000  # same ceiling as store counts (receipts/schemas.py)
 
 
 @dataclass
@@ -252,7 +253,7 @@ def _shortfall(db: Session, user: User, trip: Trip, event: SyncEventIn, out: Out
         raise DomainError("INVALID_SHORTFALL", "Kind must be missing or damaged", rule_id="BR-26")
     if reason not in SHORTFALL_REASONS:
         raise DomainError("INVALID_SHORTFALL", "Choose a reason", rule_id="BR-26")
-    if not isinstance(qty, int) or not 0 < qty <= planned[order_id]:
+    if isinstance(qty, bool) or not isinstance(qty, int) or not 0 < qty <= planned[order_id]:
         raise DomainError(
             "INVALID_SHORTFALL", f"Quantity must be 1 to {planned[order_id]}", rule_id="BR-26"
         )
@@ -346,8 +347,15 @@ def _validate_outcome(p: dict[str, Any]) -> None:
         raise DomainError(
             "INVALID_OUTCOME", "Outcome must be delivered, partial or failed", rule_id="BR-34"
         )
-    for line in p.get("orders", []):
-        if not isinstance(line.get("cases"), int) or line["cases"] < 0:
+    # The payload is device-supplied JSON: a malformed shape must be a clean rejection, never a
+    # 500 that would leave the batch queued on the phone forever (BR-35).
+    lines = p.get("orders", [])
+    if not isinstance(lines, list) or not all(isinstance(line, dict) for line in lines):
+        raise DomainError("INVALID_OUTCOME", "Orders must be a list of counts", rule_id="BR-34")
+    counts = [line.get("cases") for line in lines]
+    counts += [p[k] for k in ("cases_handed_over", "damaged", "refused") if p.get(k) is not None]
+    for cases in counts:
+        if isinstance(cases, bool) or not isinstance(cases, int) or not 0 <= cases <= MAX_CASES:
             raise DomainError("INVALID_OUTCOME", "Cases must be a whole number", rule_id="BR-34")
 
 

@@ -375,7 +375,7 @@ def _bottleneck(
             used,
             capacity,
             "Highest utilisation among eligible reefer resources; "
-            "brand, district and per-vehicle limits also constrain the greedy plan",
+            "brand, district and per-vehicle limits also constrain the plan",
         )
     active = [v for v in problem.vehicles.values() if v.switched_on and v.status == "available"]
     return Bottleneck(

@@ -240,6 +240,19 @@ def refresh(repo: Repository, clock: Clock, version: PlanVersion) -> OpsOut:
                 stops=chain,
             )
         )
+    # Stop exceptions raised on a superseded version of this plan point at stop rows the
+    # current version replaced; close them so /exceptions only lists live work (QA B4).
+    current_stops = {str(s.id) for t in version.trips for s in t.stops}
+    for row in repo.exceptions("open"):
+        if row.entity_type != "stop" or row.entity_id in current_stops:
+            continue
+        old = repo.db.get(Stop, uuid.UUID(row.entity_id))
+        if (
+            old
+            and old.trip.version.plan_id == version.plan_id
+            and old.trip.version_id != version.id
+        ):
+            row.status = "resolved"
     repo.db.commit()
     return OpsOut(
         operating_date=version.plan.operating_date,
